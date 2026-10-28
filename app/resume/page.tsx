@@ -1,12 +1,157 @@
+import type { Metadata } from "next"
 import type { ReactNode } from "react"
-import { Download, Mail, Github, Linkedin } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { VolunteerGroups } from "@/lib/profile-data"
+import { Download } from "lucide-react"
+import PageHeader from "@/components/page-header"
+import { EMAIL, GITHUB, LINKEDIN } from "@/components/social-icons"
+import { Entry, VolunteerGroups } from "@/lib/profile-data"
 
-const education = [["University of Ghana", "BSc Statistics with Computer Science · 2022–2026"], ["Brandenburg University of Applied Sciences", "End-to-End Business Processes with SAP S/4HANA Cloud (IEE2E) · June 2026"], ["ALX AI Starter Kit", "Apr–May 2025"], ["Claude Academy by Anthropic", "Sept 2026 – present"], ["Ghana National College", "WASSCE, General Arts · 2018–2021"]]
-const experience = [["SAP Consultant & Educational Content Creator (Team Lead), CodeRaccoon", "SAP Consultant & Educational Content Creator (Team Lead) · Nov 2025 – Aug 2026", "Combined SAP S/4HANA Cloud consulting with instructional design; built e-learning courses, interactive simulations and content with Rise 360, Articulate and Assima; led software, AI, UI/UX and beta testing; trained the team in prompt engineering."], ["NextIT Consult", "Database Management Intern (Odoo) · May – Aug 2025", "Managed business database data entry and warehousing in Odoo and supported daily operations and digital tasks."], ["KNG (Knowledge Network Group)", "IT Intern · Oct – Nov 2023", "Completed Java and OOP training, assisted software development and collaborated on team projects."]]
-const certifications = ["Claude Academy by Anthropic: Claude Code 101, Claude Code in Action, MCP, AI Fluency, Claude 101, AI Capabilities and Limitations, Claude Cowork, Human Agent Teams", "AHK Intercultural Training Certificate for IT Professionals · 2026", "SAP S/4HANA Cloud IEE2E Certificate · Brandenburg University of Applied Sciences · 2026", "Course Creation Certificate · CodeRaccoon, 2025", "Prompt Engineering Certificate · Udemy · 2025", "German Language A1 & A2 · Ambylon · 2025", "ALX AI Starter Kit Certificate · ALX Ghana · 2025", "Solo Learn Front-End Development Fundamentals · 2022"]
-const skills = ["SAP S/4HANA Cloud & ERP (Fiori, MM/Supply Chain, Logistics, Accounting, HCM, DMS)", "Instructional Design & Course Creation (Rise 360, Articulate, Assima)", "Prompt Engineering, AI Automation and AI Agent Tooling", "Software, AI and UI/UX Testing", "Python, Java, C++, SQL/MySQL and Data Warehousing", "Python & Data Analysis, Data Visualization and Web Development", "UI/UX Design & Wireframing, Excel Automation & Reporting", "Microsoft Office, Team Leadership, Public Speaking, Communication & Problem Solving", "Cybersecurity Fundamentals"]
-const Card = ({ children }: { children: ReactNode }) => <div className="min-w-0 rounded-xl border border-slate-100 bg-slate-50 p-6 dark:border-slate-700 dark:bg-slate-800">{children}</div>
+export const metadata: Metadata = { title: "Resume | Benedict Frimpong Boateng" }
 
-export default function ResumePage() { return <main className="min-w-0 overflow-x-hidden pt-20"><section className="bg-slate-900 py-20 text-white"><div className="container mx-auto max-w-5xl px-4"><h1 className="mb-6 break-words text-4xl font-bold md:text-5xl">Resume / CV</h1><p className="max-w-2xl break-words text-xl text-slate-300">SAP S/4HANA Cloud consultant and instructional designer open to work.</p></div></section><section className="bg-white px-4 py-16 dark:bg-slate-900"><div className="container mx-auto max-w-5xl"><div className="mb-12 flex flex-wrap items-center justify-between gap-4"><h2 className="break-words text-3xl font-bold text-slate-900 dark:text-white">Benedict Frimpong Boateng</h2><Button asChild className="rounded-full"><a href="/Benedict_Frimpong_Boateng_CV.pdf" download target="_blank" rel="noopener noreferrer"><Download className="mr-2 h-4 w-4" />Download CV</a></Button></div><div className="grid grid-cols-1 gap-8 md:grid-cols-3"><aside className="min-w-0 space-y-8"><Card><h3 className="mb-4 text-xl font-semibold text-slate-900 dark:text-white">Contact</h3><div className="space-y-3 text-slate-700 dark:text-slate-300"><a className="flex min-w-0 items-start gap-3" href="mailto:frimpongboatengbenedict@gmail.com"><Mail className="shrink-0" /><span className="min-w-0 break-all">frimpongboatengbenedict@gmail.com</span></a><a className="flex min-w-0 items-start gap-3" href="https://www.linkedin.com/in/benedict-frimpong-boateng-552490249/" target="_blank" rel="noreferrer"><Linkedin />LinkedIn</a><a className="flex gap-3" href="https://github.com/Davinchigh" target="_blank" rel="noreferrer"><Github />GitHub</a></div></Card><Card><h3 className="mb-4 text-xl font-semibold text-slate-900 dark:text-white">Skills</h3><div className="space-y-2 text-slate-700 dark:text-slate-300">{skills.map((skill) => <p key={skill} className="break-words">• {skill}</p>)}</div></Card></aside><div className="min-w-0 space-y-16 md:col-span-2"><section><h3 className="mb-6 border-b border-slate-200 pb-2 text-2xl font-bold text-slate-900 dark:border-slate-700 dark:text-white">Education</h3><div className="space-y-4">{education.map(([title, meta]) => <Card key={title}><h4 className="break-words text-lg font-semibold text-slate-900 dark:text-white">{title}</h4><p className="mt-2 break-words text-slate-700 dark:text-slate-300">{meta}</p></Card>)}</div></section><section><h3 className="mb-6 border-b border-slate-200 pb-2 text-2xl font-bold text-slate-900 dark:border-slate-700 dark:text-white">Experience</h3><div className="space-y-4">{experience.map(([title, meta, description]) => <Card key={title}><h4 className="break-words text-lg font-semibold text-slate-900 dark:text-white">{title}</h4><p className="mt-2 break-words font-medium text-slate-700 dark:text-slate-300">{meta}</p><p className="mt-3 break-words text-slate-600 dark:text-slate-400">{description}</p></Card>)}</div></section><section><h3 className="mb-6 border-b border-slate-200 pb-2 text-2xl font-bold text-slate-900 dark:border-slate-700 dark:text-white">Projects</h3><Card><h4 className="break-words text-lg font-semibold text-slate-900 dark:text-white">Time Series Analysis of COVID-19 Cases in Ghana</h4><p className="mt-2 break-words text-slate-700 dark:text-slate-300">Reproducible Python pipeline for forecasting Ghana&apos;s daily COVID-19 cases using WHO data and statistical time-series models.</p></Card></section><section><h3 className="mb-6 border-b border-slate-200 pb-2 text-2xl font-bold text-slate-900 dark:text-white">Volunteer &amp; Leadership</h3><VolunteerGroups compact /></section><section><h3 className="mb-6 border-b border-slate-200 pb-2 text-2xl font-bold text-slate-900 dark:border-slate-700 dark:text-white">Certifications</h3><div className="space-y-4">{certifications.map((certification) => <Card key={certification}><p className="break-words text-slate-700 dark:text-slate-300">{certification}</p></Card>)}</div></section></div></div></div></section></main> }
+const experience = [
+  {
+    title: "SAP Consultant & Educational Content Creator (Team Lead)",
+    org: "CodeRaccoon",
+    dates: "Nov 2025 to Aug 2026",
+    detail:
+      "Combined SAP S/4HANA Cloud consulting with instructional design. Built e-learning courses, interactive simulations and content with Rise 360, Articulate and Assima. Led software, AI, UI/UX and beta testing, and trained the team in prompt engineering.",
+  },
+  {
+    title: "Database Management Intern (Odoo)",
+    org: "NextIT Consult",
+    dates: "May to Aug 2025",
+    detail: "Managed business data entry and warehousing in Odoo and supported daily operations and digital tasks.",
+  },
+  {
+    title: "IT Intern",
+    org: "KNG (Knowledge Network Group)",
+    dates: "Oct to Nov 2023",
+    detail: "Completed Java and OOP training, assisted with software development and collaborated on team projects.",
+  },
+]
+
+const education = [
+  { title: "University of Ghana", subtitle: "BSc Statistics with Computer Science", dates: "2022 to 2026" },
+  {
+    title: "Brandenburg University of Applied Sciences",
+    subtitle: "End-to-End Business Processes with SAP S/4HANA Cloud (IEE2E)",
+    dates: "June 2026",
+  },
+  { title: "Claude Academy by Anthropic", subtitle: "Certifications", dates: "Sept 2026 to present" },
+  { title: "ALX", subtitle: "AI Starter Kit", dates: "Apr to May 2025" },
+  { title: "Ghana National College", subtitle: "WASSCE, General Arts", dates: "2018 to 2021" },
+]
+
+const certifications = [
+  {
+    title: "Claude Academy by Anthropic",
+    detail: "Claude Code 101, Claude Code in Action, MCP, AI Fluency, Claude 101, AI Capabilities and Limitations, Claude Cowork, Human Agent Teams",
+  },
+  { title: "SAP S/4HANA Cloud IEE2E Certificate", detail: "Brandenburg University of Applied Sciences, 2026" },
+  { title: "AHK Intercultural Training Certificate for IT Professionals", detail: "2026" },
+  { title: "Course Creation Certificate", detail: "CodeRaccoon, 2025" },
+  { title: "Prompt Engineering Certificate", detail: "Udemy, 2025" },
+  { title: "German Language A1 & A2", detail: "Ambylon, 2025" },
+  { title: "ALX AI Starter Kit Certificate", detail: "ALX Ghana, 2025" },
+  { title: "Front-End Development Fundamentals", detail: "SoloLearn, 2022" },
+]
+
+const skills = [
+  "SAP S/4HANA Cloud & ERP (Fiori, MM/Supply Chain, Logistics, Accounting, HCM, DMS)",
+  "Instructional design & course creation (Rise 360, Articulate, Assima)",
+  "Prompt engineering, AI automation and AI agent tooling",
+  "Software, AI and UI/UX testing",
+  "Python, Java, C++, SQL/MySQL and data warehousing",
+  "Data analysis, data visualization and web development",
+  "UI/UX design & wireframing, Excel automation & reporting",
+  "Microsoft Office, team leadership, public speaking, communication & problem solving",
+  "Cybersecurity fundamentals",
+]
+
+function Block({ id, title, children }: { id: string; title: string; children: ReactNode }) {
+  return (
+    <section aria-labelledby={id} className="grid gap-4 border-t border-border pt-8 md:grid-cols-12 md:gap-10">
+      <h2 id={id} className="text-xl font-semibold tracking-tight md:col-span-3">
+        {title}
+      </h2>
+      <div className="md:col-span-9">{children}</div>
+    </section>
+  )
+}
+
+export default function ResumePage() {
+  return (
+    <main>
+      <PageHeader title="Resume">
+        <p>SAP S/4HANA Cloud consultant and instructional designer, open to work.</p>
+        <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-4 text-base">
+          <a
+            href="/Benedict_Frimpong_Boateng_CV.pdf"
+            download
+            className="inline-flex h-11 items-center gap-2 rounded-md bg-foreground px-5 text-sm font-medium text-background transition-opacity hover:opacity-85"
+          >
+            <Download className="h-4 w-4" aria-hidden="true" />
+            Download CV (PDF)
+          </a>
+          <a href={`mailto:${EMAIL}`} className="text-link break-all text-foreground">
+            {EMAIL}
+          </a>
+          <a href={LINKEDIN} target="_blank" rel="noopener noreferrer" className="text-link text-foreground">
+            LinkedIn
+          </a>
+          <a href={GITHUB} target="_blank" rel="noopener noreferrer" className="text-link text-foreground">
+            GitHub
+          </a>
+        </div>
+      </PageHeader>
+
+      <div className="page space-y-16">
+        <Block id="experience" title="Experience">
+          <ul>
+            {experience.map((job) => (
+              <Entry key={job.title} title={job.title} subtitle={job.org} dates={job.dates}>
+                {job.detail}
+              </Entry>
+            ))}
+          </ul>
+        </Block>
+
+        <Block id="education" title="Education">
+          <ul>
+            {education.map((item) => (
+              <Entry key={item.title} title={item.title} subtitle={item.subtitle} dates={item.dates} />
+            ))}
+          </ul>
+        </Block>
+
+        <Block id="projects" title="Projects">
+          <ul>
+            <Entry title="Time Series Analysis of COVID-19 Cases in Ghana" subtitle="Final year project, Python">
+              Reproducible pipeline for forecasting Ghana&apos;s daily COVID-19 cases using WHO data and statistical time series
+              models.
+            </Entry>
+          </ul>
+        </Block>
+
+        <Block id="skills" title="Skills">
+          <ul className="space-y-2 leading-relaxed">
+            {skills.map((skill) => (
+              <li key={skill}>{skill}</li>
+            ))}
+          </ul>
+        </Block>
+
+        <Block id="certifications" title="Certifications">
+          <ul>
+            {certifications.map((cert) => (
+              <Entry key={cert.title} title={cert.title} subtitle={cert.detail} />
+            ))}
+          </ul>
+        </Block>
+
+        <Block id="community" title="Volunteering and leadership">
+          <VolunteerGroups compact />
+        </Block>
+      </div>
+    </main>
+  )
+}

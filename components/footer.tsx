@@ -1,4 +1,42 @@
 import Link from "next/link"
-import SocialIcons from "@/components/social-icons"
+import SocialIcons, { EMAIL } from "@/components/social-icons"
 
-export default function Footer() { return <footer className="overflow-x-hidden bg-slate-900 py-12 text-white"><div className="container max-w-6xl mx-auto px-4"><div className="grid grid-cols-1 md:grid-cols-4 gap-8"><div className="md:col-span-2"><h3 className="text-xl font-bold mb-4">Benedict Frimpong Boateng</h3><p className="text-slate-300 mb-4 max-w-md">SAP S/4HANA Cloud consultant and instructional designer based in Accra, Ghana. Open to work.</p><SocialIcons /></div><div><h4 className="text-lg font-semibold mb-4">Quick Links</h4><ul className="space-y-2">{[["Home","/"],["About","/about"],["Projects","/projects"]].map(([label,href]) => <li key={href}><Link href={href} className="text-slate-300 hover:text-white transition-colors">{label}</Link></li>)}</ul></div><div><h4 className="text-lg font-semibold mb-4">More</h4><ul className="space-y-2">{[["Resume","/Benedict_Frimpong_Boateng_CV.pdf"],["Contact","/contact"]].map(([label,href]) => <li key={href}><Link href={href} className="text-slate-300 hover:text-white transition-colors">{label}</Link></li>)}</ul></div></div><div className="border-t border-slate-700 mt-8 pt-8 text-center text-slate-400"><p>© 2026 Benedict Frimpong Boateng</p></div></div></footer> }
+const links = [
+  ["About", "/about"],
+  ["Projects", "/projects"],
+  ["Designs", "/figma-designs"],
+  ["Resume", "/resume"],
+  ["Contact", "/contact"],
+]
+
+export default function Footer() {
+  return (
+    <footer className="mt-24 border-t border-border">
+      <div className="page grid gap-10 py-12 md:grid-cols-[1fr_auto] md:items-end">
+        <div>
+          <p className="text-2xl font-semibold tracking-tight">Have a role or project in mind?</p>
+          <a href={`mailto:${EMAIL}`} className="text-link mt-2 inline-block break-all text-muted-foreground hover:text-foreground">
+            {EMAIL}
+          </a>
+          <SocialIcons className="-ml-3 mt-6" />
+        </div>
+        <nav aria-label="Footer">
+          <ul className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
+            {links.map(([label, href]) => (
+              <li key={href}>
+                <Link href={href} className="text-muted-foreground hover:text-foreground">
+                  {label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      </div>
+      <div className="page">
+        <p className="border-t border-border py-6 text-sm text-muted-foreground">
+          © {new Date().getFullYear()} Benedict Frimpong Boateng, Accra, Ghana
+        </p>
+      </div>
+    </footer>
+  )
+}

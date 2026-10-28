@@ -1,12 +1,103 @@
-"use client"
-
 import Link from "next/link"
-import { ArrowRight, ExternalLink } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { motion } from "framer-motion"
+import { ArrowRight } from "lucide-react"
+import ProjectRow from "@/components/project-row"
 import SocialIcons from "@/components/social-icons"
-import { timeSeriesProject } from "@/lib/profile-data"
+import { projects } from "@/lib/projects"
 
-const projects = [timeSeriesProject, { title: "Elizabeth Sey Hall Website", description: "Responsive website design for a university residence hall with modern UI/UX principles.", image: "/images/elizabeth-sey-hall.png", tags: ["Web Development", "UI/UX"] }, { title: "ALX AI Project", description: "Machine learning implementation from the ALX AI Starter Kit program.", image: "/images/alx-ai.webp", tags: ["AI", "Python", "Machine Learning"] }]
+const facts = [
+  ["Most recent role", "SAP Consultant & Educational Content Creator, Team Lead at CodeRaccoon"],
+  ["Education", "BSc Statistics with Computer Science, University of Ghana"],
+  ["Based in", "Accra, Ghana"],
+]
 
-export default function Home() { return <main className="min-w-0 overflow-x-hidden"><section className="relative flex flex-col items-center justify-center bg-gradient-to-b from-slate-900 to-slate-800 px-4 py-28 text-white md:py-40"><div className="container mx-auto max-w-5xl"><div className="grid min-w-0 grid-cols-1 items-center gap-8 md:grid-cols-2"><motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex min-w-0 flex-col space-y-6"><div className="inline-flex w-fit items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-1 text-sm text-emerald-200"><span className="h-2 w-2 rounded-full bg-emerald-400" />Open to work</div><h1 className="break-words text-4xl font-bold tracking-tight md:text-6xl">Benedict Frimpong Boateng</h1><h2 className="break-words text-2xl font-medium text-slate-300 md:text-3xl">SAP S/4HANA Cloud Consultant · Instructional Designer · Statistics &amp; Computer Science</h2><p className="max-w-md break-words text-lg text-slate-300">SAP S/4HANA Cloud consultant and e-learning developer who builds professional courses and simulations in Articulate Rise 360, with a foundation in statistics, programming and AI. I&apos;m currently open to work.</p><div className="flex flex-wrap gap-4 pt-4"><Button asChild size="lg" className="rounded-full"><Link href="/contact">Get In Touch <ArrowRight className="ml-2 h-4 w-4" /></Link></Button><Button asChild variant="outline" size="lg" className="rounded-full border-white bg-transparent text-white hover:bg-white hover:text-slate-900"><Link href="/resume">View My Resume</Link></Button></div><SocialIcons className="pt-4" variant="ghost" /></motion.div><motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="flex justify-center md:justify-end"><div className="relative h-64 w-64 overflow-hidden rounded-full border-4 border-white/20 md:h-80 md:w-80"><img src="/images/benedict-frimpong-boateng.jpeg" alt="Portrait of Benedict Frimpong Boateng" className="h-full w-full object-cover" /></div></motion.div></div></div></section><section className="bg-white px-4 py-20 dark:bg-slate-900"><div className="container mx-auto max-w-5xl"><h2 className="mb-8 text-3xl font-bold text-slate-900 dark:text-white">About Me</h2><div className="grid grid-cols-1 gap-8 md:grid-cols-2"><div><p className="mb-6 break-words text-lg text-slate-700 dark:text-slate-300">I&apos;m studying Statistics with Computer Science at the University of Ghana (2022 – 2026). Most recently I worked as an SAP Consultant &amp; Educational Content Creator and Team Lead at CodeRaccoon, combining SAP S/4HANA Cloud consulting with instructional design for internal and client-facing training programs.</p><Button asChild className="rounded-full"><Link href="/about">Learn More About Me <ArrowRight className="ml-2 h-4 w-4" /></Link></Button></div><div className="flex flex-col space-y-4">{[["Most Recent Role", "SAP Consultant & Educational Content Creator (Team Lead)"], ["Education", "BSc Statistics with Computer Science, University of Ghana"], ["Status", "Open to work"]].map(([title, text]) => <div key={title} className="rounded-lg bg-slate-100 p-6 dark:bg-slate-800"><h3 className="mb-2 text-xl font-semibold text-slate-900 dark:text-white">{title}</h3><p className="break-words text-slate-700 dark:text-slate-300">{text}</p></div>)}</div></div></div></section><section className="bg-slate-50 px-4 py-20 dark:bg-slate-800"><div className="container mx-auto max-w-5xl"><div className="mb-8 flex flex-wrap items-center justify-between gap-4"><h2 className="text-3xl font-bold text-slate-900 dark:text-white">Featured Projects</h2><Button asChild variant="outline" className="rounded-full bg-transparent"><Link href="/projects">View All Projects <ArrowRight className="ml-2 h-4 w-4" /></Link></Button></div><div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">{projects.map((project, index) => <motion.article key={project.title} whileHover={{ y: -5 }} className="flex min-w-0 flex-col overflow-hidden rounded-xl bg-white shadow-md transition-all duration-300 hover:shadow-lg dark:bg-slate-900"><div className="relative aspect-video bg-slate-200 dark:bg-slate-700"><img src={project.image} alt={project.title} className="h-full w-full object-cover" />{index === 0 && <span className="absolute left-3 top-3 rounded-full bg-emerald-600 px-3 py-1 text-xs font-semibold text-white">Featured</span>}</div><div className="flex flex-1 flex-col p-5"><h3 className="break-words text-xl font-semibold text-slate-900 dark:text-white">{project.title}</h3><p className="mt-2 flex-1 break-words text-sm leading-6 text-slate-700 dark:text-slate-300">{project.description}</p><div className="mt-4 flex flex-wrap gap-2">{project.tags.map((tag) => <span key={tag} className="rounded-full bg-slate-100 px-3 py-1 text-sm text-slate-700 dark:bg-slate-700 dark:text-slate-300">{tag}</span>)}</div>{project.link && <Button asChild variant="outline" className="mt-5 w-full"><a href={project.link} target="_blank" rel="noopener noreferrer">View on GitHub <ExternalLink className="ml-2 h-4 w-4" /></a></Button>}</div></motion.article>)}</div></div></section><section className="bg-white px-4 py-20 text-center dark:bg-slate-900"><h2 className="mb-4 text-3xl font-bold text-slate-900 dark:text-white">Get In Touch</h2><p className="mx-auto mb-8 max-w-2xl break-words text-xl text-slate-700 dark:text-slate-300">I&apos;m open to full-time, contract and freelance opportunities. Let&apos;s connect.</p><Button asChild size="lg" className="rounded-full"><Link href="/contact">Contact Me <ArrowRight className="ml-2 h-4 w-4" /></Link></Button></section></main> }
+export default function Home() {
+  return (
+    <main>
+      <section className="page pb-20 pt-32 md:pb-28 md:pt-40">
+        <div className="grid items-end gap-10 lg:grid-cols-[1fr_auto]">
+          <h1 className="hero-name text-[clamp(3.25rem,11vw,9.5rem)] font-semibold leading-[0.88] tracking-[-0.055em]">
+            <span className="block">Benedict</span>
+            <span className="block">Frimpong</span>
+            <span className="block">Boateng</span>
+          </h1>
+          <div className="hidden w-56 overflow-hidden rounded-md border border-border lg:block xl:w-64">
+            <img
+              src="/images/benedict-frimpong-boateng.jpeg"
+              alt="Portrait of Benedict Frimpong Boateng"
+              className="aspect-[4/5] w-full object-cover grayscale"
+            />
+          </div>
+        </div>
+
+        <div className="mt-12 grid gap-8 border-t border-border pt-8 md:grid-cols-12">
+          <p className="text-xl leading-relaxed md:col-span-7 md:text-2xl">
+            SAP S/4HANA Cloud consultant and instructional designer. I build e-learning courses and simulations in Rise 360,
+            backed by a foundation in statistics, programming and AI.
+          </p>
+          <div className="flex flex-col gap-6 md:col-span-5 md:items-end">
+            <p className="flex items-center gap-2 text-sm">
+              <span className="inline-block h-2 w-2 rounded-full bg-foreground" aria-hidden="true" />
+              Open to work
+            </p>
+            <div className="flex flex-wrap gap-3">
+              <Link
+                href="/contact"
+                className="inline-flex h-11 items-center gap-2 rounded-md bg-foreground px-5 text-sm font-medium text-background transition-opacity hover:opacity-85"
+              >
+                Get in touch <ArrowRight className="h-4 w-4" aria-hidden="true" />
+              </Link>
+              <Link
+                href="/resume"
+                className="inline-flex h-11 items-center rounded-md border border-foreground px-5 text-sm font-medium transition-colors hover:bg-foreground hover:text-background"
+              >
+                View resume
+              </Link>
+            </div>
+            <SocialIcons className="-mr-3" />
+          </div>
+        </div>
+      </section>
+
+      <section className="page" aria-labelledby="about-heading">
+        <div className="grid gap-10 border-t border-border py-16 md:grid-cols-12">
+          <h2 id="about-heading" className="text-sm font-medium md:col-span-3">
+            About
+          </h2>
+          <div className="md:col-span-9">
+            <p className="max-w-3xl text-lg leading-relaxed md:text-xl">
+              I&apos;m studying Statistics with Computer Science at the University of Ghana (2022 to 2026). Most recently I led a team at CodeRaccoon,
+              combining SAP S/4HANA Cloud consulting with instructional design for internal and client training.
+            </p>
+            <dl className="mt-10 grid gap-6 sm:grid-cols-3">
+              {facts.map(([term, detail]) => (
+                <div key={term}>
+                  <dt className="text-sm text-muted-foreground">{term}</dt>
+                  <dd className="mt-1 leading-snug">{detail}</dd>
+                </div>
+              ))}
+            </dl>
+            <Link href="/about" className="text-link mt-10 inline-block font-medium">
+              More about me
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <section className="page" aria-labelledby="work-heading">
+        <div className="flex flex-wrap items-baseline justify-between gap-4 border-t border-border pb-2 pt-16">
+          <h2 id="work-heading" className="text-4xl font-semibold tracking-[-0.03em] md:text-5xl">
+            Selected work
+          </h2>
+          <Link href="/projects" className="text-link font-medium">
+            All projects
+          </Link>
+        </div>
+        <div className="mt-6">
+          {projects.slice(0, 3).map((project) => (
+            <ProjectRow key={project.slug} project={project} />
+          ))}
+        </div>
+      </section>
+    </main>
+  )
+}

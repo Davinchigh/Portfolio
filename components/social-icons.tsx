@@ -1,54 +1,40 @@
-import Link from "next/link"
-import { Github, Linkedin, Mail, Twitter } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { Github, Linkedin, Mail } from "lucide-react"
 
-interface SocialIconsProps {
-  className?: string
-  iconSize?: number
-  variant?: "ghost" | "outline" | "default"
-  showLabels?: boolean
+export const EMAIL = "frimpongboatengbenedict@gmail.com"
+export const LINKEDIN = "https://www.linkedin.com/in/benedict-frimpong-boateng-552490249/"
+export const GITHUB = "https://github.com/Davinchigh"
+export const X_URL = "https://x.com/DavinchiMax"
+
+function XLogo({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" className={className} fill="currentColor">
+      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231 5.45-6.231Zm-1.161 17.52h1.833L7.084 4.126H5.117l11.966 15.644Z" />
+    </svg>
+  )
 }
 
-export default function SocialIcons({
-  className = "",
-  iconSize = 5,
-  variant = "ghost",
-  showLabels = false,
-}: SocialIconsProps) {
+const links = [
+  { label: "GitHub", href: GITHUB, Icon: Github, external: true },
+  { label: "LinkedIn", href: LINKEDIN, Icon: Linkedin, external: true },
+  { label: "Email", href: `mailto:${EMAIL}`, Icon: Mail, external: false },
+  { label: "X", href: X_URL, Icon: XLogo, external: true },
+]
+
+export default function SocialIcons({ className = "" }: { className?: string }) {
   return (
-    <div className={`flex gap-4 ${className}`}>
-      <Link href="https://github.com/Davinchigh" target="_blank" rel="noopener noreferrer">
-        <Button variant={variant} size={showLabels ? "default" : "icon"} className="rounded-full hover:bg-slate-700/10">
-          <Github className={`h-${iconSize} w-${iconSize} ${showLabels ? "mr-2" : ""}`} />
-          {showLabels && <span>GitHub</span>}
-          {!showLabels && <span className="sr-only">GitHub</span>}
-        </Button>
-      </Link>
-      <Link
-        href="https://www.linkedin.com/in/benedict-frimpong-boateng-552490249/"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <Button variant={variant} size={showLabels ? "default" : "icon"} className="rounded-full hover:bg-slate-700/10">
-          <Linkedin className={`h-${iconSize} w-${iconSize} ${showLabels ? "mr-2" : ""}`} />
-          {showLabels && <span>LinkedIn</span>}
-          {!showLabels && <span className="sr-only">LinkedIn</span>}
-        </Button>
-      </Link>
-      <Link href="mailto:frimpongboatengbenedict@gmail.com">
-        <Button variant={variant} size={showLabels ? "default" : "icon"} className="rounded-full hover:bg-slate-700/10">
-          <Mail className={`h-${iconSize} w-${iconSize} ${showLabels ? "mr-2" : ""}`} />
-          {showLabels && <span>Email</span>}
-          {!showLabels && <span className="sr-only">Email</span>}
-        </Button>
-      </Link>
-      <Link href="https://x.com/DavinchiMax" target="_blank" rel="noopener noreferrer">
-        <Button variant={variant} size={showLabels ? "default" : "icon"} className="rounded-full hover:bg-slate-700/10">
-          <Twitter className={`h-${iconSize} w-${iconSize} ${showLabels ? "mr-2" : ""}`} />
-          {showLabels && <span>Twitter</span>}
-          {!showLabels && <span className="sr-only">X (Twitter)</span>}
-        </Button>
-      </Link>
-    </div>
+    <ul className={`flex items-center gap-1 ${className}`}>
+      {links.map(({ label, href, Icon, external }) => (
+        <li key={label}>
+          <a
+            href={href}
+            {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+            className="inline-flex h-10 w-10 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+          >
+            <Icon className="h-[18px] w-[18px]" />
+            <span className="sr-only">{label}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
   )
 }

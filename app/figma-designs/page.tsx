@@ -1,137 +1,94 @@
-"use client"
+import type { Metadata } from "next"
+import { ArrowUpRight } from "lucide-react"
+import PageHeader from "@/components/page-header"
+import { designs } from "@/lib/projects"
 
-import { useState } from "react"
-import { motion } from "framer-motion"
-import { ExternalLink } from "lucide-react"
-import { Button } from "@/components/ui/button"
+export const metadata: Metadata = { title: "Designs | Benedict Frimpong Boateng" }
 
-export default function FigmaDesignsPage() {
-  const [isHovered, setIsHovered] = useState(false)
+const process = [
+  {
+    title: "Research",
+    text: "I start with who will use the product and what they need to get done, then look at how similar products solve it.",
+  },
+  {
+    title: "Wireframe and prototype",
+    text: "Low fidelity layouts first so I can test structure quickly, then clickable prototypes in Figma to check the flow.",
+  },
+  {
+    title: "Visual design and handoff",
+    text: "Type, colour and spacing are finalised with accessibility in mind, and I document the details developers need to build it accurately.",
+  },
+]
 
+export default function DesignsPage() {
   return (
-    <main className="pt-20 min-h-screen">
-      {/* Header */}
-      <section className="bg-slate-900 text-white py-20">
-        <div className="container max-w-5xl mx-auto px-4">
-          <h1 className="text-4xl md:text-5xl font-bold mb-6">Figma Designs</h1>
-          <p className="text-xl text-slate-300 max-w-2xl">
-            Explore my UI/UX design work and prototypes created in Figma.
-          </p>
-        </div>
-      </section>
+    <main>
+      <PageHeader title="Designs">UI and UX work I&apos;ve designed in Figma. Open any project to explore the full file.</PageHeader>
 
-      {/* Figma Design Showcase */}
-      <section className="py-16 px-4 bg-white dark:bg-slate-900">
-        <div className="container max-w-5xl mx-auto">
-          <div className="grid grid-cols-1 gap-12">
-            {/* Gardening Website Design */}
-            <div className="bg-slate-50 dark:bg-slate-800 rounded-xl overflow-hidden shadow-md border border-slate-100 dark:border-slate-700">
-              <div className="relative">
-                <motion.div
-                  whileHover={{ scale: 1.02 }}
-                  transition={{ duration: 0.3 }}
-                  onHoverStart={() => setIsHovered(true)}
-                  onHoverEnd={() => setIsHovered(false)}
-                  className="relative overflow-hidden"
+      <section className="page space-y-24" aria-label="Design projects">
+        {designs.map((design) => (
+          <article key={design.slug} className="group border-t border-border pt-10">
+            <div className="grid gap-6 md:grid-cols-12 md:gap-10">
+              <div className="md:col-span-4">
+                <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">{design.title}</h2>
+                <p className="mt-4 leading-relaxed text-muted-foreground">{design.summary}</p>
+                <p className="mt-5 text-sm text-muted-foreground">{design.tags.join(", ")}</p>
+                <a
+                  href={design.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-8 inline-flex h-11 items-center gap-2 rounded-md bg-foreground px-5 text-sm font-medium text-background transition-opacity hover:opacity-85"
                 >
-                  <img src="/images/gardening-website.png" alt="Gardening Website Design" className="w-full h-auto" />
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: isHovered ? 1 : 0 }}
-                    transition={{ duration: 0.3 }}
-                    className="absolute inset-0 bg-slate-900/70 flex items-center justify-center"
-                  >
-                    <Button asChild size="lg" className="rounded-full">
-                      <a
-                        href="https://www.figma.com/design/L7RpsFVTDxXhtsFduDBIc7/Gardening-Website?node-id=0-1&t=cXSSNo4etJVdy4xk-1"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        View in Figma <ExternalLink className="ml-2 h-4 w-4" />
-                      </a>
-                    </Button>
-                  </motion.div>
-                </motion.div>
+                  Open in Figma <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+                  <span className="sr-only">(opens in a new tab)</span>
+                </a>
               </div>
-              <div className="p-6">
-                <h2 className="text-2xl font-bold mb-3 text-slate-900 dark:text-white">Gardening Website Design</h2>
-                <p className="text-slate-700 dark:text-slate-300 mb-4">
-                  A modern, responsive website design for a gardening service. This project showcases my UI/UX skills
-                  and attention to detail in creating visually appealing and functional interfaces.
-                </p>
-                <div className="flex flex-wrap gap-2 mb-6">
-                  <span className="px-3 py-1 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 text-sm rounded-full">
-                    UI Design
-                  </span>
-                  <span className="px-3 py-1 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 text-sm rounded-full">
-                    Figma
-                  </span>
-                  <span className="px-3 py-1 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 text-sm rounded-full">
-                    Responsive
-                  </span>
-                  <span className="px-3 py-1 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 text-sm rounded-full">
-                    Web Design
-                  </span>
-                </div>
-                <Button asChild variant="outline" className="w-full">
-                  <a
-                    href="https://www.figma.com/design/L7RpsFVTDxXhtsFduDBIc7/Gardening-Website?node-id=0-1&t=cXSSNo4etJVdy4xk-1"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Open Figma Design <ExternalLink className="ml-2 h-4 w-4" />
-                  </a>
-                </Button>
-              </div>
-            </div>
 
-            {/* Design Process Section */}
-            <div className="mt-12">
-              <h2 className="text-2xl font-bold mb-6 text-slate-900 dark:text-white border-b border-slate-200 dark:border-slate-700 pb-2">
-                My Design Process
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-slate-50 dark:bg-slate-800 p-6 rounded-xl border border-slate-100 dark:border-slate-700">
-                  <h3 className="text-xl font-semibold mb-3 text-slate-900 dark:text-white">Research & Discovery</h3>
-                  <p className="text-slate-700 dark:text-slate-300">
-                    I begin each design project with thorough research to understand user needs, market trends, and
-                    client requirements. This foundation ensures that the final design is both functional and
-                    user-centered.
-                  </p>
-                </div>
-                <div className="bg-slate-50 dark:bg-slate-800 p-6 rounded-xl border border-slate-100 dark:border-slate-700">
-                  <h3 className="text-xl font-semibold mb-3 text-slate-900 dark:text-white">
-                    Wireframing & Prototyping
-                  </h3>
-                  <p className="text-slate-700 dark:text-slate-300">
-                    Creating low and high-fidelity wireframes allows me to iterate quickly and test different layouts
-                    before committing to a final design. Interactive prototypes help visualize the user journey.
-                  </p>
-                </div>
-                <div className="bg-slate-50 dark:bg-slate-800 p-6 rounded-xl border border-slate-100 dark:border-slate-700">
-                  <h3 className="text-xl font-semibold mb-3 text-slate-900 dark:text-white">Visual Design & Handoff</h3>
-                  <p className="text-slate-700 dark:text-slate-300">
-                    The final stage involves creating polished visual designs with attention to typography, color
-                    theory, and accessibility. I prepare detailed documentation for developers to ensure accurate
-                    implementation.
-                  </p>
-                </div>
+              <div className="space-y-4 md:col-span-8">
+                <a
+                  href={design.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block overflow-hidden rounded-md border border-border bg-muted"
+                  aria-label={`${design.title} in Figma (opens in a new tab)`}
+                >
+                  <img src={design.image} alt={design.imageAlt} loading="lazy" className="mono-img w-full" />
+                </a>
+                {"secondaryImage" in design && design.secondaryImage && (
+                  <figure>
+                    <div className="overflow-hidden rounded-md border border-border bg-muted">
+                      <img
+                        src={design.secondaryImage}
+                        alt={design.secondaryAlt}
+                        loading="lazy"
+                        className="mono-img aspect-[21/9] w-full object-cover"
+                      />
+                    </div>
+                    <figcaption className="mt-2 text-sm text-muted-foreground">The hall and its grounds, the setting the site was designed for.</figcaption>
+                  </figure>
+                )}
               </div>
             </div>
-          </div>
-        </div>
+          </article>
+        ))}
       </section>
 
-      {/* Call to Action */}
-      <section className="py-16 px-4 bg-slate-100 dark:bg-slate-800">
-        <div className="container max-w-5xl mx-auto text-center">
-          <h2 className="text-2xl font-bold mb-4 text-slate-900 dark:text-white">Interested in Working Together?</h2>
-          <p className="text-slate-700 dark:text-slate-300 mb-8 max-w-2xl mx-auto">
-            I'm always open to new design projects and collaborations. Let's create something amazing together!
-          </p>
-          <Button asChild size="lg" className="rounded-full">
-            <a href="/contact">Get in Touch</a>
-          </Button>
+      <section className="page mt-24" aria-labelledby="process-heading">
+        <div className="border-t border-border pt-12">
+          <h2 id="process-heading" className="text-3xl font-semibold tracking-tight">
+            How I work
+          </h2>
+          <ol className="mt-8 grid gap-10 md:grid-cols-3">
+            {process.map((step, index) => (
+              <li key={step.title}>
+                <p className="text-5xl font-semibold tracking-tight text-muted-foreground/50" aria-hidden="true">
+                  {index + 1}
+                </p>
+                <h3 className="mt-4 text-lg font-semibold">{step.title}</h3>
+                <p className="mt-2 leading-relaxed text-muted-foreground">{step.text}</p>
+              </li>
+            ))}
+          </ol>
         </div>
       </section>
     </main>
