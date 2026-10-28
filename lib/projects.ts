@@ -32,6 +32,27 @@ export const projects: Project[] = [
     contain: true,
   },
   {
+    slug: "class-planner",
+    title: "Class Planner for Statistics Students",
+    summary:
+      "A web app where statistics students upload their timetable (Excel or CSV) and see their next class with a countdown, today's classes and the full week, and track assignments, homework and departmental programmes. A rebuild of a project I made in college.",
+    image: "/images/class-planner.jpg",
+    imageAlt: "Class Planner dashboard showing the next class, today's classes, assignments and a weekly timetable",
+    tags: ["React", "TypeScript", "Data parsing", "UI design"],
+    links: [{ label: "View code on GitHub", href: "https://github.com/Davinchigh/stats-student-dashboard" }],
+  },
+  {
+    slug: "java-inventory",
+    title: "Java Inventory System",
+    summary:
+      "A desktop stock manager in Java and Swing: products, stock in and out with a full history, low stock alerts, search and filters, and autosave to CSV. Built with clear OOP layers and tests. A rebuild of my college inventory project.",
+    image: "/images/java-inventory-app.png",
+    imageAlt: "Inventory window listing stationery products with stock levels, values and low stock rows highlighted",
+    tags: ["Java", "Swing", "OOP", "Testing"],
+    links: [{ label: "View code on GitHub", href: "https://github.com/Davinchigh/java-inventory-system" }],
+    contain: true,
+  },
+  {
     slug: "elizabeth-sey-hall",
     title: "Elizabeth Sey Hall Website",
     summary:
