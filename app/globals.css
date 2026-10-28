@@ -3,70 +3,59 @@
 @tailwind utilities;
 
 /*
-  Monochrome system. Only black, white and neutral greys.
-  Light: ink on paper. Dark: paper on ink.
+  Dark by default: near-black with warm off-white text and one amber accent,
+  used for handwritten notes and anything "live". Light mode mirrors it.
 */
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 0%;
-
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 0%;
-
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 0%;
-
-    --primary: 0 0% 0%;
-    --primary-foreground: 0 0% 100%;
-
-    --secondary: 0 0% 96%;
-    --secondary-foreground: 0 0% 0%;
-
-    --muted: 0 0% 96%;
-    --muted-foreground: 0 0% 32%;
-
-    --accent: 0 0% 94%;
-    --accent-foreground: 0 0% 0%;
-
-    --destructive: 0 0% 0%;
+    --background: 45 14% 95%; /* #f4f3ef */
+    --foreground: 60 5% 8%; /* #161614 */
+    --card: 45 12% 92%;
+    --card-foreground: 60 5% 8%;
+    --popover: 45 14% 97%;
+    --popover-foreground: 60 5% 8%;
+    --primary: 60 5% 8%;
+    --primary-foreground: 45 14% 95%;
+    --secondary: 45 10% 89%;
+    --secondary-foreground: 60 5% 8%;
+    --muted: 45 10% 89%;
+    --muted-foreground: 50 4% 33%; /* body secondary, ~7:1 */
+    --subtle: 50 3% 40%; /* meta text, ~5.5:1 */
+    --accent: 45 10% 87%;
+    --accent-foreground: 60 5% 8%;
+    --destructive: 0 70% 40%;
     --destructive-foreground: 0 0% 100%;
-
-    --border: 0 0% 88%;
-    --input: 0 0% 80%;
-    --ring: 0 0% 0%;
-
-    --radius: 0.375rem;
+    --border: 45 8% 82%;
+    --input: 45 8% 74%;
+    --ring: 60 5% 8%;
+    --amber: 26 90% 37%; /* #b45309 on light, readable as text */
+    --live: 142 70% 32%;
+    --radius: 0.75rem;
   }
 
   .dark {
-    --background: 0 0% 0%;
-    --foreground: 0 0% 100%;
-
-    --card: 0 0% 0%;
-    --card-foreground: 0 0% 100%;
-
-    --popover: 0 0% 6%;
-    --popover-foreground: 0 0% 100%;
-
-    --primary: 0 0% 100%;
-    --primary-foreground: 0 0% 0%;
-
-    --secondary: 0 0% 10%;
-    --secondary-foreground: 0 0% 100%;
-
-    --muted: 0 0% 8%;
-    --muted-foreground: 0 0% 66%;
-
-    --accent: 0 0% 12%;
-    --accent-foreground: 0 0% 100%;
-
-    --destructive: 0 0% 100%;
-    --destructive-foreground: 0 0% 0%;
-
-    --border: 0 0% 18%;
-    --input: 0 0% 26%;
-    --ring: 0 0% 100%;
+    --background: 0 0% 4%; /* #0a0a0a */
+    --foreground: 43 13% 92%; /* #edebe6 */
+    --card: 60 2% 7%;
+    --card-foreground: 43 13% 92%;
+    --popover: 60 2% 9%;
+    --popover-foreground: 43 13% 92%;
+    --primary: 43 13% 92%;
+    --primary-foreground: 0 0% 4%;
+    --secondary: 60 2% 11%;
+    --secondary-foreground: 43 13% 92%;
+    --muted: 60 2% 11%;
+    --muted-foreground: 53 4% 62%; /* #a1a099 */
+    --subtle: 53 3% 51%; /* #85847d */
+    --accent: 60 3% 13%;
+    --accent-foreground: 43 13% 92%;
+    --destructive: 0 80% 70%;
+    --destructive-foreground: 0 0% 4%;
+    --border: 60 3% 15%;
+    --input: 60 3% 22%;
+    --ring: 43 13% 92%;
+    --amber: 43 96% 56%; /* #fbbf24 */
+    --live: 142 69% 58%;
   }
 }
 
@@ -76,74 +65,96 @@
   }
   html {
     scroll-behavior: smooth;
+    scroll-padding-top: 80px;
   }
   body {
     @apply bg-background text-foreground;
-    font-feature-settings: "ss01", "cv11";
+  }
+  h1,
+  h2,
+  h3 {
+    @apply font-medium;
+    letter-spacing: -0.025em;
   }
   ::selection {
-    @apply bg-foreground text-background;
+    background: hsl(var(--amber));
+    color: hsl(var(--background));
   }
   :focus-visible {
-    outline: 2px solid hsl(var(--ring));
+    outline: 2px solid hsl(var(--amber));
     outline-offset: 3px;
+    border-radius: 4px;
   }
 }
 
 @layer components {
-  /* Page shell */
-  .page {
-    @apply mx-auto w-full max-w-6xl px-4 sm:px-6;
+  .wrap {
+    @apply mx-auto w-full max-w-5xl px-5 sm:px-8;
   }
 
-  /* Project and design imagery: shown in greyscale, colour returns on hover or focus */
-  .mono-img {
-    filter: grayscale(1) contrast(1.05);
-    transition: filter 400ms ease;
+  /* Small mono labels: dates, eyebrows, meta */
+  .meta {
+    @apply font-mono text-xs text-subtle;
   }
-  .group:hover .mono-img,
-  .group:focus-within .mono-img {
-    filter: grayscale(0) contrast(1);
+  .eyebrow {
+    @apply font-mono text-[11px] uppercase tracking-[0.14em] text-subtle;
   }
 
-  /* Simple text link with an underline that thickens on hover */
-  .text-link {
-    @apply underline decoration-1 underline-offset-4 transition-[text-decoration-thickness];
+  /* Handwritten margin notes */
+  .hand {
+    font-family: "Caveat Variable", cursive;
+    @apply text-2xl leading-none text-amber;
   }
-  .text-link:hover {
-    text-decoration-thickness: 2px;
+
+  .link {
+    @apply underline decoration-border decoration-1 underline-offset-4 transition-colors hover:decoration-foreground;
+  }
+
+  .pill-button {
+    @apply inline-flex h-11 items-center gap-2 rounded-full bg-foreground px-5 text-sm font-medium text-background transition-transform hover:-translate-y-0.5;
+  }
+  .ghost-button {
+    @apply inline-flex h-11 items-center gap-2 rounded-full border px-5 text-sm font-medium transition-colors hover:bg-accent;
+  }
+
+  /* Screenshot frames */
+  .shot {
+    @apply overflow-hidden rounded-xl border bg-card;
   }
 }
 
-/* The one orchestrated moment: the name on the home page rises in, line by line */
-@keyframes rise {
+/* One page-load moment: hero lines settle in */
+@keyframes settle {
   from {
     opacity: 0;
-    transform: translateY(0.35em);
+    transform: translateY(10px);
   }
   to {
     opacity: 1;
     transform: none;
   }
 }
-.hero-name > span {
-  animation: rise 700ms cubic-bezier(0.2, 0.7, 0.1, 1) both;
+.settle > * {
+  animation: settle 600ms cubic-bezier(0.2, 0.7, 0.1, 1) both;
 }
-.hero-name > span:nth-child(2) {
-  animation-delay: 90ms;
+.settle > *:nth-child(2) {
+  animation-delay: 60ms;
 }
-.hero-name > span:nth-child(3) {
+.settle > *:nth-child(3) {
+  animation-delay: 120ms;
+}
+.settle > *:nth-child(4) {
   animation-delay: 180ms;
+}
+.settle > *:nth-child(n + 5) {
+  animation-delay: 240ms;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hero-name > span {
-    animation: none;
-  }
   html {
     scroll-behavior: auto;
   }
-  .mono-img {
-    transition: none;
+  .settle > * {
+    animation: none;
   }
 }

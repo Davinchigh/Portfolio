@@ -1,36 +1,43 @@
 import type React from "react"
-import type { Metadata } from "next"
+import type { Metadata, Viewport } from "next"
 import { GeistSans } from "geist/font/sans"
+import { GeistMono } from "geist/font/mono"
+import "@fontsource-variable/caveat"
 import "./globals.css"
 import Navbar from "@/components/navbar"
 import Footer from "@/components/footer"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/toaster"
-import ScrollToTop from "@/components/scroll-to-top"
 
-const title = "Benedict Frimpong Boateng | SAP Consultant & Instructional Designer"
+const title = "Benedict Frimpong Boateng | AI engineer and software developer"
 const description =
-  "SAP S/4HANA Cloud consultant, e-learning developer and Statistics with Computer Science student based in Accra, Ghana. Open to work."
+  "AI engineer, prompt engineer and software developer in Accra, Ghana. I build with Claude, test things properly and ship fast. Open to full time and freelance work."
 
 export const metadata: Metadata = {
   title,
   description,
-  openGraph: { title, description },
+  openGraph: { title, description, type: "website" },
   twitter: { card: "summary", title, description },
+}
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: dark)", color: "#0a0a0a" },
+    { media: "(prefers-color-scheme: light)", color: "#f4f3ef" },
+  ],
 }
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={GeistSans.variable} suppressHydrationWarning>
+    <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable}`} suppressHydrationWarning>
       <body className="font-sans antialiased">
-        <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} disableTransitionOnChange>
           <a
             href="#main"
-            className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:bg-foreground focus:px-4 focus:py-2 focus:text-background"
+            className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded-full focus:bg-foreground focus:px-4 focus:py-2 focus:text-background"
           >
-            Skip to content
+            skip to content
           </a>
-          <ScrollToTop />
           <Navbar />
           <div id="main">{children}</div>
           <Footer />

@@ -1,42 +1,29 @@
-import Link from "next/link"
-import SocialIcons, { EMAIL } from "@/components/social-icons"
-
-const links = [
-  ["About", "/about"],
-  ["Projects", "/projects"],
-  ["Designs", "/figma-designs"],
-  ["Resume", "/resume"],
-  ["Contact", "/contact"],
-]
+import { Clock } from "@/components/site/clock"
+import { person, socials } from "@/lib/site"
 
 export default function Footer() {
   return (
-    <footer className="mt-24 border-t border-border">
-      <div className="page grid gap-10 py-12 md:grid-cols-[1fr_auto] md:items-end">
-        <div>
-          <p className="text-2xl font-semibold tracking-tight">Have a role or project in mind?</p>
-          <a href={`mailto:${EMAIL}`} className="text-link mt-2 inline-block break-all text-muted-foreground hover:text-foreground">
-            {EMAIL}
-          </a>
-          <SocialIcons className="-ml-3 mt-6" />
-        </div>
-        <nav aria-label="Footer">
-          <ul className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
-            {links.map(([label, href]) => (
-              <li key={href}>
-                <Link href={href} className="text-muted-foreground hover:text-foreground">
-                  {label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
-      </div>
-      <div className="page">
-        <p className="border-t border-border py-6 text-sm text-muted-foreground">
-          © {new Date().getFullYear()} Benedict Frimpong Boateng, Accra, Ghana
+    <footer className="border-t">
+      <div className="wrap flex flex-col gap-6 py-10 sm:flex-row sm:items-center sm:justify-between">
+        <p className="meta">
+          {person.name}, {person.location}, <Clock />
         </p>
+        <ul className="flex flex-wrap gap-x-6 gap-y-1">
+          {socials.map((s) => (
+            <li key={s.label}>
+              <a href={s.href} target="_blank" rel="noopener noreferrer" className="inline-block py-2 text-sm text-muted-foreground hover:text-foreground">
+                {s.label.toLowerCase()}
+              </a>
+            </li>
+          ))}
+          <li>
+            <a href={`mailto:${person.email}`} className="inline-block py-2 text-sm text-muted-foreground hover:text-foreground">
+              email
+            </a>
+          </li>
+        </ul>
       </div>
+      <p className="wrap pb-8 meta">built in accra with next.js and claude.</p>
     </footer>
   )
 }

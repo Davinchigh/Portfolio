@@ -15,6 +15,7 @@ const config: Config = {
     extend: {
       fontFamily: {
         sans: ['var(--font-geist-sans)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        mono: ['var(--font-geist-mono)', 'ui-monospace', 'SFMono-Regular', 'monospace'],
       },
       colors: {
         background: 'hsl(var(--background))',
@@ -48,6 +49,9 @@ const config: Config = {
           foreground: 'hsl(var(--destructive-foreground))',
         },
         border: 'hsl(var(--border))',
+        subtle: 'hsl(var(--subtle))',
+        amber: 'hsl(var(--amber))',
+        live: 'hsl(var(--live))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
         chart: {
