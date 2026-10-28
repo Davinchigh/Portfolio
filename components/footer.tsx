@@ -1,3 +1,4 @@
+import Link from "next/link"
 import { Clock } from "@/components/site/clock"
 import { person, socials } from "@/lib/site"
 
@@ -23,7 +24,12 @@ export default function Footer() {
           </li>
         </ul>
       </div>
-      <p className="wrap pb-8 meta">built in accra with next.js and claude.</p>
+      <p className="wrap pb-8 meta">
+        built in accra with next.js and claude.{" "}
+        <Link href="/privacy" className="hover:text-foreground">
+          privacy
+        </Link>
+      </p>
     </footer>
   )
 }

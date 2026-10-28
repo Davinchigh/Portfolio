@@ -2,20 +2,48 @@
 
 import { useEffect, useRef, useState } from "react"
 import createGlobe from "cobe"
+import Link from "next/link"
 import { useTheme } from "next-themes"
 import { HandNote } from "@/components/site/hand-note"
 
-type Place = { city: string; country?: string; lat: number; lon: number; tempC: number | null }
+type Place = { city: string; country?: string; lat: number; lon: number; tempC?: number | null }
 type Here = { home: Place; visitor: Place | null }
 
+const HOME_TZ = "Africa/Accra"
 const ACCRA: Place = { city: "Accra", country: "GH", lat: 5.6037, lon: -0.187, tempC: null }
 
 /** Longitude in degrees to the globe's phi angle so that place faces the viewer (cobe's convention). */
 const facing = (lon: number) => Math.PI - ((lon * Math.PI) / 180 - Math.PI / 2)
 
-function Temp({ value }: { value: number | null }) {
-  return value === null ? null : <span className="text-foreground">{value}°C</span>
+const clock = (d: Date, timeZone: string) =>
+  new Intl.DateTimeFormat("en-GB", { hour: "2-digit", minute: "2-digit", timeZone }).format(d)
+
+/** Minutes a time zone is ahead of UTC right now. */
+function offset(d: Date, timeZone: string) {
+  const local = new Date(d.toLocaleString("en-US", { timeZone }))
+  const utc = new Date(d.toLocaleString("en-US", { timeZone: "UTC" }))
+  return Math.round((local.getTime() - utc.getTime()) / 60000)
 }
+
+function gap(minutes: number) {
+  if (minutes === 0) return "same time as you, by the way."
+  const abs = Math.abs(minutes)
+  const h = Math.floor(abs / 60)
+  const m = abs % 60
+  const amount = `${h ? `${h} hour${h === 1 ? "" : "s"}` : ""}${h && m ? " " : ""}${m ? `${m} min` : ""}`
+  return minutes > 0 ? `you're ${amount} ahead of me.` : `you're ${amount} behind me.`
+}
+
+function countryName(code?: string) {
+  if (!code) return null
+  try {
+    return new Intl.DisplayNames(["en"], { type: "region" }).of(code) ?? null
+  } catch {
+    return null
+  }
+}
+
+const Hi = ({ children }: { children: React.ReactNode }) => <span className="text-foreground">{children}</span>
 
 export function Globe() {
   const canvas = useRef<HTMLCanvasElement>(null)
@@ -23,8 +51,22 @@ export function Globe() {
   const drag = useRef(0)
   const [here, setHere] = useState<Here>({ home: ACCRA, visitor: null })
   const [loaded, setLoaded] = useState(false)
+  const [now, setNow] = useState<Date | null>(null)
+  const [visitorTz, setVisitorTz] = useState<string | null>(null)
   const { resolvedTheme } = useTheme()
   const dark = resolvedTheme !== "light"
+
+  // Visitor's time zone comes from their own browser. It never leaves the page.
+  useEffect(() => {
+    try {
+      setVisitorTz(Intl.DateTimeFormat().resolvedOptions().timeZone || null)
+    } catch {
+      setVisitorTz(null)
+    }
+    setNow(new Date())
+    const id = window.setInterval(() => setNow(new Date()), 15000)
+    return () => window.clearInterval(id)
+  }, [])
 
   useEffect(() => {
     const ctrl = new AbortController()
@@ -41,7 +83,9 @@ export function Globe() {
     if (!el) return
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches
     let width = el.offsetWidth
-    let phi = facing(here.home.lon) - 0.35
+    // Start facing the midpoint between the two dots so both are visible.
+    const dLon = here.visitor ? ((here.visitor.lon - here.home.lon + 540) % 360) - 180 : 0
+    let phi = here.visitor ? facing(here.home.lon + dLon / 2) : facing(here.home.lon) - 0.35
     const onResize = () => (width = el.offsetWidth)
     window.addEventListener("resize", onResize)
 
@@ -88,33 +132,63 @@ export function Globe() {
           <h2 id="now-title" className="mt-3 text-3xl sm:text-4xl">
             two dots on a globe
           </h2>
-          <div className="mt-8 space-y-4 text-lg leading-relaxed text-muted-foreground" aria-live="polite">
-            {visitor ? (
-              <p>
-                you&apos;re reading this from somewhere near <span className="text-foreground">{visitor.city}</span>
-                {visitor.tempC !== null && (
-                  <>
-                    , where it&apos;s <Temp value={visitor.tempC} /> right now
-                  </>
-                )}
-                .
-              </p>
-            ) : (
-              <p>{loaded ? "wherever you're reading this from, hello." : "finding you on the map..."}</p>
-            )}
-            <p>
-              i&apos;m in <span className="text-foreground">{home.city.toLowerCase()}</span>
-              {home.tempC !== null && (
+          <div className="mt-8 space-y-4 text-lg leading-relaxed text-muted-foreground">
+            <p aria-live="polite">
+              {visitor ? (
                 <>
-                  , where it&apos;s <Temp value={home.tempC} />
+                  you&apos;re reading this from somewhere near{" "}
+                  <Hi>
+                    {visitor.city}
+                    {countryName(visitor.country) ? `, ${countryName(visitor.country)}` : ""}
+                  </Hi>
+                  {now && visitorTz ? (
+                    <>
+                      , where it&apos;s <Hi>{clock(now, visitorTz)}</Hi>.
+                    </>
+                  ) : (
+                    "."
+                  )}
+                </>
+              ) : !loaded ? (
+                "finding you on the map..."
+              ) : now && visitorTz ? (
+                <>
+                  you&apos;re somewhere on this globe, where it&apos;s <Hi>{clock(now, visitorTz)}</Hi>. that much i know.
+                </>
+              ) : (
+                "you're somewhere on this globe. that much i know."
+              )}
+            </p>
+            <p>
+              i&apos;m in <Hi>{home.city.toLowerCase()}</Hi>
+              {now && (
+                <>
+                  , where it&apos;s <Hi>{clock(now, HOME_TZ)}</Hi>
                 </>
               )}
-              .{visitor && visitor.city.toLowerCase() !== "accra" ? " not that far, really." : ""}
+              {home.tempC != null && (
+                <>
+                  {" "}
+                  and <Hi>{home.tempC}°C</Hi>
+                </>
+              )}
+              .{now && visitorTz ? ` ${gap(offset(now, visitorTz) - offset(now, HOME_TZ))}` : ""}
             </p>
           </div>
           <HandNote arrow="none" className="mt-8 -rotate-2 text-xl">
             give it a spin
           </HandNote>
+          <p className="meta mt-8 max-w-sm leading-relaxed">
+            your rough location is worked out from your IP address by my host, shown only to you, and never saved.{" "}
+            <Link href="/privacy" className="link">
+              privacy
+            </Link>
+            . weather by{" "}
+            <a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer" className="link">
+              open-meteo
+            </a>
+            .
+          </p>
         </div>
 
         <div className="relative mx-auto aspect-square w-full max-w-[460px]">

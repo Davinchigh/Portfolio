@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo, useRef, useState } from "react"
 import { ChevronDown } from "lucide-react"
 import { HandNote } from "@/components/site/hand-note"
 import { Section } from "@/components/site/section"
@@ -31,7 +31,7 @@ const sorted = [...roles].sort((a, b) => decimal(b.start) - decimal(a.start))
 function Initials({ company, current, logo }: { company: string; current?: boolean; logo?: string }) {
   if (logo)
     return (
-      <span className="relative flex h-11 w-11 shrink-0 overflow-hidden rounded-xl border bg-white">
+      <span className="relative flex h-11 w-11 shrink-0 overflow-hidden rounded-xl border bg-white transition-transform duration-200 group-hover:scale-110 group-hover:border-amber/60 motion-reduce:transform-none">
         <img src={logo} alt="" aria-hidden="true" className="h-full w-full object-contain" />
         {current && <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-live ring-2 ring-background" />}
       </span>
@@ -46,7 +46,7 @@ function Initials({ company, current, logo }: { company: string; current?: boole
     .toUpperCase()
   return (
     <span
-      className={`relative flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border font-mono text-xs font-semibold text-muted-foreground ${
+      className={`relative flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border transition-transform duration-200 group-hover:scale-110 group-hover:border-amber/60 motion-reduce:transform-none font-mono text-xs font-semibold text-muted-foreground ${
         logo ? "overflow-hidden bg-white" : "bg-card"
       }`}
     >
@@ -79,14 +79,14 @@ function ListView() {
           </>
         )
         return (
-          <li key={r.id} className="relative py-3">
+          <li key={r.id} className="relative py-1">
             {hasDetails ? (
               <button
                 type="button"
                 aria-expanded={isOpen}
                 aria-controls={panelId}
                 onClick={() => setOpen(isOpen ? null : r.id)}
-                className="group flex w-full items-start gap-4 rounded-xl text-left hover:[&_.font-medium]:text-amber"
+                className="group -mx-2 flex w-[calc(100%+1rem)] items-start gap-4 rounded-xl px-2 py-2 text-left transition-colors hover:bg-accent/60 hover:[&_.font-medium]:text-amber"
               >
                 {header}
               </button>
@@ -119,6 +119,7 @@ function ListView() {
 
 function TimelineView() {
   const [active, setActive] = useState<string>("coderaccoon")
+  const [hovered, setHovered] = useState<string | null>(null)
   const { first, last, years } = useMemo(() => {
     const first = Math.floor(Math.min(...roles.map((r) => decimal(r.start))))
     const last = Math.ceil(Math.max(...roles.map((r) => decimal(r.end, true))))
@@ -126,12 +127,20 @@ function TimelineView() {
   }, [])
   const span = last - first
   const pct = (v: number) => ((v - first) / span) * 100
-  const chosen = roles.find((r) => r.id === active)
+  const shownId = hovered ?? active
+  const chosen = roles.find((r) => r.id === shownId)
+  const bounds = (r: Role) => {
+    const left = pct(decimal(r.start))
+    return { left, width: Math.max(pct(decimal(r.end, true)) - left, 7) }
+  }
+  const lastBand = useRef<{ left: number; width: number } | null>(null)
+  if (hovered) lastBand.current = bounds(roles.find((r) => r.id === hovered)!)
+  const band = lastBand.current
 
   return (
     <div>
-      <div className="overflow-x-auto pb-2">
-        <div className="relative min-w-[640px]">
+      <div className="overflow-x-auto pb-2 pt-2">
+        <div className="relative min-w-[640px]" onMouseLeave={() => setHovered(null)}>
           <div className="relative h-6">
             {years.map((y) => (
               <span key={y} className="meta absolute top-0" style={{ left: `${pct(y)}%` }}>
@@ -143,10 +152,19 @@ function TimelineView() {
             {years.map((y) => (
               <li key={`line-${y}`} aria-hidden="true" className="pointer-events-none absolute bottom-0 top-0 w-px bg-border" style={{ left: `${pct(y)}%` }} />
             ))}
+            {/* Highlight band across the hovered role's years */}
+            <li
+              aria-hidden="true"
+              className={`pointer-events-none absolute -top-8 bottom-0 rounded-lg border-x border-dashed border-amber/50 bg-amber/[0.06] transition-[left,width,opacity] duration-300 ease-out motion-reduce:transition-none ${
+                hovered && band ? "opacity-100" : "opacity-0"
+              } ${band ? "" : "hidden"}`}
+              style={band ? { left: `${band.left}%`, width: `${band.width}%` } : undefined}
+            />
             {[...sorted].reverse().map((r) => {
-              const left = pct(decimal(r.start))
-              const width = Math.max(pct(decimal(r.end, true)) - left, 7)
+              const { left, width } = bounds(r)
               const isActive = r.id === active
+              const isHovered = r.id === hovered
+              const dimmed = hovered !== null && !isHovered
               const narrow = width < 16
               const labelOnLeft = left + width > 80
               return (
@@ -154,7 +172,9 @@ function TimelineView() {
                   {narrow && (
                     <span
                       aria-hidden="true"
-                      className="pointer-events-none absolute inset-y-0 flex items-center whitespace-nowrap px-2 text-sm text-muted-foreground"
+                      className={`pointer-events-none absolute inset-y-0 flex items-center whitespace-nowrap px-2 text-sm transition-colors ${
+                        isHovered ? "text-foreground" : "text-muted-foreground"
+                      }`}
                       style={labelOnLeft ? { right: `${100 - left}%` } : { left: `calc(${left + width}% + 4px)` }}
                     >
                       {r.company}
@@ -163,14 +183,36 @@ function TimelineView() {
                   <button
                     type="button"
                     onClick={() => setActive(r.id)}
+                    onMouseEnter={() => setHovered(r.id)}
+                    onFocus={() => setHovered(r.id)}
+                    onBlur={() => setHovered(null)}
                     aria-pressed={isActive}
-                    className={`absolute inset-y-0 flex items-center overflow-hidden rounded-lg border px-3 text-left text-sm transition-colors ${
-                      isActive ? "border-amber bg-amber/15 text-foreground" : "bg-card text-muted-foreground hover:text-foreground"
+                    aria-label={`${r.company}, ${r.role}, ${range(r)}`}
+                    className={`absolute inset-y-0 flex items-center gap-2 overflow-hidden rounded-lg border px-3 text-left text-sm transition-[transform,box-shadow,background-color,border-color,color] duration-200 ease-out hover:-translate-y-0.5 hover:shadow-lg hover:shadow-amber/10 focus-visible:-translate-y-0.5 motion-reduce:transform-none motion-reduce:transition-none ${
+                      isActive
+                        ? "border-amber bg-amber/15 text-foreground"
+                        : isHovered
+                          ? "border-amber/60 bg-amber/10 text-foreground"
+                          : dimmed
+                            ? "border-border/40 bg-transparent text-muted-foreground"
+                            : "bg-card text-muted-foreground"
                     }`}
                     style={{ left: `${left}%`, width: `${width}%`, minWidth: 44 }}
                   >
+                    {r.logo && !narrow && (
+                      <img src={r.logo} alt="" aria-hidden="true" className={`h-5 w-5 shrink-0 rounded bg-white object-contain transition-opacity ${dimmed ? "opacity-50" : ""}`} />
+                    )}
                     <span className={narrow ? "sr-only" : "truncate"}>{r.company}</span>
                   </button>
+                  <span
+                    aria-hidden="true"
+                    className={`pointer-events-none absolute -top-7 z-10 whitespace-nowrap rounded-md bg-foreground px-2 py-0.5 font-mono text-[11px] text-background shadow transition-all duration-200 motion-reduce:transition-none ${
+                      isHovered ? "translate-y-0 opacity-100" : "translate-y-1 opacity-0"
+                    }`}
+                    style={labelOnLeft ? { right: `${100 - left - width}%` } : { left: `${left}%` }}
+                  >
+                    {range(r)}
+                  </span>
                 </li>
               )
             })}
@@ -178,11 +220,21 @@ function TimelineView() {
         </div>
       </div>
       {chosen && (
-        <div className="mt-6 rounded-xl border bg-card p-5" aria-live="polite">
-          <p className="font-medium">{chosen.company}</p>
-          <p className="text-sm text-muted-foreground">{chosen.role}</p>
-          <p className="meta mt-1">{range(chosen)}</p>
+        <div
+          key={chosen.id}
+          className={`mt-6 rounded-xl border p-5 transition-colors ${hovered && hovered !== active ? "border-dashed bg-card/60" : "bg-card"}`}
+          aria-live="polite"
+        >
+          <div className="flex items-start gap-4">
+            <Initials company={chosen.company} current={chosen.end === "present"} logo={chosen.logo} />
+            <div>
+              <p className="font-medium">{chosen.company}</p>
+              <p className="text-sm text-muted-foreground">{chosen.role}</p>
+              <p className="meta mt-1">{range(chosen)}</p>
+            </div>
+          </div>
           {chosen.summary && <p className="mt-3 text-sm text-muted-foreground">{chosen.summary}</p>}
+          {hovered && hovered !== active && <p className="meta mt-3">previewing. click the bar to keep it.</p>}
         </div>
       )}
     </div>
