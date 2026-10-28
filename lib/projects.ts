@@ -39,7 +39,10 @@ export const projects: Project[] = [
     image: "/images/class-planner.jpg",
     imageAlt: "Class Planner dashboard showing the next class, today's classes, assignments and a weekly timetable",
     tags: ["React", "TypeScript", "Data parsing", "UI design"],
-    links: [{ label: "View code on GitHub", href: "https://github.com/Davinchigh/stats-student-dashboard" }],
+    links: [
+      { label: "Try it live", href: "https://class-planner-stats.vercel.app" },
+      { label: "View code on GitHub", href: "https://github.com/Davinchigh/stats-student-dashboard" },
+    ],
   },
   {
     slug: "java-inventory",
