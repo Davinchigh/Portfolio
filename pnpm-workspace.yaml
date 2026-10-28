@@ -1,2 +1,6 @@
+# Let sharp run its install script (needed for image processing).
+# allowBuilds is read by newer pnpm, onlyBuiltDependencies by older versions.
 allowBuilds:
-  sharp: set this to true or false
+  sharp: true
+onlyBuiltDependencies:
+  - sharp
