@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { Contact } from "@/components/home/contact"
 import { Experience } from "@/components/home/experience"
+import { Globe } from "@/components/home/globe"
 import { Hero } from "@/components/home/hero"
 import { Certifications, Designs, Stack, Ventures } from "@/components/home/more-sections"
 import { Stats } from "@/components/home/stats"
@@ -33,6 +34,7 @@ export default function Home() {
       <Ventures />
       <Stack />
       <Certifications />
+      <Globe />
       <Contact />
     </main>
   )
