@@ -31,6 +31,7 @@ export type Role = {
   start: string // YYYY or YYYY-MM
   end: string | "present"
   kind: "work" | "volunteer" | "leadership"
+  logo?: string
   summary?: string
   bullets?: string[]
 }
@@ -38,6 +39,7 @@ export type Role = {
 export const roles: Role[] = [
   {
     id: "coderaccoon",
+    logo: "/logos/coderaccoon.png",
     company: "CodeRaccoon",
     role: "SAP Consultant & Educational Content Creator, Team Lead",
     start: "2025-11",
@@ -63,6 +65,7 @@ export const roles: Role[] = [
   },
   {
     id: "rbf",
+    logo: "/logos/rbf.png",
     company: "Raising Beautiful Flowers (RBF)",
     role: "Liaison",
     start: "2025-01",
@@ -71,6 +74,7 @@ export const roles: Role[] = [
   },
   {
     id: "nextit",
+    logo: "/logos/nextit.png",
     company: "NextIT Consult",
     role: "Database Management Intern (Odoo)",
     start: "2025-05",
@@ -91,6 +95,7 @@ export const roles: Role[] = [
   },
   {
     id: "ideal-market",
+    logo: "/logos/ideal-market.png",
     company: "Ideal Market",
     role: "Volunteer Database Assistant",
     start: "2022-09",
@@ -119,6 +124,19 @@ export type Work = {
 }
 
 export const work: Work[] = [
+  {
+    slug: "zero",
+    org: "original game, in progress",
+    title: "ZERO, The Architect's Edition",
+    hook: "a card game where information is a weapon and every favour becomes a debt.",
+    problem: "fast shedding card games reward luck. i wanted one where reading people and planning ahead decide who wins.",
+    role: "designed the rules, the full deck, influence tokens and the brand, then built the game's site with claude code.",
+    outcome: "12 laws, 6 special cards and 4 wild types, shared with a group of players and now heading to print.",
+    tags: ["game design", "systems design", "branding"],
+    image: "/images/zero/zero-mark.webp",
+    imageAlt: "The ZERO mark: a gold omega on a card inside a ringed dial on a black background",
+    links: [{ label: "see the full game", href: "/projects/zero" }],
+  },
   {
     slug: "class-planner",
     org: "personal project, rebuilt from college",
@@ -216,10 +234,11 @@ export const ventures = [
     tags: ["claude api", "claude code"],
   },
   {
-    title: "Original card game",
-    summary: "designing and balancing a card game i'm taking toward production.",
+    title: "ZERO, an original card game",
+    summary: "twelve laws, influence tokens and six special cards. designed and branded by me, heading to print.",
     status: "in progress",
-    tags: ["game design", "claude code"],
+    tags: ["game design", "branding", "claude code"],
+    href: "/projects/zero",
   },
   {
     title: "Fashion brand identity",

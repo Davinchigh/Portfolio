@@ -1,4 +1,5 @@
-import { ArrowUpRight } from "lucide-react"
+import Link from "next/link"
+import { ArrowRight, ArrowUpRight } from "lucide-react"
 import type { Work as WorkItem } from "@/lib/site"
 
 /** One numbered case study: label, title, hook, then problem, role and outcome beside the screenshot. */
@@ -33,11 +34,18 @@ export function CaseStudy({ item, index, headingLevel = "h3" }: { item: WorkItem
           <ul className="mt-5 flex flex-wrap gap-x-5 gap-y-2">
             {item.links.map((l) => (
               <li key={l.href}>
-                <a href={l.href} target="_blank" rel="noopener noreferrer" className="link inline-flex items-center gap-1 py-1 text-sm font-medium">
-                  {l.label}
-                  <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
-                  <span className="sr-only">(opens in a new tab)</span>
-                </a>
+                {l.href.startsWith("/") ? (
+                  <Link href={l.href} className="link inline-flex items-center gap-1 py-1 text-sm font-medium">
+                    {l.label}
+                    <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                  </Link>
+                ) : (
+                  <a href={l.href} target="_blank" rel="noopener noreferrer" className="link inline-flex items-center gap-1 py-1 text-sm font-medium">
+                    {l.label}
+                    <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+                    <span className="sr-only">(opens in a new tab)</span>
+                  </a>
+                )}
               </li>
             ))}
           </ul>
@@ -45,12 +53,12 @@ export function CaseStudy({ item, index, headingLevel = "h3" }: { item: WorkItem
       </div>
 
       <div className="md:col-span-7">
-        <div className="shot">
+        <div className={`shot ${item.slug === "zero" ? "bg-[#060608]" : ""}`}>
           <img
             src={item.image}
             alt={item.imageAlt}
             loading="lazy"
-            className={`aspect-[16/10] w-full ${item.contain ? "bg-white object-contain p-3" : "object-cover object-top"}`}
+            className={`aspect-[16/10] w-full ${item.contain ? "bg-white object-contain p-3" : item.slug === "zero" ? "object-contain" : "object-cover object-top"}`}
           />
         </div>
       </div>

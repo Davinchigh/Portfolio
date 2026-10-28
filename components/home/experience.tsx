@@ -28,7 +28,14 @@ function decimal(value: string, isEnd = false) {
 }
 const sorted = [...roles].sort((a, b) => decimal(b.start) - decimal(a.start))
 
-function Initials({ company, current }: { company: string; current?: boolean }) {
+function Initials({ company, current, logo }: { company: string; current?: boolean; logo?: string }) {
+  if (logo)
+    return (
+      <span className="relative flex h-11 w-11 shrink-0 overflow-hidden rounded-xl border bg-white">
+        <img src={logo} alt="" aria-hidden="true" className="h-full w-full object-contain" />
+        {current && <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-live ring-2 ring-background" />}
+      </span>
+    )
   const text = company
     .replace(/\(.*\)/, "")
     .split(/\s+/)
@@ -38,8 +45,12 @@ function Initials({ company, current }: { company: string; current?: boolean }) 
     .join("")
     .toUpperCase()
   return (
-    <span className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border bg-card font-mono text-xs font-semibold text-muted-foreground">
-      {text}
+    <span
+      className={`relative flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border font-mono text-xs font-semibold text-muted-foreground ${
+        logo ? "overflow-hidden bg-white" : "bg-card"
+      }`}
+    >
+      {logo ? <img src={logo} alt="" aria-hidden="true" className="h-full w-full rounded-xl object-contain" /> : text}
       {current && <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-live ring-2 ring-background" />}
     </span>
   )
@@ -55,7 +66,7 @@ function ListView() {
         const panelId = `role-${r.id}`
         const header = (
           <>
-            <Initials company={r.company} current={r.end === "present"} />
+            <Initials company={r.company} current={r.end === "present"} logo={r.logo} />
             <span className="min-w-0 flex-1 pt-0.5">
               <span className="block font-medium">{r.company}</span>
               <span className="mt-0.5 block text-sm text-muted-foreground">{r.role}</span>

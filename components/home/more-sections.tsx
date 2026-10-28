@@ -1,3 +1,4 @@
+import Link from "next/link"
 import { ArrowUpRight } from "lucide-react"
 import { HandNote } from "@/components/site/hand-note"
 import { Section } from "@/components/site/section"
@@ -45,7 +46,15 @@ export function Ventures() {
                 <span className={`h-2 w-2 rounded-full ${active ? "bg-amber" : "bg-subtle"}`} aria-hidden="true" />
                 {v.status}
               </p>
-              <h3 className="mt-3 text-lg">{v.title}</h3>
+              <h3 className="mt-3 text-lg">
+                {"href" in v && v.href ? (
+                  <Link href={v.href} className="link">
+                    {v.title}
+                  </Link>
+                ) : (
+                  v.title
+                )}
+              </h3>
               <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">{v.summary}</p>
               <p className="meta mt-4">{v.tags.join(", ")}</p>
             </li>
