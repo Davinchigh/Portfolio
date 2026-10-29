@@ -49,12 +49,15 @@ export function Ventures() {
                 {v.status}
               </p>
               <h3 className="mt-3 text-lg">
-                {"href" in v && v.href ? (
+                {v.href.startsWith("http") ? (
+                  <a href={v.href} target="_blank" rel="noopener noreferrer" className="link inline-flex items-center gap-1">
+                    {v.title} <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+                    <span className="sr-only">(opens in a new tab)</span>
+                  </a>
+                ) : (
                   <Link href={v.href} className="link">
                     {v.title}
                   </Link>
-                ) : (
-                  v.title
                 )}
               </h3>
               <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">{v.summary}</p>

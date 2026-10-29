@@ -275,10 +275,11 @@ export const ventures = [
     href: "/projects/zero",
   },
   {
-    title: "Fashion brand identity",
-    summary: "built the brand for my mom's fashion business.",
-    status: "built",
-    tags: ["branding"],
+    title: "Lizab House of Fashion",
+    summary: "the brand, flyer and a three.js website for my mom's fashion house, where a silk scarf carries you through the collection.",
+    status: "in progress",
+    tags: ["branding", "three.js", "next.js"],
+    href: "https://lizab-house-of-fashion.vercel.app",
   },
 ] as const
 

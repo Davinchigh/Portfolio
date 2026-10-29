@@ -24,7 +24,7 @@ export function Contact() {
     <section id="contact" aria-labelledby="contact-title" className="wrap scroll-mt-20 border-t py-24 sm:py-32">
       <p className="eyebrow">{mode === "recruiter" ? "your move" : "say hello"}</p>
       <h2 id="contact-title" className="mt-4 max-w-4xl text-4xl leading-[1.02] sm:text-7xl">
-        {mode === "recruiter" ? "you've seen my story. i'd like to be part of yours." : "building something? i'd love to hear about it."}
+        {mode === "recruiter" ? "you've seen my story. i'd like to be part of yours." : "building something with ai? i'd like to help ship it."}
       </h2>
       <p className="mt-6 max-w-xl text-lg text-muted-foreground">
         {mode === "recruiter"
