@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { Builds } from "@/components/home/builds"
 import { Contact } from "@/components/home/contact"
 import { Experience } from "@/components/home/experience"
 import { Flow } from "@/components/home/flow"
@@ -40,6 +41,7 @@ export default function Home() {
                 ))}
               </Section>
             ),
+            builds: <Builds />,
             ventures: <Ventures />,
             designs: <Designs />,
             stack: <Stack />,

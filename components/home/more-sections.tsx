@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { CertificateViewer } from "@/components/home/certificate-viewer"
 import { ArrowUpRight } from "lucide-react"
 import { HandNote } from "@/components/site/hand-note"
 import { Section } from "@/components/site/section"
@@ -110,10 +111,15 @@ export function Stack() {
 
 export function Certifications() {
   return (
-    <Section id="certifications" eyebrow="certifications" title="things i've been certified in" intro="most recent first.">
+    <Section
+      id="certifications"
+      eyebrow="certifications"
+      title="things i've been certified in"
+      intro="most recent first. open any certificate to see the original, and verify it where the issuer allows."
+    >
       <ul>
         {certifications.map((c) => (
-          <li key={c.issuer} className="grid gap-2 border-t py-5 sm:grid-cols-[1fr_auto] sm:gap-8">
+          <li key={c.issuer} className="grid gap-3 border-t py-5 sm:grid-cols-[1fr_auto] sm:gap-8">
             <div>
               <h3 className="font-medium">{c.issuer}</h3>
               {c.items.length === 1 ? (
@@ -126,6 +132,11 @@ export function Certifications() {
                     </li>
                   ))}
                 </ul>
+              )}
+              {c.doc && (
+                <div className="mt-3">
+                  <CertificateViewer doc={c.doc} issuer={c.issuer} />
+                </div>
               )}
             </div>
             <p className="meta sm:pt-1">{c.year}</p>

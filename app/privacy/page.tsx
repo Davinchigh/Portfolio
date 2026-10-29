@@ -57,6 +57,10 @@ export default function PrivacyPage() {
             <li>
               Your theme choice (dark or light) is remembered the same way.
             </li>
+            <li>
+              If you open one of the apps under &quot;builds you can try&quot; and type your name, the app keeps it in your
+              browser to greet you. It travels in the part of the link after the #, which browsers never send to a server.
+            </li>
           </ul>
         </section>
 

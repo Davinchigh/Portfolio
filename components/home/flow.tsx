@@ -3,12 +3,12 @@
 import { Fragment } from "react"
 import { useVisitor } from "@/lib/visitor"
 
-type Key = "stats" | "experience" | "lessons" | "work" | "ventures" | "designs" | "stack" | "certifications" | "now"
+type Key = "stats" | "experience" | "lessons" | "work" | "ventures" | "builds" | "designs" | "stack" | "certifications" | "now"
 
 /** Recruiters get proof first. Everyone else gets the story first. */
 const ORDER: Record<"recruiter" | "explorer", Key[]> = {
-  recruiter: ["stats", "work", "experience", "stack", "certifications", "designs", "ventures", "now"],
-  explorer: ["experience", "lessons", "work", "ventures", "designs", "stats", "stack", "certifications", "now"],
+  recruiter: ["stats", "work", "builds", "experience", "stack", "certifications", "designs", "ventures", "now"],
+  explorer: ["experience", "lessons", "work", "builds", "ventures", "designs", "stats", "stack", "certifications", "now"],
 }
 
 export function Flow({ sections }: { sections: Record<Key, React.ReactNode> }) {

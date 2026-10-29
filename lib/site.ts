@@ -55,6 +55,7 @@ export const roles: Role[] = [
   },
   {
     id: "nextgen",
+    logo: "/logos/nextgen.png",
     company: "NextGen Youth Movement",
     role: "Facilitator, Teens Conference 2026",
     start: "2026",
@@ -85,6 +86,7 @@ export const roles: Role[] = [
   },
   {
     id: "kng",
+    logo: "/logos/kng.png",
     company: "KNG (Knowledge Network Group)",
     role: "IT Intern",
     start: "2023-10",
@@ -201,6 +203,36 @@ export const work: Work[] = [
   },
 ]
 
+// ---------- Builds you can try ----------
+
+/**
+ * Personal learning apps first built for one person. These public copies are anonymised:
+ * they greet whoever opens them, using a name the visitor types (kept in their browser only).
+ */
+export const builds = [
+  {
+    slug: "masterclass",
+    title: "AI & Prompt Engineering Masterclass",
+    line: "12 units from zero to agents, with lessons, a prompt coach, reflections and a certificate at the end.",
+    detail: "react, built with claude code. the original runs live on the claude api; this preview uses pre-written lessons.",
+    href: "/builds/masterclass.html",
+  },
+  {
+    slug: "promptmastery",
+    title: "PromptMastery",
+    line: "a hands-on prompt course with quizzes, a journal and a downloadable certificate with your name on it.",
+    detail: "vanilla javascript single-page app, saves progress in your browser.",
+    href: "/builds/promptmastery.html",
+  },
+  {
+    slug: "the-climb",
+    title: "The Climb",
+    line: "a four-week fitness plan with guided timers, form videos and a private progress log.",
+    detail: "a coaching app. everything stays on your device.",
+    href: "/builds/the-climb.html",
+  },
+]
+
 // ---------- Design work ----------
 
 export const designs = [
@@ -228,10 +260,11 @@ export const designs = [
 
 export const ventures = [
   {
-    title: "AI tutoring app",
-    summary: "a full course app for a friend, with claude running live as the tutor.",
+    title: "AI tutoring apps",
+    summary: "three personal learning apps i built for a friend with claude code. try them yourself below.",
     status: "built",
     tags: ["claude api", "claude code"],
+    href: "/#builds",
   },
   {
     title: "ZERO, an original card game",
@@ -294,7 +327,10 @@ export const stack: { label: string; tools: Tool[] }[] = [
 
 // ---------- Certifications ----------
 
-export const certifications = [
+/** A certificate a recruiter can open: preview image (and `-thumb`), the original PDF and an online check where one exists. */
+export type CertificateDoc = { image: string; pdf?: string; verify?: string; label: string }
+
+export const certifications: { issuer: string; year: string; items: string[]; doc?: CertificateDoc }[] = [
   {
     issuer: "Claude Academy by Anthropic",
     year: "2026",
@@ -309,12 +345,59 @@ export const certifications = [
       "Building Effective Human Agent Teams",
     ],
   },
-  { issuer: "Brandenburg University of Applied Sciences", year: "2026", items: ["SAP S/4HANA Cloud End-to-End Business Processes (IEE2E)"] },
-  { issuer: "AHK, German Industry and Commerce in Ghana", year: "2026", items: ["Intercultural Training for IT Professionals"] },
-  { issuer: "CodeRaccoon", year: "2025", items: ["Course Creation"] },
+  {
+    issuer: "Brandenburg University of Applied Sciences",
+    year: "2026",
+    items: ["SAP S/4HANA Cloud End-to-End Business Processes (IEE2E)"],
+    doc: {
+      label: "SAP S/4HANA Cloud IEE2E certificate, Brandenburg University of Applied Sciences, June 2026",
+      image: "/certificates/sap-iee2e",
+      pdf: "/certificates/sap-iee2e.pdf",
+      verify: "https://e-zertifikat.th-brandenburg.de/koaga-luggo-onenm-ucoej-dirip",
+    },
+  },
+  {
+    issuer: "CodeRaccoon, Ambylon and Dicebridge Training",
+    year: "2026",
+    items: ["Professional Achievement: Mathematics Curriculum, Stages 1 to 12"],
+    doc: {
+      label: "Certificate of Professional Achievement for a Mathematics Curriculum on the Ambylon learning platform, April 2026",
+      image: "/certificates/coderaccoon-curriculum",
+      pdf: "/certificates/coderaccoon-curriculum.pdf",
+    },
+  },
+  {
+    issuer: "NextGen Youth Movement",
+    year: "2026",
+    items: ["Certificate of Appreciation, facilitator at Teens Conference 2026"],
+    doc: {
+      label: "Certificate of Appreciation from NextGen Youth Movement, Teens Conference 2026",
+      image: "/certificates/nextgen-appreciation",
+      pdf: "/certificates/nextgen-appreciation.pdf",
+    },
+  },
+  {
+    issuer: "AHK, German Industry and Commerce in Ghana",
+    year: "2026",
+    items: ["Intercultural Training for IT Professionals"],
+    doc: {
+      label: "AHK certificate of successful participation, Intercultural Training for IT Professionals, January 2026",
+      image: "/certificates/ahk-intercultural",
+      pdf: "/certificates/ahk-intercultural.pdf",
+    },
+  },
   { issuer: "Udemy", year: "2025", items: ["Prompt Engineering"] },
   { issuer: "Ambylon", year: "2025", items: ["German A1 and A2"] },
-  { issuer: "ALX Ghana", year: "2025", items: ["AI Starter Kit"] },
+  {
+    issuer: "ALX Ghana",
+    year: "2025",
+    items: ["AI Starter Kit"],
+    doc: {
+      label: "ALX AI Starter Kit certificate of achievement, May 2025",
+      image: "/certificates/alx-ai-starter-kit",
+      verify: "https://savanna.alxafrica.com/certificates/sneTcR3yN8",
+    },
+  },
   { issuer: "SoloLearn", year: "2022", items: ["Front-End Development Fundamentals"] },
 ]
 

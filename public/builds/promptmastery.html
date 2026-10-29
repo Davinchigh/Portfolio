@@ -1,0 +1,1627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>PromptMastery, an AI course (preview build)</title>
+<meta name="description" content="The Real-World AI &amp; Prompt Engineering Course, personalised for whoever opens it." />
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Inter:wght@300;400;500;600;700&family=Great+Vibes&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        fontFamily: {
+          serif: ['"Playfair Display"', 'serif'],
+          sans: ['Inter', 'system-ui', 'sans-serif'],
+          mono: ['"JetBrains Mono"', 'monospace'],
+          script: ['"Great Vibes"', 'cursive']
+        },
+        colors: {
+          brand: { 50:'#eef2ff', 100:'#e0e7ff', 200:'#c7d2fe', 300:'#a5b4fc', 400:'#818cf8', 500:'#6366f1', 600:'#4f46e5', 700:'#4338ca', 800:'#3730a3', 900:'#312e81' },
+          gold:  { 50:'#fdf8ef', 100:'#faecd4', 200:'#f3d59f', 300:'#e8b96a', 400:'#d4a574', 500:'#c08a4a', 600:'#9b6a33', 700:'#73502a', 800:'#503923', 900:'#332518' },
+          cream: '#FAF7F2',
+          navy:  '#0F172A',
+        },
+        boxShadow: {
+          soft: '0 10px 30px -10px rgba(79,70,229,0.18)',
+          card: '0 4px 20px -6px rgba(15,23,42,0.10)',
+          glow: '0 0 0 4px rgba(129,140,248,0.25)'
+        }
+      }
+    }
+  }
+</script>
+<style>
+  html, body { background: #FAF7F2; }
+  .dark html, .dark body { background: #0F172A; }
+  body { font-family: 'Inter', sans-serif; color: #1f2937; }
+  .dark body { color: #e5e7eb; }
+  h1,h2,h3,h4,.font-serif { font-family: 'Playfair Display', serif; letter-spacing: -0.01em; }
+  .hero-gradient {
+    background:
+      radial-gradient(1200px 400px at 80% -10%, rgba(212,165,116,0.25), transparent 60%),
+      radial-gradient(900px 500px at -10% 10%, rgba(129,140,248,0.35), transparent 60%),
+      linear-gradient(135deg, #4F46E5 0%, #6D28D9 55%, #4F46E5 100%);
+  }
+  .prompt-box {
+    background: #1f2937; color: #f9fafb; border-radius: 12px; padding: 14px 16px;
+    font-family: 'JetBrains Mono', monospace; font-size: 13.5px; line-height: 1.6;
+    white-space: pre-wrap; word-break: break-word;
+  }
+  .dark .prompt-box { background: #0b1220; border: 1px solid #1f2937; }
+  .callout { border-left: 4px solid; border-radius: 12px; padding: 14px 16px; }
+  .callout.tip   { border-color: #4F46E5; background: #eef2ff; }
+  .callout.warn  { border-color: #f59e0b; background: #fffbeb; }
+  .callout.ex    { border-color: #10b981; background: #ecfdf5; }
+  .callout.note  { border-color: #d4a574; background: #fdf8ef; }
+  .callout.bad   { border-color: #ef4444; background: #fef2f2; }
+  .dark .callout.tip   { background: rgba(79,70,229,0.12); }
+  .dark .callout.warn  { background: rgba(245,158,11,0.10); }
+  .dark .callout.ex    { background: rgba(16,185,129,0.10); }
+  .dark .callout.note  { background: rgba(212,165,116,0.10); }
+  .dark .callout.bad   { background: rgba(239,68,68,0.10); }
+  .session-link.active { background: linear-gradient(90deg, rgba(79,70,229,0.10), transparent); color: #4F46E5; }
+  .dark .session-link.active { color: #a5b4fc; background: linear-gradient(90deg, rgba(165,180,252,0.12), transparent); }
+  .fade-in { animation: fade 400ms ease-out; }
+  @keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .pop { animation: pop 350ms ease-out; }
+  @keyframes pop { 0% { transform: scale(0.9); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+  .ring-bg { stroke: #e5e7eb; }
+  .dark .ring-bg { stroke: #1f2937; }
+
+  /* Certificate */
+  .cert-wrap { aspect-ratio: 1.414 / 1; width: 100%; max-width: 1100px; margin: auto;
+    background: linear-gradient(135deg, #fffdf7 0%, #fdf6e3 100%);
+    color: #2b2410; position: relative; overflow: hidden;
+    box-shadow: 0 30px 80px -30px rgba(0,0,0,0.35);
+    border: 2px solid #d4a574;
+  }
+  .cert-inner { position: absolute; inset: 22px; border: 1px solid #d4a574; padding: 36px 48px; }
+  .cert-inner::before, .cert-inner::after {
+    content:''; position:absolute; width:120px; height:120px; pointer-events:none;
+    background-image: radial-gradient(circle at center, transparent 50%, #d4a574 51%, transparent 53%);
+  }
+  .seal {
+    width: 110px; height: 110px; border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #f3d59f, #c08a4a 80%);
+    box-shadow: inset 0 0 0 6px #fff8e6, 0 6px 18px rgba(0,0,0,0.25);
+    display: flex; align-items:center; justify-content:center;
+    color: #5b3a14; font-family: 'Playfair Display', serif; font-weight: 800;
+    position: relative;
+  }
+  .ribbon {
+    position: absolute; top: 88px; left: 50%; transform: translateX(-50%);
+    width: 28px; height: 60px; background: #b91c1c; clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 80%, 0 100%);
+  }
+  .confetti-piece { position: fixed; width: 8px; height: 14px; opacity: 0.9; z-index: 70; pointer-events:none; }
+
+  /* Sidebar scroll */
+  .nice-scroll::-webkit-scrollbar { width: 8px; }
+  .nice-scroll::-webkit-scrollbar-thumb { background: #c7d2fe; border-radius: 8px; }
+  .dark .nice-scroll::-webkit-scrollbar-thumb { background: #312e81; }
+
+  /* Drag/match cards */
+  .tool-card { transition: all .2s ease; cursor: pointer; }
+  .tool-card.selected { outline: 3px solid #4F46E5; transform: translateY(-2px); }
+  .scenario.matched { opacity: .55; }
+
+  /* Print certificate */
+  @media print {
+    body * { visibility: hidden; }
+    #certificate-print, #certificate-print * { visibility: visible; }
+    #certificate-print { position: absolute; inset: 0; }
+  }
+</style>
+</head>
+<body class="min-h-screen">
+
+<!-- App Shell -->
+<div id="app"></div>
+
+<!-- Settings Modal -->
+<div id="settings-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/40 backdrop-blur-sm">
+  <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-[min(520px,92vw)] p-6">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="text-xl font-serif font-bold">Settings</h3>
+      <button onclick="closeSettings()" class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"><i data-lucide="x" class="w-5 h-5"></i></button>
+    </div>
+    <label class="block text-sm font-medium mb-1">Your Name</label>
+    <input id="settings-name" class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 mb-4" />
+    <div class="flex items-center justify-between mb-4">
+      <span class="text-sm font-medium">Dark Mode</span>
+      <button id="settings-dark" onclick="toggleDark()" class="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-sm"></button>
+    </div>
+    <div class="grid grid-cols-2 gap-2 mb-4">
+      <button onclick="exportProgress()" class="px-3 py-2 rounded-lg bg-brand-600 text-white text-sm hover:bg-brand-700">Export Progress</button>
+      <button onclick="demoUnlock()" class="px-3 py-2 rounded-lg bg-gold-400 text-white text-sm hover:bg-gold-500">Demo Unlock 🎓</button>
+    </div>
+    <button onclick="resetProgress()" class="w-full px-3 py-2 rounded-lg border border-red-400 text-red-600 text-sm hover:bg-red-50 dark:hover:bg-red-950">Reset All Progress</button>
+    <div class="flex justify-end mt-5">
+      <button onclick="saveSettings()" class="px-4 py-2 rounded-lg bg-brand-600 text-white text-sm hover:bg-brand-700">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 hidden">
+  <div class="bg-slate-900 text-white text-sm px-4 py-2 rounded-full shadow-2xl flex items-center gap-2">
+    <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400"></i>
+    <span id="toast-text"></span>
+  </div>
+</div>
+
+<script>
+/* =========================================================
+   PromptMastery — Interactive AI Course
+   Personalised for the visitor (name from #name= or this browser)
+   Single-file vanilla JS SPA, persisted in localStorage
+   ========================================================= */
+
+/* ---------------- STATE ---------------- */
+const VISITOR_NAME = (() => {
+  const clean = (v) => (v || "").replace(/[^\p{L}\p{M} .-]/gu, "").replace(/\s+/g, " ").trim().slice(0, 30);
+  try {
+    const fromLink = clean(new URLSearchParams(location.hash.slice(1)).get("name"));
+    if (fromLink) { localStorage.setItem("bfb_visitor_name", fromLink); return fromLink; }
+    return clean(localStorage.getItem("bfb_visitor_name"));
+  } catch (e) { return ""; }
+})();
+const LS_KEY = 'bfb_promptmastery_preview_v1';
+const defaultState = {
+  name: VISITOR_NAME || 'Friend',
+  dark: false,
+  progress: {}, // {sessionId: {done:bool, quizScore:number, exercisesDone:[ids]}}
+  journal: [],  // {id, title, body, ts}
+  finalProject: null,
+  lastRoute: '#/welcome',
+  certUnlocked: false,
+  certId: 'PM-' + Math.random().toString(36).slice(2,8).toUpperCase()
+};
+let state = loadState();
+if (VISITOR_NAME) state.name = VISITOR_NAME;
+function loadState() {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (!raw) return {...defaultState};
+    return {...defaultState, ...JSON.parse(raw)};
+  } catch(e) { return {...defaultState}; }
+}
+function saveState() {
+  localStorage.setItem(LS_KEY, JSON.stringify(state));
+}
+function firstName() { return (state.name || 'Friend').split(' ')[0]; }
+
+/* ---------------- AI TOOLS ---------------- */
+const TOOLS = [
+  { id:'chatgpt', name:'ChatGPT', url:'https://chat.openai.com', emoji:'💬', tag:'Text', desc:'The versatile all-rounder. Great for writing, coding, brainstorming, and casual chat.' },
+  { id:'claude',  name:'Claude', url:'https://claude.ai', emoji:'📝', tag:'Text', desc:'Thoughtful and nuanced. Best for long documents, careful analysis, and writing with style.' },
+  { id:'gemini',  name:'Google Gemini', url:'https://gemini.google.com', emoji:'✨', tag:'Text', desc:'Plugs into Google apps. Strong for research, multimodal tasks, and live web info.' },
+  { id:'copilot', name:'Microsoft Copilot', url:'https://copilot.microsoft.com', emoji:'🪟', tag:'Text', desc:'Lives inside Word, Excel, PowerPoint, and Windows. Perfect for Office workflows.' },
+  { id:'perplexity', name:'Perplexity', url:'https://www.perplexity.ai', emoji:'🔎', tag:'Research', desc:'Like Google + ChatGPT. Always cites its sources — your research best friend.' },
+  { id:'midjourney', name:'Midjourney', url:'https://www.midjourney.com', emoji:'🎨', tag:'Image', desc:'Artistic, dreamy, beautiful images. The art-school of AI image tools.' },
+  { id:'dalle', name:'DALL·E (inside ChatGPT)', url:'https://chat.openai.com', emoji:'🖼️', tag:'Image', desc:'Quick images with readable text right inside ChatGPT.' },
+  { id:'leonardo', name:'Leonardo AI', url:'https://leonardo.ai', emoji:'🦁', tag:'Image', desc:'Free tier, game-art and concept art focus. Generous daily credits.' },
+  { id:'sora', name:'Sora', url:'https://sora.com', emoji:'🎬', tag:'Video', desc:'OpenAI\'s text-to-video. Cinematic short clips from words.' },
+  { id:'runway', name:'Runway', url:'https://runway.ml', emoji:'🎞️', tag:'Video', desc:'Pro-grade AI video editing, image-to-video, and motion magic.' },
+  { id:'eleven', name:'ElevenLabs', url:'https://elevenlabs.io', emoji:'🎙️', tag:'Audio', desc:'Hyper-realistic AI voices. Read scripts, dub videos, clone your own voice.' },
+  { id:'suno', name:'Suno', url:'https://suno.com', emoji:'🎵', tag:'Audio', desc:'AI music with lyrics, vocals, instruments. Type a vibe, get a song.' },
+  { id:'notebooklm', name:'NotebookLM', url:'https://notebooklm.google.com', emoji:'📚', tag:'Study', desc:'Upload PDFs and have a tutor that only answers from YOUR documents.' },
+];
+
+/* ---------------- SESSIONS DATA ---------------- */
+const SESSIONS = [
+  {
+    id:1, title:'What is AI & Prompt Engineering?', icon:'sparkles', time:'25 min', level:'Beginner',
+    objectives:['Understand what a Large Language Model really is','Learn why prompts matter','Master the 4 pillars of every good prompt','Rewrite a vague prompt into a clear one'],
+    render: renderSession1
+  },
+  {
+    id:2, title:'Meet Your AI Toolbox', icon:'toolbox', time:'30 min', level:'Beginner',
+    objectives:['Discover 13 essential AI tools','Know which tool to use when','Sign up and try 3 of them'],
+    render: renderSession2
+  },
+  {
+    id:3, title:'The Anatomy of a Perfect Prompt (CO-STAR)', icon:'layout-template', time:'35 min', level:'Beginner',
+    objectives:['Learn the CO-STAR framework','Try RTF, RISEN & CRISPE briefly','Build prompts with the live CO-STAR Builder'],
+    render: renderSession3
+  },
+  {
+    id:4, title:'Prompting Techniques That Actually Work', icon:'wand-2', time:'35 min', level:'Intermediate',
+    objectives:['Zero-shot vs Few-shot prompting','Chain-of-thought reasoning','Role and persona prompting'],
+    render: renderSession4
+  },
+  {
+    id:5, title:'Writing & Communication with AI', icon:'pen-line', time:'30 min', level:'Beginner',
+    objectives:['Write in your own voice','Emails, essays, posts, summaries','10 copy-paste-ready templates'],
+    render: renderSession5
+  },
+  {
+    id:6, title:'Learning & Research with AI', icon:'graduation-cap', time:'30 min', level:'Beginner',
+    objectives:['Use AI as a personal tutor','Research safely with Perplexity & NotebookLM','Spot and avoid hallucinations'],
+    render: renderSession6
+  },
+  {
+    id:7, title:'Prompting for Images', icon:'image', time:'35 min', level:'Intermediate',
+    objectives:['The image prompt formula','Style, lighting, composition keywords','Build prompts with the Image Builder'],
+    render: renderSession7
+  },
+  {
+    id:8, title:'Prompting for Video & Audio', icon:'film', time:'30 min', level:'Intermediate',
+    objectives:['Sora & Runway video basics','ElevenLabs voice prompting','Suno music prompting'],
+    render: renderSession8
+  },
+  {
+    id:9, title:'Data, Analysis & Productivity', icon:'bar-chart-3', time:'30 min', level:'Intermediate',
+    objectives:['Analyze CSV/Excel with AI','Build formulas without coding','Summarize meetings & docs'],
+    render: renderSession9
+  },
+  {
+    id:10, title:'Ethics & Becoming an AI Power User', icon:'shield-check', time:'25 min', level:'All',
+    objectives:['Iterative & chained prompting','Privacy and safety','Build your personal prompt vault'],
+    render: renderSession10
+  }
+];
+
+/* ---------------- ROUTER ---------------- */
+function router() {
+  const hash = location.hash || '#/welcome';
+  state.lastRoute = hash; saveState();
+  const app = document.getElementById('app');
+  app.innerHTML = '';
+  if (hash === '#/welcome') return renderWelcome(app);
+  if (hash.startsWith('#/session/')) {
+    const id = parseInt(hash.split('/')[2]);
+    return renderSessionShell(app, id);
+  }
+  if (hash === '#/journal') return renderShell(app, 'Prompt Journal', renderJournal);
+  if (hash === '#/final') return renderShell(app, 'Final Project', renderFinal);
+  if (hash === '#/certificate') return renderShell(app, 'Certificate', renderCertificate);
+  if (hash === '#/search') return renderShell(app, 'Search', renderSearch);
+  if (hash === '#/tools') return renderShell(app, 'AI Toolbox', renderTools);
+  location.hash = '#/welcome';
+}
+window.addEventListener('hashchange', router);
+
+/* ---------------- LAYOUT ---------------- */
+function progressPct() {
+  const total = SESSIONS.length + 1; // sessions + final
+  let done = 0;
+  SESSIONS.forEach(s => { if (state.progress[s.id]?.done) done++; });
+  if (state.finalProject) done++;
+  return Math.round((done/total)*100);
+}
+function progressRing(size=72, stroke=8) {
+  const r = (size - stroke)/2;
+  const c = 2*Math.PI*r;
+  const pct = progressPct();
+  const off = c - (pct/100)*c;
+  return `
+    <div class="relative" style="width:${size}px;height:${size}px;">
+      <svg width="${size}" height="${size}" class="-rotate-90">
+        <circle class="ring-bg" cx="${size/2}" cy="${size/2}" r="${r}" stroke-width="${stroke}" fill="none"/>
+        <circle cx="${size/2}" cy="${size/2}" r="${r}" stroke="url(#g1)" stroke-width="${stroke}" fill="none"
+          stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${off}" style="transition:stroke-dashoffset .6s ease"/>
+        <defs><linearGradient id="g1" x1="0" x2="1" y1="0" y2="1"><stop offset="0%" stop-color="#4F46E5"/><stop offset="100%" stop-color="#D4A574"/></linearGradient></defs>
+      </svg>
+      <div class="absolute inset-0 flex items-center justify-center text-xs font-bold">${pct}%</div>
+    </div>`;
+}
+
+function sidebar(activeId) {
+  const items = SESSIONS.map(s => {
+    const done = state.progress[s.id]?.done;
+    const active = activeId === s.id;
+    return `<a href="#/session/${s.id}" class="session-link ${active?'active':''} flex items-center gap-3 px-3 py-2 rounded-xl text-sm hover:bg-brand-50 dark:hover:bg-slate-800">
+      <span class="w-6 h-6 rounded-full ${done?'bg-emerald-500 text-white':'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300'} text-[11px] font-bold flex items-center justify-center">${done?'✓':s.id}</span>
+      <span class="truncate">${s.title}</span>
+    </a>`;
+  }).join('');
+  return `
+    <aside class="w-72 shrink-0 hidden lg:flex flex-col gap-3 p-4 bg-white/70 dark:bg-slate-900/60 backdrop-blur border-r border-slate-200 dark:border-slate-800 min-h-screen">
+      <a href="#/welcome" class="flex items-center gap-2 px-2 py-2">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-600 to-gold-400 flex items-center justify-center text-white font-bold">P</div>
+        <div>
+          <div class="font-serif font-bold leading-none">PromptMastery</div>
+          <div class="text-[11px] text-slate-500">Your AI course</div>
+        </div>
+      </a>
+      <div class="flex items-center gap-3 p-3 rounded-2xl bg-gradient-to-br from-brand-50 to-gold-50 dark:from-slate-800 dark:to-slate-800">
+        ${progressRing(56,6)}
+        <div>
+          <div class="text-xs text-slate-500">Welcome,</div>
+          <div class="font-bold text-sm leading-tight">${firstName()} 👋</div>
+          <div class="text-[11px] text-slate-500 mt-0.5">${progressPct()}% complete</div>
+        </div>
+      </div>
+      <nav class="flex flex-col gap-1 mt-2 overflow-auto nice-scroll" style="max-height: calc(100vh - 280px)">
+        <div class="text-[11px] uppercase tracking-wider text-slate-400 px-3 mt-1 mb-1">Sessions</div>
+        ${items}
+        <div class="text-[11px] uppercase tracking-wider text-slate-400 px-3 mt-3 mb-1">More</div>
+        <a href="#/tools" class="flex items-center gap-3 px-3 py-2 rounded-xl text-sm hover:bg-brand-50 dark:hover:bg-slate-800"><i data-lucide="layout-grid" class="w-4 h-4"></i>AI Toolbox</a>
+        <a href="#/journal" class="flex items-center gap-3 px-3 py-2 rounded-xl text-sm hover:bg-brand-50 dark:hover:bg-slate-800"><i data-lucide="book-open" class="w-4 h-4"></i>Prompt Journal</a>
+        <a href="#/search" class="flex items-center gap-3 px-3 py-2 rounded-xl text-sm hover:bg-brand-50 dark:hover:bg-slate-800"><i data-lucide="search" class="w-4 h-4"></i>Search</a>
+        <a href="#/final" class="flex items-center gap-3 px-3 py-2 rounded-xl text-sm hover:bg-brand-50 dark:hover:bg-slate-800"><i data-lucide="flag" class="w-4 h-4"></i>Final Project</a>
+        <a href="#/certificate" class="flex items-center gap-3 px-3 py-2 rounded-xl text-sm hover:bg-brand-50 dark:hover:bg-slate-800"><i data-lucide="award" class="w-4 h-4"></i>Certificate</a>
+      </nav>
+      <div class="mt-auto flex items-center gap-2">
+        <button onclick="openSettings()" class="flex-1 flex items-center justify-center gap-2 text-xs px-3 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200"><i data-lucide="settings" class="w-3.5 h-3.5"></i>Settings</button>
+        <button onclick="toggleDark()" class="px-3 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-xs"><i data-lucide="moon" class="w-3.5 h-3.5"></i></button>
+      </div>
+    </aside>`;
+}
+function mobileBar() {
+  return `<div class="lg:hidden flex items-center justify-between p-3 border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur sticky top-0 z-30">
+    <a href="#/welcome" class="flex items-center gap-2"><div class="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-600 to-gold-400 text-white text-sm font-bold flex items-center justify-center">P</div><span class="font-serif font-bold">PromptMastery</span></a>
+    <div class="flex items-center gap-2">
+      ${progressRing(36,5)}
+      <button onclick="openMobileMenu()" class="p-2 rounded-lg bg-slate-100 dark:bg-slate-800"><i data-lucide="menu" class="w-5 h-5"></i></button>
+    </div>
+  </div>`;
+}
+
+function openMobileMenu() {
+  // Build a quick overlay
+  const overlay = document.createElement('div');
+  overlay.className = 'fixed inset-0 z-40 bg-black/40 lg:hidden';
+  overlay.onclick = () => overlay.remove();
+  const panel = document.createElement('div');
+  panel.className = 'absolute left-0 top-0 bottom-0 w-72 bg-white dark:bg-slate-900 p-4 overflow-auto';
+  panel.innerHTML = sidebar(-1).replace('hidden lg:flex','flex');
+  panel.onclick = (e)=>{ if (e.target.tagName === 'A') overlay.remove(); e.stopPropagation(); };
+  overlay.appendChild(panel);
+  document.body.appendChild(overlay);
+  lucide.createIcons();
+}
+
+function renderShell(app, title, contentFn) {
+  app.innerHTML = `
+    ${mobileBar()}
+    <div class="flex">
+      ${sidebar(-1)}
+      <main class="flex-1 min-w-0">
+        <div class="max-w-5xl mx-auto px-5 lg:px-10 py-8 fade-in">
+          <h1 class="text-3xl lg:text-4xl font-serif font-bold mb-6">${title}</h1>
+          <div id="shell-content"></div>
+        </div>
+      </main>
+    </div>`;
+  contentFn(document.getElementById('shell-content'));
+  lucide.createIcons();
+}
+
+/* ---------------- WELCOME ---------------- */
+function renderWelcome(app) {
+  const resumeRoute = state.lastRoute && state.lastRoute !== '#/welcome' ? state.lastRoute : '#/session/1';
+  app.innerHTML = `
+    <div class="hero-gradient text-white">
+      <div class="max-w-6xl mx-auto px-6 lg:px-10 py-10 lg:py-20">
+        <div class="flex items-center justify-between mb-10">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-white/15 backdrop-blur flex items-center justify-center font-bold">P</div>
+            <div>
+              <div class="font-serif font-bold text-lg leading-none">PromptMastery</div>
+              <div class="text-xs text-white/80">A real-world AI course</div>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="openSettings()" class="px-3 py-2 rounded-lg bg-white/15 backdrop-blur text-sm hover:bg-white/25"><i data-lucide="settings" class="w-4 h-4 inline mr-1"></i>Settings</button>
+            <button onclick="toggleDark()" class="px-3 py-2 rounded-lg bg-white/15 backdrop-blur text-sm"><i data-lucide="moon" class="w-4 h-4"></i></button>
+          </div>
+        </div>
+        <div class="grid lg:grid-cols-2 gap-10 items-center">
+          <div>
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 backdrop-blur text-xs font-medium mb-5">
+              <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> Personalized for ${state.name}
+            </div>
+            <h1 class="font-serif font-bold text-4xl lg:text-6xl leading-tight mb-4">Hello, ${firstName()} <span class="inline-block">👋</span></h1>
+            <p class="text-lg text-white/90 leading-relaxed mb-2">Welcome to <b>The Real-World AI &amp; Prompt Engineering Course</b> — a friendly, hands-on journey from zero to confident AI user.</p>
+            <p class="text-white/80 leading-relaxed mb-7">By the end, you'll know how to talk to ChatGPT, Claude, Gemini, Midjourney, Sora, and more — like a pro. No jargon. No pressure. Just real practice.</p>
+            <div class="flex flex-wrap gap-3 mb-6">
+              <a href="${resumeRoute}" class="px-6 py-3 rounded-xl bg-white text-brand-700 font-semibold hover:bg-gold-100 shadow-lg shadow-black/10 inline-flex items-center gap-2">
+                <i data-lucide="play" class="w-4 h-4"></i> ${state.lastRoute && state.lastRoute !== '#/welcome' ? 'Resume where you left off' : 'Start Learning'}
+              </a>
+              <a href="#/session/1" class="px-6 py-3 rounded-xl bg-white/10 backdrop-blur text-white font-semibold hover:bg-white/20 inline-flex items-center gap-2 border border-white/30">
+                <i data-lucide="book-open" class="w-4 h-4"></i> Begin Session 1
+              </a>
+            </div>
+            <div class="grid grid-cols-4 gap-3 max-w-md">
+              <div class="bg-white/10 rounded-xl p-3 text-center"><div class="text-2xl font-serif font-bold">10</div><div class="text-[11px] text-white/80">Sessions</div></div>
+              <div class="bg-white/10 rounded-xl p-3 text-center"><div class="text-2xl font-serif font-bold">20+</div><div class="text-[11px] text-white/80">Exercises</div></div>
+              <div class="bg-white/10 rounded-xl p-3 text-center"><div class="text-2xl font-serif font-bold">13</div><div class="text-[11px] text-white/80">AI Tools</div></div>
+              <div class="bg-white/10 rounded-xl p-3 text-center"><div class="text-2xl font-serif font-bold">1</div><div class="text-[11px] text-white/80">Certificate</div></div>
+            </div>
+          </div>
+          <div class="relative">
+            <div class="bg-white/95 text-slate-800 rounded-3xl shadow-2xl p-6 pop">
+              <div class="flex items-center gap-3 mb-4">
+                ${progressRing(64,7)}
+                <div>
+                  <div class="text-xs text-slate-500">Your Progress</div>
+                  <div class="font-bold">${progressPct()}% complete</div>
+                  <div class="text-[11px] text-slate-500">${Object.values(state.progress).filter(p=>p.done).length} / ${SESSIONS.length} sessions done</div>
+                </div>
+              </div>
+              <div class="grid grid-cols-2 gap-2">
+                ${SESSIONS.slice(0,6).map(s=>{
+                  const done = state.progress[s.id]?.done;
+                  return `<a href="#/session/${s.id}" class="flex items-center gap-2 p-2 rounded-xl border border-slate-200 hover:border-brand-400 hover:bg-brand-50">
+                    <div class="w-7 h-7 rounded-lg ${done?'bg-emerald-500':'bg-brand-100 text-brand-700'} text-white text-xs font-bold flex items-center justify-center">${done?'✓':s.id}</div>
+                    <div class="text-xs font-medium truncate">${s.title}</div>
+                  </a>`;
+                }).join('')}
+              </div>
+              <a href="#/tools" class="mt-3 block text-center text-sm text-brand-600 hover:underline">See all sessions →</a>
+            </div>
+            <div class="absolute -bottom-5 -right-5 bg-gold-400 text-gold-900 rounded-2xl p-4 shadow-xl rotate-3 pop">
+              <i data-lucide="award" class="w-6 h-6 mb-1"></i>
+              <div class="font-serif font-bold text-sm leading-tight">Earn your<br/>Certificate</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="max-w-6xl mx-auto px-6 lg:px-10 py-14">
+      <h2 class="font-serif text-3xl font-bold mb-2">The Full Curriculum</h2>
+      <p class="text-slate-600 dark:text-slate-400 mb-8">Ten sessions, one final project, and a printable certificate — at your own pace.</p>
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+        ${SESSIONS.map(s=>{
+          const done = state.progress[s.id]?.done;
+          return `<a href="#/session/${s.id}" class="group block p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-brand-400 hover:shadow-soft transition">
+            <div class="flex items-center justify-between mb-3">
+              <div class="text-xs font-bold text-brand-600 dark:text-brand-300">SESSION ${String(s.id).padStart(2,'0')}</div>
+              ${done? '<span class="text-[10px] px-2 py-1 rounded-full bg-emerald-100 text-emerald-700 font-bold">DONE</span>' : `<span class="text-[10px] px-2 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500">${s.time}</span>`}
+            </div>
+            <div class="font-serif font-bold text-lg mb-2">${s.title}</div>
+            <div class="text-sm text-slate-500 line-clamp-3">${s.objectives[0]}</div>
+            <div class="mt-4 text-brand-600 dark:text-brand-300 text-sm font-medium opacity-0 group-hover:opacity-100 transition">Start session →</div>
+          </a>`;
+        }).join('')}
+      </div>
+      <div class="mt-12 p-6 rounded-3xl bg-gradient-to-br from-brand-50 to-gold-50 dark:from-slate-800 dark:to-slate-800 border border-brand-100 dark:border-slate-700">
+        <div class="font-serif text-2xl font-bold mb-2">A note from your mentor 💌</div>
+        <p class="text-slate-700 dark:text-slate-300 leading-relaxed">${firstName()}, take your time. You don't have to finish this in a day. Do an exercise, sleep on it, come back. The point isn't to memorize — it's to <b>feel comfortable talking to AI</b>. I'm rooting for you the whole way through. — <i>Your AI Mentor</i></p>
+      </div>
+    </div>`;
+  lucide.createIcons();
+}
+
+/* ---------------- SESSION SHELL ---------------- */
+function renderSessionShell(app, id) {
+  const s = SESSIONS.find(x=>x.id===id);
+  if (!s) { location.hash = '#/welcome'; return; }
+  state.progress[id] = state.progress[id] || { done:false, quizScore:null, exercises:[] };
+  saveState();
+  app.innerHTML = `
+    ${mobileBar()}
+    <div class="flex">
+      ${sidebar(id)}
+      <main class="flex-1 min-w-0">
+        <div class="max-w-4xl mx-auto px-5 lg:px-10 py-8 fade-in">
+          <div class="flex items-center justify-between text-xs text-slate-500 mb-4">
+            <div class="flex items-center gap-2">
+              <a href="#/welcome" class="hover:underline">Home</a>
+              <i data-lucide="chevron-right" class="w-3 h-3"></i>
+              <span>Session ${id}</span>
+            </div>
+            <div class="flex items-center gap-2">
+              ${id>1?`<a href="#/session/${id-1}" class="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200"><i data-lucide="arrow-left" class="w-3 h-3 inline"></i> Prev</a>`:''}
+              ${id<SESSIONS.length?`<a href="#/session/${id+1}" class="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200">Next <i data-lucide="arrow-right" class="w-3 h-3 inline"></i></a>`:''}
+            </div>
+          </div>
+          <div class="rounded-3xl bg-gradient-to-br from-brand-600 to-brand-800 text-white p-6 lg:p-8 mb-6 shadow-soft">
+            <div class="flex items-start justify-between gap-4">
+              <div>
+                <div class="inline-flex items-center gap-2 text-xs bg-white/15 px-2 py-1 rounded-full mb-3">
+                  <i data-lucide="${s.icon}" class="w-3.5 h-3.5"></i> Session ${id} · ${s.level} · ${s.time}
+                </div>
+                <h1 class="font-serif text-3xl lg:text-4xl font-bold mb-3">${s.title}</h1>
+                <ul class="space-y-1 text-sm text-white/90">
+                  ${s.objectives.map(o=>`<li class="flex items-start gap-2"><i data-lucide="check" class="w-4 h-4 mt-0.5 text-gold-200"></i>${o}</li>`).join('')}
+                </ul>
+              </div>
+              <div class="hidden md:flex w-20 h-20 rounded-2xl bg-white/15 items-center justify-center text-3xl font-serif font-bold">${id}</div>
+            </div>
+          </div>
+          <div id="session-body"></div>
+          <div class="mt-10 flex flex-wrap items-center justify-between gap-3 p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+            <div class="text-sm text-slate-600 dark:text-slate-400">${state.progress[id].done ? '✅ You\'ve completed this session.' : `Ready when you are, ${firstName()}.`}</div>
+            <div class="flex items-center gap-2">
+              ${id>1?`<a href="#/session/${id-1}" class="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800">← Previous</a>`:''}
+              <button onclick="markSessionDone(${id})" class="px-4 py-2 rounded-xl ${state.progress[id].done?'bg-emerald-500':'bg-brand-600 hover:bg-brand-700'} text-white font-semibold">${state.progress[id].done?'Completed ✓':'Mark as Complete'}</button>
+              ${id<SESSIONS.length?`<a href="#/session/${id+1}" class="px-4 py-2 rounded-xl bg-gold-400 text-gold-900 font-semibold hover:bg-gold-300">Next →</a>`:`<a href="#/final" class="px-4 py-2 rounded-xl bg-gold-400 text-gold-900 font-semibold hover:bg-gold-300">Final Project →</a>`}
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>`;
+  s.render(document.getElementById('session-body'));
+  lucide.createIcons();
+}
+
+function markSessionDone(id) {
+  state.progress[id] = state.progress[id] || {};
+  state.progress[id].done = true;
+  saveState();
+  toast(`Session ${id} marked complete — beautiful work, ${firstName()}!`);
+  router();
+}
+
+/* ---------------- WIDGET: Prompt Playground ---------------- */
+function playground(initial='', exerciseId='') {
+  const uid = 'pg-' + Math.random().toString(36).slice(2,8);
+  return `
+  <div class="mt-4 rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+    <div class="flex items-center justify-between px-4 py-2 bg-slate-50 dark:bg-slate-800 text-xs text-slate-500">
+      <span class="font-medium"><i data-lucide="terminal" class="w-3.5 h-3.5 inline"></i> Prompt Playground</span>
+      <span>Write • Copy • Try it on any AI tool</span>
+    </div>
+    <textarea id="${uid}" class="w-full p-4 font-mono text-sm bg-white dark:bg-slate-900 outline-none resize-y min-h-[140px]" placeholder="Type or paste your prompt here, ${firstName()}...">${initial}</textarea>
+    <div class="flex flex-wrap gap-2 p-3 border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
+      <button onclick="copyPrompt('${uid}')" class="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-sm hover:bg-slate-200"><i data-lucide="copy" class="w-3.5 h-3.5 inline"></i> Copy</button>
+      <button onclick="savePrompt('${uid}','${exerciseId}')" class="px-3 py-1.5 rounded-lg bg-brand-600 text-white text-sm hover:bg-brand-700"><i data-lucide="bookmark-plus" class="w-3.5 h-3.5 inline"></i> Save to Journal</button>
+      <span class="mx-1 text-slate-300">|</span>
+      <button onclick="tryOn('${uid}','chatgpt')" class="px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300 text-sm hover:bg-emerald-100"><span class="mr-1">💬</span>Try in ChatGPT</button>
+      <button onclick="tryOn('${uid}','claude')" class="px-3 py-1.5 rounded-lg bg-orange-50 text-orange-700 dark:bg-orange-950/40 dark:text-orange-300 text-sm hover:bg-orange-100"><span class="mr-1">📝</span>Try in Claude</button>
+      <button onclick="tryOn('${uid}','gemini')" class="px-3 py-1.5 rounded-lg bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300 text-sm hover:bg-blue-100"><span class="mr-1">✨</span>Try in Gemini</button>
+      <button onclick="tryOn('${uid}','perplexity')" class="px-3 py-1.5 rounded-lg bg-purple-50 text-purple-700 dark:bg-purple-950/40 dark:text-purple-300 text-sm hover:bg-purple-100"><span class="mr-1">🔎</span>Try in Perplexity</button>
+    </div>
+  </div>`;
+}
+function copyPrompt(uid) {
+  const v = document.getElementById(uid).value;
+  navigator.clipboard.writeText(v).then(()=> toast('Copied! Paste it into your AI tool.'));
+}
+function savePrompt(uid, exId) {
+  const v = document.getElementById(uid).value.trim();
+  if (!v) { toast('Write a prompt first ✍️'); return; }
+  state.journal.unshift({ id:'j'+Date.now(), title:exId || ('Prompt ' + new Date().toLocaleDateString()), body:v, ts:Date.now() });
+  saveState();
+  toast('Saved to your Prompt Journal 📔');
+}
+function tryOn(uid, toolId) {
+  const v = document.getElementById(uid).value;
+  if (v.trim()) navigator.clipboard.writeText(v).catch(()=>{});
+  const urls = {
+    chatgpt: 'https://chat.openai.com/?q=' + encodeURIComponent(v),
+    claude: 'https://claude.ai/new?q=' + encodeURIComponent(v),
+    gemini: 'https://gemini.google.com/app',
+    perplexity: 'https://www.perplexity.ai/?q=' + encodeURIComponent(v)
+  };
+  toast('Opening ' + toolId + ' — your prompt is also copied to clipboard.');
+  window.open(urls[toolId], '_blank');
+}
+
+/* ---------------- WIDGET: Quiz ---------------- */
+function quiz(sessionId, questions) {
+  const qid = 'q-'+sessionId;
+  setTimeout(()=> {
+    const root = document.getElementById(qid);
+    if (!root) return;
+    let answers = new Array(questions.length).fill(null);
+    function paint() {
+      root.innerHTML = `
+        <div class="rounded-2xl border border-brand-200 dark:border-slate-700 p-5 bg-brand-50/50 dark:bg-slate-900">
+          <div class="flex items-center justify-between mb-4">
+            <div class="font-serif text-xl font-bold flex items-center gap-2"><i data-lucide="clipboard-list" class="w-5 h-5 text-brand-600"></i>End-of-Session Quiz</div>
+            <div class="text-xs text-slate-500">${questions.length} questions</div>
+          </div>
+          ${questions.map((q,i)=>`
+            <div class="mb-5">
+              <div class="font-medium mb-2">${i+1}. ${q.q}</div>
+              <div class="grid gap-2">
+                ${q.opts.map((o,j)=>{
+                  const sel = answers[i]===j;
+                  const correct = answers[i]!==null && j===q.a;
+                  const wrong = sel && j!==q.a;
+                  const cls = answers[i]===null
+                    ? 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-brand-400'
+                    : correct ? 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-400'
+                    : wrong   ? 'bg-red-50 dark:bg-red-950/40 border-red-400'
+                    : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 opacity-70';
+                  return `<button ${answers[i]!==null?'disabled':''} onclick="window.__qpick_${qid}(${i},${j})" class="text-left text-sm px-3 py-2 rounded-lg border ${cls}">${o}${answers[i]!==null && j===q.a?' ✅':''}${wrong?' ❌':''}</button>`;
+                }).join('')}
+              </div>
+              ${answers[i]!==null ? `<div class="mt-2 text-xs text-slate-500 italic">${q.exp||''}</div>`:''}
+            </div>
+          `).join('')}
+          ${answers.every(a=>a!==null) ? (()=>{
+            const score = answers.reduce((s,a,i)=> s + (a===questions[i].a?1:0), 0);
+            state.progress[sessionId] = state.progress[sessionId] || {};
+            state.progress[sessionId].quizScore = score;
+            saveState();
+            const pct = Math.round(score/questions.length*100);
+            const msg = pct===100 ? `Perfect, ${firstName()}! 🌟` : pct>=70 ? `Great work, ${firstName()}! 💪` : `Good try, ${firstName()} — review and retry anytime.`;
+            return `<div class="mt-2 p-3 rounded-xl bg-gradient-to-r from-brand-100 to-gold-100 dark:from-slate-800 dark:to-slate-800 text-sm font-medium">Score: ${score}/${questions.length} (${pct}%) — ${msg}</div>`;
+          })() : ''}
+        </div>`;
+      window['__qpick_'+qid] = (i,j) => { answers[i]=j; paint(); lucide.createIcons(); };
+      lucide.createIcons();
+    }
+    paint();
+  }, 50);
+  return `<div id="${qid}" class="mt-8"></div>`;
+}
+
+/* ---------------- WIDGET: Bad vs Good ---------------- */
+function badGood(bad, good) {
+  return `<div class="grid md:grid-cols-2 gap-3 my-4">
+    <div class="callout bad">
+      <div class="text-xs font-bold uppercase tracking-wider text-red-600 mb-1">❌ Bad Prompt</div>
+      <div class="font-mono text-sm">${bad}</div>
+    </div>
+    <div class="callout ex">
+      <div class="text-xs font-bold uppercase tracking-wider text-emerald-700 mb-1">✅ Good Prompt</div>
+      <div class="font-mono text-sm">${good}</div>
+    </div>
+  </div>`;
+}
+
+/* ---------------- WIDGET: Reveal ---------------- */
+function reveal(label, body) {
+  const id = 'rv-'+Math.random().toString(36).slice(2,7);
+  return `<div class="mt-2"><button onclick="document.getElementById('${id}').classList.toggle('hidden')" class="text-sm text-brand-600 hover:underline">${label} ▾</button>
+    <div id="${id}" class="hidden mt-2 p-4 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-sm">${body}</div>
+  </div>`;
+}
+
+/* ============ SESSION 1 ============ */
+function renderSession1(el) {
+  el.innerHTML = `
+    <p class="text-lg leading-relaxed">Hi ${firstName()} — let's start at the very beginning. Don't worry, we'll go slowly, and by the end of this session you'll already write better prompts than 90% of people just casually using ChatGPT.</p>
+
+    <h2 class="font-serif text-2xl font-bold mt-8 mb-2">🧠 What is AI, really?</h2>
+    <p>Think of an AI chatbot like a <b>brilliant new intern</b> who has read most of the internet. They are smart, fast, and willing to help — but they have no idea what <i>you</i> want unless you tell them clearly. They can't read your mind. They can't see your calendar. They don't know your boss's name.</p>
+    <p class="mt-3">The "intern" you're talking to is called a <b>Large Language Model (LLM)</b>. It works by predicting the next word, one at a time, based on everything you've said. That's it. That's the magic. The clearer your instructions, the better the predictions.</p>
+
+    <div class="callout tip mt-4"><b>💡 Key idea:</b> AI doesn't <i>understand</i> like a human. It <i>predicts</i> based on patterns. Your job is to give it enough pattern to predict well.</div>
+
+    <h2 class="font-serif text-2xl font-bold mt-8 mb-2">✍️ What is Prompt Engineering?</h2>
+    <p>A <b>prompt</b> is the message you type to the AI. <b>Prompt engineering</b> is the craft of writing those messages so the AI gives you exactly what you want — the first time, or close to it.</p>
+    <p class="mt-3">It's not coding. It's not magic. It's basically <b>clear communication on steroids</b>. If you can write a clear text message to a coworker, you can write a great prompt.</p>
+
+    ${badGood(
+      'write me an email',
+      'Write a polite, 4-sentence email to my client Anna apologizing for missing our Tuesday call. Offer two new times: Thursday 10am or Friday 2pm. Sign off with my first name.'
+    )}
+
+    <h2 class="font-serif text-2xl font-bold mt-8 mb-2">🏛️ The 4 Pillars of Every Great Prompt</h2>
+    <div class="grid md:grid-cols-2 gap-3 mt-3">
+      <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-700"><div class="text-brand-600 font-bold text-sm mb-1">1. ROLE</div><div class="text-sm">Who should the AI <i>be</i>? "Act as a kindergarten teacher", "You are a senior copywriter".</div></div>
+      <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-700"><div class="text-brand-600 font-bold text-sm mb-1">2. TASK</div><div class="text-sm">What do you want done? "Summarize", "Translate", "Write", "Plan".</div></div>
+      <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-700"><div class="text-brand-600 font-bold text-sm mb-1">3. CONTEXT</div><div class="text-sm">Background it would help to know — your audience, situation, constraints.</div></div>
+      <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-700"><div class="text-brand-600 font-bold text-sm mb-1">4. FORMAT</div><div class="text-sm">How do you want the answer? "Bullet list", "150 words", "Table", "Email".</div></div>
+    </div>
+
+    <div class="callout note mt-4"><b>📚 Worked example:</b><br/>
+    <span class="font-mono text-sm">Act as a friendly fitness coach (ROLE). Build me a 7-day beginner workout plan (TASK). I'm a 28-year-old who works at a desk, can train 30 minutes a day, only have dumbbells (CONTEXT). Present it as a table with day, focus, exercises, and notes (FORMAT).</span>
+    </div>
+
+    <!-- Exercise 1.1 -->
+    <h2 class="font-serif text-2xl font-bold mt-10 mb-2">✅ Exercise 1.1 — Your First Prompt</h2>
+    <p><b>Goal:</b> Write your very first 4-pillar prompt and see the AI in action.</p>
+    <ol class="list-decimal pl-6 mt-2 space-y-1 text-sm">
+      <li>Go to <a class="text-brand-600 underline" href="https://chat.openai.com" target="_blank">ChatGPT</a>, <a class="text-brand-600 underline" href="https://claude.ai" target="_blank">Claude</a>, or <a class="text-brand-600 underline" href="https://gemini.google.com" target="_blank">Gemini</a>. Sign up free with email or Google.</li>
+      <li>Below, write a prompt about <b>something you actually want help with this week</b> (a message, a recipe, a study plan…).</li>
+      <li>Use all 4 pillars: Role, Task, Context, Format.</li>
+      <li>Click <b>"Try in ChatGPT"</b>. Notice how the answer changes if you add or remove a pillar.</li>
+    </ol>
+    ${playground('Act as a [role].\nTask: [what you want done].\nContext: [your situation, audience, constraints].\nFormat: [how the answer should look].', 'S1-Ex1.1')}
+    ${reveal('Reveal sample answer', `<span class="font-mono">Act as a thoughtful mentor. Task: Write me a 3-paragraph pep talk for my first day of a new job. Context: I'm a 24-year-old graphic designer joining a small marketing agency tomorrow; I'm nervous but excited. Format: Warm tone, no clichés, end with one practical tip.</span>`)}
+
+    <!-- Exercise 1.2 -->
+    <h2 class="font-serif text-2xl font-bold mt-10 mb-2">✅ Exercise 1.2 — Rewrite the Vague Prompt</h2>
+    <p><b>Goal:</b> Practice turning a foggy request into a sharp one.</p>
+    <div class="callout bad mt-2"><b>Vague prompt:</b><br/><span class="font-mono">help me with my CV</span></div>
+    <p class="mt-2 text-sm">Now rewrite it below using the 4 pillars. Imagine you're applying for a customer-service role with 2 years of retail experience.</p>
+    ${playground('', 'S1-Ex1.2')}
+    ${reveal('Compare with a model answer', `<span class="font-mono">Act as a professional resume writer. Rewrite the experience section of my CV for a Customer Service Representative role. Context: I have 2 years of retail experience at a clothing store, where I handled returns, trained 3 new hires, and increased upsells by 15%. Format: 4 bullet points starting with action verbs, each under 20 words, focused on measurable impact.</span>`)}
+
+    <div class="callout warn mt-6"><b>⚠️ Watch out:</b> If the AI gives you a weird or wrong answer, don't blame the AI first. Re-read your prompt. 90% of the time, the prompt was unclear.</div>
+
+    ${quiz(1, [
+      { q:'What is an LLM mainly doing under the hood?', opts:['Searching Google live','Predicting the next word based on patterns','Following hard-coded rules','Watching your screen'], a:1, exp:'LLMs predict the next token based on training patterns and your prompt.' },
+      { q:'Which of these is NOT one of the 4 pillars?', opts:['Role','Task','Tone color','Format'], a:2, exp:'Tone is part of CO-STAR (next session). The 4 pillars are Role, Task, Context, Format.' },
+      { q:'Why is "write me an email" a bad prompt?', opts:['Too long','It\'s missing role, context, and format','Email is the wrong word','AI can\'t write emails'], a:1 },
+      { q:'When the AI gives a bad answer, the first step is to…', opts:['Switch models','Re-read and improve your prompt','Restart your computer','Give up'], a:1 }
+    ])}
+  `;
+}
+
+/* ============ SESSION 2 ============ */
+function renderSession2(el) {
+  const cards = TOOLS.map(t=>`
+    <a href="${t.url}" target="_blank" class="block p-4 rounded-2xl border border-slate-200 dark:border-slate-700 hover:border-brand-400 hover:shadow-soft bg-white dark:bg-slate-900 transition">
+      <div class="flex items-center gap-3 mb-2">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-100 to-gold-100 dark:from-slate-800 dark:to-slate-700 flex items-center justify-center text-xl">${t.emoji}</div>
+        <div>
+          <div class="font-bold leading-tight">${t.name}</div>
+          <div class="text-[11px] uppercase tracking-wider text-brand-600">${t.tag}</div>
+        </div>
+        <i data-lucide="external-link" class="ml-auto w-4 h-4 text-slate-400"></i>
+      </div>
+      <p class="text-sm text-slate-600 dark:text-slate-400">${t.desc}</p>
+    </a>`).join('');
+  el.innerHTML = `
+    <p class="text-lg leading-relaxed">Picking the right AI tool is half the battle, ${firstName()}. Below are the 13 tools you'll actually use this year. Skim them now — you don't need to learn all of them today.</p>
+    <div class="callout tip mt-4"><b>💡 Rule of thumb:</b> Use <b>ChatGPT</b> for most things, <b>Claude</b> for long/sensitive writing, <b>Gemini</b> for live research, <b>Perplexity</b> for cited research, <b>Midjourney/DALL·E</b> for images, <b>Sora/Runway</b> for video, <b>ElevenLabs/Suno</b> for audio, and <b>NotebookLM</b> when studying documents.</div>
+    <h2 class="font-serif text-2xl font-bold mt-8 mb-3">🧰 The 13-Tool Toolbox</h2>
+    <div class="grid md:grid-cols-2 gap-3">${cards}</div>
+
+    <h2 class="font-serif text-2xl font-bold mt-10 mb-2">📊 Quick comparison</h2>
+    <div class="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-700 mt-2">
+      <table class="w-full text-sm">
+        <thead class="bg-slate-50 dark:bg-slate-800 text-left">
+          <tr><th class="p-3">Need</th><th class="p-3">Use</th><th class="p-3">Why</th></tr>
+        </thead>
+        <tbody class="divide-y divide-slate-200 dark:divide-slate-800">
+          <tr><td class="p-3">Daily Q&amp;A, writing, coding</td><td class="p-3">ChatGPT</td><td class="p-3">Most versatile, great free plan</td></tr>
+          <tr><td class="p-3">Sensitive, careful, long writing</td><td class="p-3">Claude</td><td class="p-3">Best long-context + tone</td></tr>
+          <tr><td class="p-3">Research with sources</td><td class="p-3">Perplexity</td><td class="p-3">Cites every claim</td></tr>
+          <tr><td class="p-3">Studying a textbook/PDF</td><td class="p-3">NotebookLM</td><td class="p-3">Only answers from YOUR docs</td></tr>
+          <tr><td class="p-3">Artistic image</td><td class="p-3">Midjourney</td><td class="p-3">Most beautiful aesthetic</td></tr>
+          <tr><td class="p-3">Quick image w/ text</td><td class="p-3">DALL·E in ChatGPT</td><td class="p-3">Easy and conversational</td></tr>
+          <tr><td class="p-3">Short cinematic video</td><td class="p-3">Sora</td><td class="p-3">Best text-to-video</td></tr>
+          <tr><td class="p-3">Voiceover</td><td class="p-3">ElevenLabs</td><td class="p-3">Hyper-realistic voices</td></tr>
+          <tr><td class="p-3">Background music / song</td><td class="p-3">Suno</td><td class="p-3">Full song from a vibe</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Exercise 2.1 -->
+    <h2 class="font-serif text-2xl font-bold mt-10 mb-2">✅ Exercise 2.1 — Sign up &amp; compare</h2>
+    <p><b>Goal:</b> Try the same prompt on 3 different tools.</p>
+    <ol class="list-decimal pl-6 mt-2 space-y-1 text-sm">
+      <li>Make free accounts on <a class="text-brand-600 underline" href="https://chat.openai.com" target="_blank">ChatGPT</a>, <a class="text-brand-600 underline" href="https://claude.ai" target="_blank">Claude</a>, and <a class="text-brand-600 underline" href="https://gemini.google.com" target="_blank">Gemini</a>.</li>
+      <li>Paste the prompt below into all three.</li>
+      <li>Notice: which one writes most warmly? Which is most concise? Which feels most "you"?</li>
+    </ol>
+    ${playground('Write a friendly 100-word birthday message to my best friend Sarah, who loves cats, jazz, and bad puns. Make it heartfelt with one cat pun.', 'S2-Ex2.1')}
+
+    <!-- Exercise 2.2 — Tool Match -->
+    <h2 class="font-serif text-2xl font-bold mt-10 mb-2">🎯 Exercise 2.2 — Tool Match Game</h2>
+    <p>Click a scenario, then click the tool that fits it best. Get all 5 right!</p>
+    <div id="toolmatch" class="mt-3"></div>
+
+    ${quiz(2, [
+      { q:'Best tool for finding info with citations?', opts:['Midjourney','Perplexity','Suno','Runway'], a:1 },
+      { q:'You need to study from a 200-page PDF. Which is ideal?', opts:['NotebookLM','ElevenLabs','Sora','Leonardo'], a:0 },
+      { q:'Best for generating background music for a video?', opts:['Suno','Claude','Copilot','Perplexity'], a:0 },
+      { q:'You want a cinematic 5-second clip. Use…', opts:['Sora','Gemini','Midjourney','Suno'], a:0 }
+    ])}
+  `;
+  setTimeout(initToolMatch, 30);
+  lucide.createIcons();
+}
+
+function initToolMatch() {
+  const scenarios = [
+    { id:'s1', text:'Write a polite resignation letter', correct:'chatgpt' },
+    { id:'s2', text:'Generate a fantasy book cover image', correct:'midjourney' },
+    { id:'s3', text:'Research climate policy with sources', correct:'perplexity' },
+    { id:'s4', text:'Create a 30-second podcast intro voiceover', correct:'eleven' },
+    { id:'s5', text:'Make a 5-second cinematic video of a city at night', correct:'sora' },
+  ];
+  const tools = ['chatgpt','midjourney','perplexity','eleven','sora'].map(id=>TOOLS.find(t=>t.id===id));
+  const root = document.getElementById('toolmatch');
+  let selectedScenario = null;
+  let matches = {};
+  function paint() {
+    const done = Object.keys(matches).length === scenarios.length;
+    const correct = scenarios.filter(s=>matches[s.id]===s.correct).length;
+    root.innerHTML = `
+      <div class="grid md:grid-cols-2 gap-4">
+        <div>
+          <div class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Scenarios</div>
+          ${scenarios.map(s=>{
+            const m = matches[s.id];
+            const ok = m && m===s.correct;
+            const bad = m && m!==s.correct;
+            return `<button onclick="window.__pickScenario('${s.id}')" class="scenario w-full text-left p-3 mb-2 rounded-xl border ${selectedScenario===s.id?'border-brand-500 ring-2 ring-brand-200':'border-slate-200 dark:border-slate-700'} ${m?'matched':''} bg-white dark:bg-slate-900">
+              <div class="text-sm font-medium">${s.text}</div>
+              ${m?`<div class="text-xs mt-1 ${ok?'text-emerald-600':'text-red-600'}">${ok?'✅ Matched: '+TOOLS.find(t=>t.id===m).name:'❌ Try again: '+TOOLS.find(t=>t.id===m).name}</div>`:''}
+            </button>`;
+          }).join('')}
+        </div>
+        <div>
+          <div class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Tools</div>
+          ${tools.map(t=>`<button onclick="window.__pickTool('${t.id}')" class="tool-card w-full text-left p-3 mb-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
+            <div class="font-medium text-sm">${t.emoji} ${t.name}</div>
+            <div class="text-xs text-slate-500">${t.desc}</div>
+          </button>`).join('')}
+        </div>
+      </div>
+      ${done?`<div class="mt-4 p-3 rounded-xl ${correct===scenarios.length?'bg-emerald-50 text-emerald-700':'bg-amber-50 text-amber-700'} text-sm font-medium">You matched ${correct} of ${scenarios.length}. ${correct===scenarios.length?'Perfect, '+firstName()+'! 🌟':'Click any scenario to re-pick.'}</div>`:''}
+    `;
+  }
+  window.__pickScenario = (id)=>{ selectedScenario = id; paint(); };
+  window.__pickTool = (tid)=>{ if (!selectedScenario) { toast('Pick a scenario first.'); return; } matches[selectedScenario]=tid; selectedScenario=null; paint(); };
+  paint();
+}
+
+/* ============ SESSION 3 — CO-STAR ============ */
+function renderSession3(el) {
+  el.innerHTML = `
+    <p class="text-lg leading-relaxed">${firstName()}, this is the session that changes everything. You're going to learn <b>CO-STAR</b>, the framework used by professionals to get consistent, high-quality results from any AI.</p>
+
+    <h2 class="font-serif text-2xl font-bold mt-8 mb-2">⭐ CO-STAR Framework</h2>
+    <div class="grid md:grid-cols-3 gap-3 mt-3">
+      ${[
+        ['C','Context',"The background. What's happening, who you are, what's at stake."],
+        ['O','Objective','The exact goal of this prompt. What does success look like?'],
+        ['S','Style','The writing style — Hemingway? Academic? Marketing copy?'],
+        ['T','Tone','The vibe — playful, formal, warm, urgent, sympathetic.'],
+        ['A','Audience',"Who's reading it? A 5-year-old? A CEO? A skeptical client?"],
+        ['R','Response','Format of the answer — bullet list, table, JSON, 200 words.']
+      ].map(([k,n,d])=>`
+        <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-700">
+          <div class="w-9 h-9 rounded-lg bg-brand-600 text-white font-bold flex items-center justify-center mb-2">${k}</div>
+          <div class="font-bold">${n}</div>
+          <div class="text-sm text-slate-600 dark:text-slate-400">${d}</div>
+        </div>`).join('')}
+    </div>
+
+    <div class="callout note mt-4"><b>📚 Worked example — LinkedIn post:</b>
+      <pre class="prompt-box mt-2">CONTEXT: I'm a junior graphic designer who just shipped my first big client project — a brand redesign for a local bakery.
+OBJECTIVE: Write a LinkedIn post celebrating the win and attracting more small-business clients.
+STYLE: Storytelling, with a clear beginning, middle, end.
+TONE: Warm, humble, slightly playful.
+AUDIENCE: Small business owners and fellow creatives.
+RESPONSE: 180 words max. End with one open question. Add 5 relevant hashtags.</pre>
+    </div>
+
+    <h2 class="font-serif text-2xl font-bold mt-10 mb-2">🛠️ The Live CO-STAR Builder</h2>
+    <p>Fill in the 6 fields and watch your prompt assemble itself.</p>
+    <div class="mt-3 grid md:grid-cols-2 gap-3" id="costar-builder">
+      ${[
+        ['cs-context','Context',"I'm a teacher of 6th graders preparing a fun unit on space."],
+        ['cs-objective','Objective','Generate 5 creative homework ideas about planets.'],
+        ['cs-style','Style','Engaging, kid-friendly, includes a small twist or game.'],
+        ['cs-tone','Tone','Playful and curious.'],
+        ['cs-audience','Audience','11-year-olds with mixed reading levels.'],
+        ['cs-response','Response format','Numbered list, each idea ≤ 40 words, include materials needed.']
+      ].map(([id,lab,ph])=>`
+        <label class="block">
+          <span class="text-xs font-bold uppercase tracking-wider text-brand-600">${lab}</span>
+          <textarea id="${id}" oninput="updateCostar()" rows="2" class="mt-1 w-full p-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm" placeholder="${ph}"></textarea>
+        </label>`).join('')}
+    </div>
+    <div class="mt-4">
+      <div class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Your assembled prompt</div>
+      <pre id="cs-output" class="prompt-box">Fill in any field above — your prompt appears here in real time, ${firstName()}.</pre>
+      <div class="mt-2 flex gap-2">
+        <button onclick="copyEl('cs-output')" class="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-sm hover:bg-slate-200"><i data-lucide="copy" class="w-3.5 h-3.5 inline"></i> Copy</button>
+        <button onclick="saveAssembled('cs-output','CO-STAR Prompt')" class="px-3 py-1.5 rounded-lg bg-brand-600 text-white text-sm">Save to Journal</button>
+        <button onclick="openWithText('chatgpt','cs-output')" class="px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 text-sm">💬 Try in ChatGPT</button>
+        <button onclick="openWithText('claude','cs-output')" class="px-3 py-1.5 rounded-lg bg-orange-50 text-orange-700 text-sm">📝 Try in Claude</button>
+      </div>
+    </div>
+
+    <h2 class="font-serif text-2xl font-bold mt-10 mb-2">🧩 Other useful frameworks</h2>
+    <div class="grid md:grid-cols-3 gap-3">
+      <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-700"><div class="font-bold">RTF</div><div class="text-sm text-slate-600 dark:text-slate-400">Role · Task · Format — the simplest. Great for quick prompts.</div></div>
+      <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-700"><div class="font-bold">RISEN</div><div class="text-sm text-slate-600 dark:text-slate-400">Role · Instructions · Steps · End goal · Narrow constraints. Good for tasks with rules.</div></div>
+      <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-700"><div class="font-bold">CRISPE</div><div class="text-sm text-slate-600 dark:text-slate-400">Capacity · Insight · Statement · Personality · Experiment. Great when you want multiple options.</div></div>
+    </div>
+
+    <h2 class="font-serif text-2xl font-bold mt-10 mb-2">✅ Exercise 3.1 — Plan a birthday party</h2>
+    <p>Use the builder above (or rewrite below) to plan an outdoor 8th birthday party for 12 kids, budget $150, on a Saturday afternoon.</p>
+    ${playground('CONTEXT: \nOBJECTIVE: \nSTYLE: \nTONE: \nAUDIENCE: \nRESPONSE: ', 'S3-Ex3.1')}
+
+    <h2 class="font-serif text-2xl font-bold mt-10 mb-2">✅ Exercise 3.2 — Write your cover letter</h2>
+    <p>Use CO-STAR to ask the AI for a strong cover letter for a job you'd actually want.</p>
+    ${playground("CONTEXT: I'm applying for [role] at [company]. My background is [...]\nOBJECTIVE: Write a cover letter that...\nSTYLE: Confident but warm\nTONE: Professional and genuine\nAUDIENCE: HR manager + hiring manager\nRESPONSE: 280 words, 3 paragraphs", 'S3-Ex3.2')}
+    ${reveal('Reveal sample (junior designer applying for marketing agency)', `<pre class="prompt-box">CONTEXT: I am a junior graphic designer with 2 years freelance experience and a degree in visual communication, applying to "Northwind Creative", a 12-person branding agency in my city.
+OBJECTIVE: Write a cover letter that highlights 2 portfolio pieces (bakery rebrand + nonprofit campaign) and shows cultural fit.
+STYLE: Story-driven; one short paragraph per main idea.
+TONE: Confident, warm, never desperate.
+AUDIENCE: A creative director who reads 30 letters/day and is tired of generic ones.
+RESPONSE: 280 words, 3 paragraphs, plain text, no bullet points, no "I am passionate about" cliches.</pre>`)}
+
+    ${quiz(3, [
+      { q:'What does the "T" in CO-STAR stand for?', opts:['Task','Tone','Topic','Tense'], a:1 },
+      { q:'Which framework is simplest for a quick prompt?', opts:['CRISPE','RISEN','RTF','CO-STAR'], a:2 },
+      { q:'Why specify the Audience?', opts:['So AI doesn\'t curse','To shape vocabulary and depth','It\'s required','It improves grammar'], a:1 },
+      { q:'Best place to define output format?', opts:['Style','Response','Context','Objective'], a:1 }
+    ])}
+  `;
+  setTimeout(updateCostar, 10);
+}
+function updateCostar() {
+  const ids = ['cs-context','cs-objective','cs-style','cs-tone','cs-audience','cs-response'];
+  const labels = ['CONTEXT','OBJECTIVE','STYLE','TONE','AUDIENCE','RESPONSE'];
+  const lines = ids.map((id,i)=>{
+    const v = (document.getElementById(id)?.value||'').trim();
+    return v ? `${labels[i]}: ${v}` : null;
+  }).filter(Boolean);
+  const out = document.getElementById('cs-output');
+  if (out) out.textContent = lines.length ? lines.join('\n') : `Fill in any field above — your prompt appears here in real time, ${firstName()}.`;
+}
+function copyEl(id){ navigator.clipboard.writeText(document.getElementById(id).textContent).then(()=>toast('Copied!'));}
+function saveAssembled(id, title){ const b=document.getElementById(id).textContent; if(!b||b.startsWith('Fill in')){toast('Build a prompt first.');return;} state.journal.unshift({id:'j'+Date.now(),title,body:b,ts:Date.now()}); saveState(); toast('Saved to Journal 📔'); }
+function openWithText(tool,id){ const t=document.getElementById(id).textContent; navigator.clipboard.writeText(t); const urls={chatgpt:'https://chat.openai.com/?q='+encodeURIComponent(t),claude:'https://claude.ai/new?q='+encodeURIComponent(t),gemini:'https://gemini.google.com/app'}; toast('Opened — prompt also copied.'); window.open(urls[tool],'_blank'); }
+
+/* ============ SESSION 4 ============ */
+function renderSession4(el) {
+  el.innerHTML = `
+    <p class="text-lg leading-relaxed">${firstName()}, now you'll learn techniques the pros use: zero-shot, few-shot, chain-of-thought, and role prompting. These are like cheat codes.</p>
+
+    <h2 class="font-serif text-2xl font-bold mt-8 mb-2">🎯 Zero-shot</h2>
+    <p>Asking directly without examples. Works great for common tasks.</p>
+    <pre class="prompt-box mt-2">Translate this to French: "I'll see you tomorrow at the café."</pre>
+
+    <h2 class="font-serif text-2xl font-bold mt-8 mb-2">🎯 Few-shot</h2>
+    <p>Give the AI 2–4 examples of the input → output you want. It mimics the pattern.</p>
+    <pre class="prompt-box mt-2">Convert each phrase to a friendly slogan.
+Input: cold brew coffee
+Output: "Cold brew, fully crew."
+
+Input: yoga studio
+Output: "Bend a little. Live a lot."
+
+Input: secondhand bookstore
+Output:</pre>
+    <div class="callout tip mt-2"><b>💡 Why it works:</b> Few-shot teaches the AI YOUR style without you having to describe it.</div>
+
+    <h2 class="font-serif text-2xl font-bold mt-8 mb-2">🧠 Chain-of-Thought (CoT)</h2>
+    <p>Add the magic phrase <b>"Let's think step by step"</b> for math, logic, or planning problems. The AI explains its reasoning — and gets more answers right.</p>
+    ${badGood(
+      'A train leaves A at 60 km/h, another from B at 40 km/h, 200 km apart. When do they meet?',
+      'A train leaves A at 60 km/h, another from B at 40 km/h, 200 km apart. Let\'s think step by step and show the calculation.'
+    )}
+
+    <h2 class="font-serif text-2xl font-bold mt-8 mb-2">🎭 Role / Persona Prompting</h2>
+    <p>Tell the AI <i>who to be</i>. It dramatically changes the quality and feel.</p>
+    <pre class="prompt-box mt-2">You are a Michelin-starred chef explaining knife skills to a complete beginner. Be warm, specific, and avoid jargon.</pre>
+
+    <h2 class="font-serif text-2xl font-bold mt-10 mb-2">✅ Exercise 4.1 — Few-shot a writing style</h2>
+    <p>Teach the AI to write captions in your style by giving 3 examples.</p>
+    ${playground(`Here are 3 examples of how I caption my Instagram photos. Match my style for the new one.
+
+Photo: sunrise over ocean
+Caption: "Coffee in hand. Salt in hair. Worries on pause."
+
+Photo: my dog napping
+Caption: "Resident vibe-checker, currently off-duty."
+
+Photo: new bookshelf
+Caption: "Built it. Stocked it. Now I just live here, I guess."
+
+Photo: my homemade pasta dinner
+Caption:`, 'S4-Ex4.1')}
+
+    <h2 class="font-serif text-2xl font-bold mt-10 mb-2">✅ Exercise 4.2 — Chain-of-thought puzzle</h2>
+    <p>Use CoT to solve this riddle. Notice how the AI's accuracy improves.</p>
+    ${playground(`I have 3 daughters. Each daughter has a brother. How many children do I have in total? Let's think step by step and explain your reasoning.`, 'S4-Ex4.2')}
+    ${reveal('Reveal the answer', 'Four. The three daughters all share <b>one</b> brother — 3 + 1 = 4 children.')}
+
+    ${quiz(4, [
+      { q:'What does "few-shot" mean?', opts:['Giving examples in the prompt','Asking quickly','Using few words','Multiple AIs at once'], a:0 },
+      { q:'The magic phrase for Chain-of-Thought?', opts:['"Be smart"','"Let\'s think step by step"','"Use logic"','"Be careful"'], a:1 },
+      { q:'Role prompting helps because…', opts:['It activates a hidden mode','It shapes the AI\'s vocabulary, depth, and tone','It speeds up the AI','It hides bias'], a:1 },
+      { q:'Best technique for "Write captions like me"?', opts:['Zero-shot','Few-shot','CoT','Translation'], a:1 }
+    ])}
+  `;
+}
+
+/* ============ SESSION 5 ============ */
+function renderSession5(el) {
+  const templates = [
+    ['Polished email','Write a polite email to [recipient] about [topic]. Tone: warm-professional. Length: under 120 words. End with a clear next step.'],
+    ['Tough conversation','Help me draft a kind but firm message to [person] about [issue]. Acknowledge their perspective, then state mine. 3 short paragraphs.'],
+    ['LinkedIn post','Write a LinkedIn post about [recent win]. Story arc: struggle → turning point → lesson. End with an open question. ≤180 words. 5 hashtags.'],
+    ['Blog outline','Outline a 1200-word blog post about [topic] for [audience]. Include H2s, H3s, hook, key takeaways, and CTA.'],
+    ['Article rewrite','Rewrite this paragraph in a clearer, friendlier voice without losing meaning: """[paste]"""'],
+    ['Summarize long text','Summarize the text below into: 1) one-sentence TL;DR 2) five bullets 3) one tweet.\n\n"""[paste]"""'],
+    ['Translate w/ tone','Translate to [language], preserving the original\'s warm, conversational tone. Note any phrases that don\'t translate literally.'],
+    ['Decline politely','Draft a 5-sentence message declining [opportunity], thanking them, leaving the door open for the future.'],
+    ['Customer reply','You are a customer-support specialist. Reply to this complaint with empathy, ownership, and a concrete fix:\n\n"""[paste]"""'],
+    ['Speech opener','Write 3 opening lines for a 5-minute talk on [topic] to [audience]. Each should hook curiosity differently (story / stat / question).']
+  ];
+  el.innerHTML = `
+    <p class="text-lg leading-relaxed">${firstName()}, this is where AI starts saving you real hours every week. Writing emails, messages, posts, summaries — let's build a personal style guide and 10 templates you'll keep.</p>
+
+    <h2 class="font-serif text-2xl font-bold mt-8 mb-2">🪞 Make AI sound like YOU</h2>
+    <ol class="list-decimal pl-6 space-y-1 text-sm">
+      <li>Paste 2–3 of your own writing samples.</li>
+      <li>Tell the AI: <i>"Study the tone, sentence length, and rhythm of these. Then write a new piece in the same voice."</i></li>
+      <li>Ask: <i>"What 5 traits define my voice?"</i> → save this list. Reuse it as a "voice card" in future prompts.</li>
+    </ol>
+
+    <h2 class="font-serif text-2xl font-bold mt-8 mb-2">📨 10 Ready-to-Use Templates</h2>
+    <div class="grid md:grid-cols-2 gap-3">
+      ${templates.map(([t,p],i)=>`
+        <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
+          <div class="flex items-center justify-between mb-2"><div class="font-bold">${t}</div>
+            <button onclick="navigator.clipboard.writeText(this.nextElementSibling.textContent);toast('Template copied!')" class="text-xs text-brand-600 hover:underline">Copy</button>
+          </div>
+          <pre class="prompt-box text-xs">${p}</pre>
+        </div>`).join('')}
+    </div>
+
+    <h2 class="font-serif text-2xl font-bold mt-10 mb-2">✅ Exercise 5.1 — Decline a meeting kindly</h2>
+    <p>Use the template + your own context.</p>
+    ${playground(`You are a warm, professional executive assistant. Help me decline a Friday 3pm meeting with my colleague Mark because I'll be traveling. Offer two alternative times next week. 5 sentences max. Sign off as ${firstName()}.`, 'S5-Ex5.1')}
+
+    <h2 class="font-serif text-2xl font-bold mt-10 mb-2">✅ Exercise 5.2 — Summarize an article</h2>
+    <p>Find any article online (news, blog post). Paste a few paragraphs into the prompt below.</p>
+    ${playground(`Summarize the text below into:
+1) A 1-sentence TL;DR
+2) Five plain-language bullets
+3) One tweet-length version (≤ 280 chars) with one relevant emoji
+
+"""
+[paste article excerpt here]
+"""`, 'S5-Ex5.2')}
+
+    ${quiz(5, [
+      { q:'Fastest way to make AI write in your style?', opts:['Tell it to be creative','Paste your own writing samples','Use Claude','Ask twice'], a:1 },
+      { q:'For a 3-format summary, you should…', opts:['Run three prompts','Ask for all 3 in one prompt','Use Excel','Translate first'], a:1 },
+      { q:'Best AI for long, careful writing?', opts:['Claude','Suno','Sora','Leonardo'], a:0 }
+    ])}
+  `;
+}
+
+/* ============ SESSION 6 ============ */
+function renderSession6(el) {
+  el.innerHTML = `
+    <p class="text-lg leading-relaxed">${firstName()}, this session turns AI into your personal tutor and research assistant — without the dangerous habit of taking its word for everything.</p>
+
+    <h2 class="font-serif text-2xl font-bold mt-8 mb-2">🎓 The Feynman Tutor</h2>
+    <p>Ask the AI to teach you anything as if you're 10, then test you. This is the fastest learning loop in existence.</p>
+    <pre class="prompt-box mt-2">Teach me [topic] as if I'm 10 years old. Use an everyday analogy. Then ask me 3 questions to check my understanding. Wait for my answers before continuing.</pre>
+
+    <h2 class="font-serif text-2xl font-bold mt-8 mb-2">🔎 Research workflow</h2>
+    <ol class="list-decimal pl-6 space-y-1 text-sm">
+      <li>Start with <a class="text-brand-600 underline" href="https://www.perplexity.ai" target="_blank">Perplexity</a> for cited overview.</li>
+      <li>Drop key PDFs/articles into <a class="text-brand-600 underline" href="https://notebooklm.google.com" target="_blank">NotebookLM</a> — now your AI <i>only</i> cites those sources.</li>
+      <li>Ask follow-ups, generate study notes, audio overviews, FAQ.</li>
+      <li>Verify any surprising claim by opening the original source.</li>
+    </ol>
+
+    <div class="callout warn mt-4"><b>⚠️ Hallucinations:</b> AI can confidently invent facts, fake citations, wrong dates. Always cross-check anything important. Never trust legal, medical, or financial advice from an LLM without a human expert.</div>
+
+    <h2 class="font-serif text-2xl font-bold mt-10 mb-2">✅ Exercise 6.1 — Be tutored on photosynthesis</h2>
+    ${playground(`Teach me photosynthesis as if I'm 10 years old. Use a kitchen-recipe analogy. Then quiz me with 3 questions, one easy, one medium, one tricky. Wait for my answers before grading.`, 'S6-Ex6.1')}
+
+    <h2 class="font-serif text-2xl font-bold mt-10 mb-2">✅ Exercise 6.2 — Try NotebookLM with a real PDF</h2>
+    <ol class="list-decimal pl-6 space-y-1 text-sm">
+      <li>Open <a class="text-brand-600 underline" href="https://notebooklm.google.com" target="_blank">notebooklm.google.com</a> and log in with Google.</li>
+      <li>Click "New" → upload any PDF (a textbook chapter, manual, article).</li>
+      <li>In the chat, paste the prompt below.</li>
+    </ol>
+    ${playground(`Based ONLY on the document I uploaded:
+1. Give me a 5-bullet summary.
+2. Pull out 3 surprising facts with the exact page number.
+3. Generate a 5-question quiz to test my understanding.`, 'S6-Ex6.2')}
+
+    ${quiz(6, [
+      { q:'A "hallucination" in AI means…', opts:['A funny output','A confidently wrong/invented fact','A creative analogy','A typo'], a:1 },
+      { q:'Best tool for cited research?', opts:['Suno','Perplexity','Midjourney','ElevenLabs'], a:1 },
+      { q:'NotebookLM answers from…', opts:['The whole internet','Wikipedia','Only YOUR uploaded sources','Twitter'], a:2 }
+    ])}
+  `;
+}
+
+/* ============ SESSION 7 — IMAGE BUILDER ============ */
+const IMG_OPTIONS = {
+  subject: ['a serene mountain lake at dawn','a cozy cyberpunk café','a fantasy library with floating books','a tiny astronaut feeding a cat','a forgotten Victorian greenhouse','a futuristic Lagos street market'],
+  style:   ['photorealistic, 35mm film','watercolor illustration','Studio Ghibli anime','oil painting, Baroque','vector flat design','3D Pixar render','cinematic concept art'],
+  light:   ['soft golden-hour light','dramatic chiaroscuro lighting','neon backlit','overcast diffused light','warm candlelight','moody blue night light'],
+  mood:    ['peaceful and dreamy','mysterious and tense','joyful and vibrant','melancholic and quiet','epic and grand','playful and whimsical'],
+  camera:  ['extreme close-up','wide-angle establishing shot','low-angle hero shot','top-down flat lay','dutch angle','over-the-shoulder POV'],
+  ratio:   ['1:1 square','16:9 cinematic widescreen','9:16 vertical','3:2 standard photo','2:3 portrait']
+};
+function renderSession7(el) {
+  const opts = Object.entries(IMG_OPTIONS).map(([k,arr])=>`
+    <label class="block">
+      <span class="text-xs font-bold uppercase tracking-wider text-brand-600">${k}</span>
+      <select id="img-${k}" onchange="updateImgPrompt()" class="mt-1 w-full p-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm">
+        <option value="">(choose one)</option>
+        ${arr.map(v=>`<option>${v}</option>`).join('')}
+      </select>
+    </label>`).join('');
+  const tplCards = [
+    ['Book cover','A fantasy book cover: [subject], [style], [light], [mood], title text "THE LANTERN OF ASH" in elegant serif, author "[your name]", 2:3 portrait.'],
+    ['Product photo','Studio product shot of [product] on a marble surface, soft 3-point lighting, 35mm lens, shallow depth of field, minimalist background, 1:1.'],
+    ['Logo concept','Minimalist vector logo for a coffee shop called "Cinder & Bean", warm earthy palette, rounded geometric type, flat design, 1:1.'],
+    ['Avatar','Pixar-style 3D avatar of a young woman with curly hair, warm smile, soft studio lighting, neutral background, 1:1.'],
+    ['Landscape','Wide cinematic landscape of [place] at golden hour, ultra-detailed, atmospheric haze, 16:9.'],
+    ['Food photo','Top-down flat lay of homemade jollof rice in a clay bowl, fresh herbs, warm lighting, natural wood table, 1:1.'],
+    ['Editorial illustration','Editorial illustration showing [concept], geometric shapes, limited palette of indigo & gold, paper texture.'],
+    ['Storyboard frame','Storyboard panel: [character] [action] in [setting], rough pencil sketch, dynamic angle, motion lines.'],
+    ['Social media banner','Banner for a productivity newsletter, abstract waves of indigo and gold, hand-lettered title "Deep Work Weekly", 3:1.'],
+    ['Children\'s book','Whimsical children\'s book illustration of [scene], pastel watercolor, soft outlines, ages 4-7, 2:3.']
+  ];
+  el.innerHTML = `
+    <p class="text-lg leading-relaxed">${firstName()}, image prompting is different — you're not asking a question, you're <b>describing a picture like a photographer or painter would</b>. Let's get good at it.</p>
+
+    <h2 class="font-serif text-2xl font-bold mt-8 mb-2">📐 The Image Prompt Formula</h2>
+    <p class="font-mono text-sm bg-slate-100 dark:bg-slate-800 p-3 rounded-xl">SUBJECT + STYLE + COMPOSITION + LIGHTING + MOOD + DETAILS + ASPECT RATIO</p>
+    ${badGood('a cat in space', 'A fluffy orange tabby cat floating gently inside a transparent astronaut helmet, soft cinematic light from Earth glow, photorealistic 50mm, dreamy mood, deep starfield background, 16:9')}
+
+    <h2 class="font-serif text-2xl font-bold mt-8 mb-2">🛠️ Image Prompt Builder</h2>
+    <p>Pick from each dropdown — your prompt builds itself below.</p>
+    <div class="grid md:grid-cols-3 gap-3 mt-3">${opts}</div>
+    <pre id="img-output" class="prompt-box mt-3">Pick options above to start, ${firstName()}…</pre>
+    <div class="mt-2 flex flex-wrap gap-2">
+      <button onclick="copyEl('img-output')" class="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-sm"><i data-lucide="copy" class="w-3.5 h-3.5 inline"></i> Copy</button>
+      <button onclick="saveAssembled('img-output','Image Prompt')" class="px-3 py-1.5 rounded-lg bg-brand-600 text-white text-sm">Save</button>
+      <a target="_blank" href="https://www.midjourney.com" class="px-3 py-1.5 rounded-lg bg-pink-50 text-pink-700 text-sm">🎨 Try in Midjourney</a>
+      <a target="_blank" href="https://chat.openai.com" class="px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 text-sm">🖼️ Try DALL·E in ChatGPT</a>
+      <a target="_blank" href="https://leonardo.ai" class="px-3 py-1.5 rounded-lg bg-amber-50 text-amber-700 text-sm">🦁 Try Leonardo</a>
+    </div>
+
+    <h2 class="font-serif text-2xl font-bold mt-10 mb-2">🖼️ 10 Image Prompt Templates</h2>
+    <div class="grid md:grid-cols-2 gap-3">
+      ${tplCards.map(([t,p])=>`<div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
+        <div class="flex items-center justify-between mb-2"><div class="font-bold">${t}</div>
+          <button onclick="navigator.clipboard.writeText(this.nextElementSibling.textContent);toast('Copied!')" class="text-xs text-brand-600 hover:underline">Copy</button>
+        </div>
+        <pre class="prompt-box text-xs">${p}</pre>
+      </div>`).join('')}
+    </div>
+
+    <h2 class="font-serif text-2xl font-bold mt-10 mb-2">✅ Exercise 7.1 — Same scene, 3 styles</h2>
+    <p>Generate the SAME subject in 3 different styles. Notice how style alone changes everything.</p>
+    ${playground(`Generate the same subject in three styles, one per output:
+Subject: A cozy reading nook by a rainy window
+Styles: 1) photorealistic 35mm  2) Studio Ghibli watercolor  3) Pixar 3D
+Each: 1:1, warm lighting, soft mood.`, 'S7-Ex7.1')}
+
+    <h2 class="font-serif text-2xl font-bold mt-10 mb-2">✅ Exercise 7.2 — Book cover for YOUR future book</h2>
+    ${playground(`Design a book cover for a novel titled "[your title]" by ${state.name}. Genre: [genre]. Mood: [mood]. Include the title and author name as readable text in elegant serif. Style: cinematic concept art, dramatic lighting. 2:3 portrait.`, 'S7-Ex7.2')}
+
+    ${quiz(7, [
+      { q:'Image prompts are most like…', opts:['Code','Painting/photo direction','Math','Bullet points'], a:1 },
+      { q:'Which is missing from "a cat in space"?', opts:['Style, lighting, composition','Everything except subject','Quotation marks','Just the ratio'], a:0 },
+      { q:'Tool best known for "Pixar-style" 3D look?', opts:['Sora','DALL·E','Suno','Perplexity'], a:1 }
+    ])}
+  `;
+  setTimeout(updateImgPrompt,10);
+}
+function updateImgPrompt(){
+  const parts = ['subject','style','light','mood','camera','ratio'].map(k=>document.getElementById('img-'+k)?.value).filter(Boolean);
+  const out = document.getElementById('img-output');
+  if (out) out.textContent = parts.length? parts.join(', ') : `Pick options above to start, ${firstName()}…`;
+}
+
+/* ============ SESSION 8 ============ */
+function renderSession8(el) {
+  el.innerHTML = `
+    <p class="text-lg leading-relaxed">${firstName()}, video and audio AI feels like science fiction — and you'll write your first prompts for both today.</p>
+
+    <h2 class="font-serif text-2xl font-bold mt-8 mb-2">🎬 Video prompting (Sora, Runway)</h2>
+    <p>Describe like a director's slate: <b>scene, subject, action, camera movement, lighting, mood, duration</b>.</p>
+    <pre class="prompt-box mt-2">A medium tracking shot following a small wooden sailboat gliding across glassy turquoise water at golden hour. The camera follows alongside, slight handheld sway. Warm cinematic lighting, peaceful mood, lens flare, 5 seconds, 16:9.</pre>
+    <div class="callout tip mt-3"><b>💡 Sora tip:</b> Two 4-second clips you stitch together often look better than one 8-second clip.</div>
+
+    <h2 class="font-serif text-2xl font-bold mt-8 mb-2">🎙️ Voice (ElevenLabs)</h2>
+    <p>Write the script, then add direction in brackets — <code>[whispers]</code>, <code>[laughs]</code>, <code>[excited]</code>, <code>[pause]</code>.</p>
+    <pre class="prompt-box mt-2">[warm, mid-pace] Welcome back to Deep Work Weekly. [pause] This week — the lost art of doing one thing. [excited] Let's get into it.</pre>
+
+    <h2 class="font-serif text-2xl font-bold mt-8 mb-2">🎵 Music (Suno)</h2>
+    <p>Genre + mood + instruments + tempo + use case.</p>
+    <pre class="prompt-box mt-2">Lo-fi hip-hop, warm and nostalgic, mellow piano, soft drums, vinyl crackle, 75 BPM, perfect background for studying.</pre>
+
+    <h2 class="font-serif text-2xl font-bold mt-10 mb-2">✅ Exercise 8.1 — Sora sunset clip</h2>
+    ${playground(`A slow cinematic dolly-in toward a single empty bench on a cliff at sunset, ocean waves below, soft warm light, gentle breeze moving the grass, peaceful and reflective mood, 5 seconds, 16:9.`, 'S8-Ex8.1')}
+    <p class="text-sm mt-2">Open <a class="text-brand-600 underline" href="https://sora.com" target="_blank">Sora</a> or <a class="text-brand-600 underline" href="https://runway.ml" target="_blank">Runway</a> and try it.</p>
+
+    <h2 class="font-serif text-2xl font-bold mt-10 mb-2">✅ Exercise 8.2 — Podcast intro voiceover</h2>
+    ${playground(`[friendly, energetic] Hey everyone, welcome to "Curiosity Hour" — the podcast where we ask one big question every week. [pause] I'm your host, ${state.name}. [warm] Today: why do we dream?`, 'S8-Ex8.2')}
+    <p class="text-sm mt-2">Try this on <a class="text-brand-600 underline" href="https://elevenlabs.io" target="_blank">ElevenLabs</a> — pick any voice, paste the script.</p>
+
+    ${quiz(8, [
+      { q:'Best Sora practice for longer clips?', opts:['Force 30s in one shot','Stitch two shorter clips','Avoid descriptions','Use only nouns'], a:1 },
+      { q:'In ElevenLabs, [whispers] and [pause] are…', opts:['Bug fixes','Speaker tags','Audio direction tags','Hashtags'], a:2 },
+      { q:'A great Suno prompt mentions…', opts:['Genre, mood, instruments, BPM','Pages','Word count','Aspect ratio'], a:0 }
+    ])}
+  `;
+}
+
+/* ============ SESSION 9 ============ */
+function renderSession9(el) {
+  el.innerHTML = `
+    <p class="text-lg leading-relaxed">${firstName()}, AI is now an analyst on call. Spreadsheets, formulas, summaries, code help — even if you've never written a line of code.</p>
+
+    <h2 class="font-serif text-2xl font-bold mt-8 mb-2">📊 Analyzing files</h2>
+    <p>In ChatGPT or Claude, click the paperclip 📎 and upload a CSV/Excel. Then ask plain-language questions.</p>
+    <pre class="prompt-box mt-2">Here's my last 6 months of expenses (CSV).
+1) Find the top 3 categories I overspend on.
+2) Suggest one cut per category.
+3) Show a simple table with monthly trend.</pre>
+
+    <h2 class="font-serif text-2xl font-bold mt-8 mb-2">🧮 Formula help (no code needed)</h2>
+    <pre class="prompt-box mt-2">In Google Sheets, I have dates in column A and amounts in column B. Write me one formula that returns the total for the current month only. Explain how it works in 2 sentences.</pre>
+
+    <h2 class="font-serif text-2xl font-bold mt-8 mb-2">🗒️ Meeting notes</h2>
+    <pre class="prompt-box mt-2">Below is a raw transcript. Produce: 1) 5-bullet summary, 2) decisions made, 3) action items with owners, 4) 2 open questions.
+
+"""[paste]"""</pre>
+
+    <h2 class="font-serif text-2xl font-bold mt-10 mb-2">✅ Exercise 9.1 — Analyze a spreadsheet</h2>
+    <p>Open ChatGPT, upload any small spreadsheet (your budget, weekly steps, anything), and paste:</p>
+    ${playground(`Here's my data. Without changing it, please:
+1) Identify 3 interesting patterns or anomalies in plain English.
+2) Suggest 2 follow-up questions I should investigate.
+3) If useful, draft a simple chart spec (type + x/y axes).`, 'S9-Ex9.1')}
+
+    <h2 class="font-serif text-2xl font-bold mt-10 mb-2">✅ Exercise 9.2 — Build a budget formula</h2>
+    ${playground(`In Google Sheets, column A = expense category (e.g., Food, Rent), column B = amount.
+Write 3 formulas:
+1) Total spend across all rows.
+2) Total spend for "Food" only.
+3) The category with the highest total.
+For each: explain in one short sentence what it does.`, 'S9-Ex9.2')}
+
+    ${quiz(9, [
+      { q:'Best way to start data analysis with AI?', opts:['Describe data in words','Upload the file directly','Take a photo','Email it'], a:1 },
+      { q:'For a transcript, ask AI for…', opts:['Random thoughts','Summary, decisions, action items','A song','Translation only'], a:1 },
+      { q:'AI can write spreadsheet formulas…', opts:['Never','Only if you code','Yes, just describe what you need','Only in Excel'], a:2 }
+    ])}
+  `;
+}
+
+/* ============ SESSION 10 ============ */
+function renderSession10(el) {
+  el.innerHTML = `
+    <p class="text-lg leading-relaxed">Final stretch, ${firstName()}! 🌟 This session turns you from "user" into "power user". You'll also learn the ethics — because using AI well means using it responsibly.</p>
+
+    <h2 class="font-serif text-2xl font-bold mt-8 mb-2">🔁 Iterative prompting</h2>
+    <p>Don't restart. <b>Refine</b>. Most pros' best output comes by round 3 or 4 in the same chat.</p>
+    <pre class="prompt-box mt-2">Good. Now make it 30% shorter, keep the warm tone, and add one concrete example.</pre>
+
+    <h2 class="font-serif text-2xl font-bold mt-8 mb-2">⛓️ Prompt chaining</h2>
+    <p>Use the output of one prompt as input to the next. Example: outline → draft → edit → headline.</p>
+
+    <h2 class="font-serif text-2xl font-bold mt-8 mb-2">🔒 Privacy & Ethics</h2>
+    <ul class="list-disc pl-6 space-y-1 text-sm">
+      <li>Never paste passwords, full ID numbers, medical records, or proprietary client data.</li>
+      <li>Treat AI output as a <b>first draft</b>, not the final truth.</li>
+      <li>Credit AI when policy or honesty requires it (school, journalism).</li>
+      <li>Watch for bias — re-roll or re-prompt if you see a stereotype.</li>
+    </ul>
+
+    <h2 class="font-serif text-2xl font-bold mt-8 mb-2">📚 Build your Personal Prompt Vault</h2>
+    <p>Inside the <a class="text-brand-600 underline" href="#/journal">Prompt Journal</a> you have a permanent home for prompts that work. Tag the 5 you'll reuse weekly.</p>
+
+    <h2 class="font-serif text-2xl font-bold mt-10 mb-2">✅ Exercise 10.1 — Refine 3 times</h2>
+    <p>Write a first attempt, then refine it twice — each time copying both prompt and improved version.</p>
+    ${playground(`First attempt: Write a thank-you note to my mentor.
+
+Refinement 1: Make it 60 words, warm but not gushing, mention one specific thing she taught me.
+
+Refinement 2: Add a single forward-looking sentence about applying her advice this month.`, 'S10-Ex10.1')}
+
+    <h2 class="font-serif text-2xl font-bold mt-10 mb-2">✅ Exercise 10.2 — Your Personal Prompt Vault</h2>
+    <p>Open the Journal and save the 5 prompts you imagine using <i>every single week</i>. Examples: weekly review, email drafting, meal planning, social caption, study summary.</p>
+    <a href="#/journal" class="inline-flex items-center gap-2 mt-2 px-4 py-2 rounded-xl bg-brand-600 text-white text-sm hover:bg-brand-700"><i data-lucide="book-open" class="w-4 h-4"></i> Open my Journal</a>
+
+    ${quiz(10, [
+      { q:'A power-user refines prompts how?', opts:['Restart every time','Iterate in the same chat','Use only one model','Always go shorter'], a:1 },
+      { q:'Which is NOT safe to paste into AI?', opts:['Public news article','Your full social security number','A blog draft','Your shopping list'], a:1 },
+      { q:'AI outputs should be treated as…', opts:['Final truth','First draft','Legal advice','Permanent'], a:1 }
+    ])}
+
+    <div class="callout note mt-8"><b>🎉 You did it, ${firstName()}.</b> One step left — complete your Final Project to unlock your certificate.<br/>
+      <a href="#/final" class="inline-block mt-2 px-4 py-2 rounded-xl bg-gold-400 text-gold-900 font-semibold">Go to Final Project →</a>
+    </div>
+  `;
+}
+
+/* ---------------- JOURNAL ---------------- */
+function renderJournal(host) {
+  function paint() {
+    host.innerHTML = `
+      <div class="flex items-center justify-between mb-4">
+        <p class="text-slate-600 dark:text-slate-400">All the prompts you've saved, ${firstName()}. Edit, copy, or export anytime.</p>
+        <div class="flex gap-2">
+          <button onclick="addJournal()" class="px-3 py-2 rounded-lg bg-brand-600 text-white text-sm hover:bg-brand-700"><i data-lucide="plus" class="w-4 h-4 inline"></i> New entry</button>
+          <button onclick="exportJournal()" class="px-3 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-sm"><i data-lucide="download" class="w-4 h-4 inline"></i> Export JSON</button>
+        </div>
+      </div>
+      ${state.journal.length===0 ? `<div class="p-8 text-center rounded-2xl border-2 border-dashed border-slate-300 dark:border-slate-700 text-slate-500">No prompts yet. Save your first one from any exercise!</div>` :
+      `<div class="grid md:grid-cols-2 gap-3">${state.journal.map(j=>`
+        <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
+          <input class="font-bold w-full bg-transparent outline-none mb-1" value="${escapeHtml(j.title)}" oninput="updateJournalTitle('${j.id}', this.value)"/>
+          <textarea class="w-full font-mono text-sm bg-slate-50 dark:bg-slate-800 rounded-lg p-2 min-h-[120px]" oninput="updateJournalBody('${j.id}', this.value)">${escapeHtml(j.body)}</textarea>
+          <div class="flex justify-between items-center mt-2 text-xs text-slate-500">
+            <span>${new Date(j.ts).toLocaleString()}</span>
+            <div class="flex gap-1">
+              <button onclick="navigator.clipboard.writeText(${JSON.stringify(j.body)});toast('Copied!')" class="px-2 py-1 rounded hover:bg-slate-100 dark:hover:bg-slate-800"><i data-lucide="copy" class="w-3.5 h-3.5"></i></button>
+              <button onclick="deleteJournal('${j.id}')" class="px-2 py-1 rounded hover:bg-red-50 text-red-600"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+            </div>
+          </div>
+        </div>`).join('')}</div>`}
+    `;
+    lucide.createIcons();
+  }
+  window.updateJournalTitle = (id,v)=>{ const j=state.journal.find(x=>x.id===id); if(j){j.title=v; saveState();}};
+  window.updateJournalBody  = (id,v)=>{ const j=state.journal.find(x=>x.id===id); if(j){j.body=v; saveState();}};
+  window.deleteJournal = (id)=>{ if(confirm('Delete this prompt?')){ state.journal = state.journal.filter(x=>x.id!==id); saveState(); paint(); }};
+  window.addJournal = ()=>{ state.journal.unshift({id:'j'+Date.now(),title:'New Prompt',body:'',ts:Date.now()}); saveState(); paint(); };
+  paint();
+}
+function exportJournal(){
+  const blob = new Blob([JSON.stringify(state.journal,null,2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href=url; a.download='prompt-journal.json'; a.click();
+  URL.revokeObjectURL(url);
+  toast('Journal exported!');
+}
+function escapeHtml(s){ return (s||'').replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+/* ---------------- FINAL PROJECT ---------------- */
+function renderFinal(host) {
+  const fp = state.finalProject || { goal:'', text:'', image:'', av:'', research:'', reflect:'' };
+  host.innerHTML = `
+    <p class="text-slate-700 dark:text-slate-300 mb-6">Your capstone, ${firstName()}: <b>"Your AI-Powered Day"</b>. Choose a real goal, then use 4 different AI tools to chase it. Document each prompt below.</p>
+    ${[
+      ['goal','🎯 Your goal','Plan a 1-day mini-retreat to recharge and learn something new.'],
+      ['text','💬 Text-AI prompt (ChatGPT/Claude/Gemini)','e.g., Draft a 1-day retreat schedule with…'],
+      ['image','🎨 Image prompt (Midjourney/DALL·E/Leonardo)','e.g., Watercolor poster of a peaceful retreat…'],
+      ['av','🎙️ Audio/Video prompt (Sora/ElevenLabs/Suno)','e.g., 30s lo-fi music for the morning…'],
+      ['research','🔎 Research prompt (Perplexity/NotebookLM)','e.g., 3 cited articles on benefits of digital detox…'],
+      ['reflect','💭 Reflection (1-2 paragraphs)','What worked? What surprised you? Which prompt did you refine the most?']
+    ].map(([k,l,ph])=>`
+      <label class="block mb-4">
+        <span class="text-sm font-bold">${l}</span>
+        <textarea id="fp-${k}" rows="${k==='reflect'?5:3}" class="mt-1 w-full p-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm font-mono" placeholder="${ph}">${escapeHtml(fp[k]||'')}</textarea>
+      </label>`).join('')}
+    <button onclick="submitFinal()" class="px-5 py-3 rounded-xl bg-gold-400 text-gold-900 font-bold hover:bg-gold-300"><i data-lucide="flag" class="w-4 h-4 inline"></i> Submit Final Project</button>
+    ${state.finalProject ? `<div class="mt-4 p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 text-sm">✅ Submitted on ${new Date(state.finalProject.ts).toLocaleString()}. <a href="#/certificate" class="underline font-semibold">Go to your certificate →</a></div>`:''}
+  `;
+  lucide.createIcons();
+}
+function submitFinal(){
+  const keys = ['goal','text','image','av','research','reflect'];
+  const obj = {}; keys.forEach(k=> obj[k]=document.getElementById('fp-'+k).value.trim());
+  if (!obj.goal || !obj.reflect) { toast('Fill in at least your goal and reflection.'); return; }
+  obj.ts = Date.now();
+  state.finalProject = obj;
+  saveState();
+  toast('🎉 Project submitted! Certificate unlocked.');
+  setTimeout(()=> location.hash='#/certificate', 800);
+}
+
+/* ---------------- CERTIFICATE ---------------- */
+function allSessionsDone(){ return SESSIONS.every(s=>state.progress[s.id]?.done); }
+function renderCertificate(host) {
+  const unlocked = allSessionsDone() && state.finalProject;
+  if (!unlocked && !state.certUnlocked) {
+    host.innerHTML = `
+      <div class="p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-center">
+        <div class="w-16 h-16 mx-auto rounded-2xl bg-gold-100 text-gold-700 flex items-center justify-center mb-3"><i data-lucide="lock" class="w-7 h-7"></i></div>
+        <h2 class="font-serif text-2xl font-bold mb-2">Your certificate is almost ready, ${firstName()}!</h2>
+        <p class="text-slate-600 dark:text-slate-400 mb-4">Complete all 10 sessions and the Final Project to unlock it.</p>
+        <div class="grid grid-cols-5 gap-2 max-w-md mx-auto mb-4">
+          ${SESSIONS.map(s=>`<div class="aspect-square rounded-lg ${state.progress[s.id]?.done?'bg-emerald-500 text-white':'bg-slate-200 dark:bg-slate-700'} flex items-center justify-center text-xs font-bold">${state.progress[s.id]?.done?'✓':s.id}</div>`).join('')}
+        </div>
+        <div class="text-sm ${state.finalProject?'text-emerald-600':'text-slate-500'}">${state.finalProject?'✅ Final Project submitted':'⏳ Final Project not yet submitted'}</div>
+        <a href="#/welcome" class="inline-block mt-4 px-4 py-2 rounded-xl bg-brand-600 text-white text-sm">Back to course</a>
+      </div>`;
+    lucide.createIcons();
+    return;
+  }
+  // first-time unlock — confetti
+  if (unlocked && !state.certUnlocked) { state.certUnlocked = true; saveState(); confetti(); }
+  const today = new Date().toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' });
+  host.innerHTML = `
+    <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+      <p class="text-slate-700 dark:text-slate-300">Congratulations, ${firstName()}. You earned this. 🌟</p>
+      <div class="flex gap-2">
+        <button onclick="downloadCertificate()" class="px-4 py-2 rounded-xl bg-brand-600 text-white text-sm hover:bg-brand-700"><i data-lucide="download" class="w-4 h-4 inline"></i> Download PDF</button>
+        <button onclick="shareLinkedIn()" class="px-4 py-2 rounded-xl bg-[#0a66c2] text-white text-sm"><i data-lucide="linkedin" class="w-4 h-4 inline"></i> Share on LinkedIn</button>
+        <button onclick="window.print()" class="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-sm"><i data-lucide="printer" class="w-4 h-4 inline"></i> Print</button>
+      </div>
+    </div>
+    <div id="certificate-print">
+      <div class="cert-wrap">
+        <div class="cert-inner">
+          <!-- corners -->
+          <svg style="position:absolute;top:8px;left:8px;width:60px;height:60px" viewBox="0 0 60 60"><path d="M2 30 Q2 2 30 2" fill="none" stroke="#d4a574" stroke-width="2"/><circle cx="10" cy="10" r="3" fill="#d4a574"/></svg>
+          <svg style="position:absolute;top:8px;right:8px;width:60px;height:60px" viewBox="0 0 60 60"><path d="M58 30 Q58 2 30 2" fill="none" stroke="#d4a574" stroke-width="2"/><circle cx="50" cy="10" r="3" fill="#d4a574"/></svg>
+          <svg style="position:absolute;bottom:8px;left:8px;width:60px;height:60px" viewBox="0 0 60 60"><path d="M2 30 Q2 58 30 58" fill="none" stroke="#d4a574" stroke-width="2"/><circle cx="10" cy="50" r="3" fill="#d4a574"/></svg>
+          <svg style="position:absolute;bottom:8px;right:8px;width:60px;height:60px" viewBox="0 0 60 60"><path d="M58 30 Q58 58 30 58" fill="none" stroke="#d4a574" stroke-width="2"/><circle cx="50" cy="50" r="3" fill="#d4a574"/></svg>
+
+          <div style="text-align:center; padding-top:8px;">
+            <div style="font-family:'Inter'; letter-spacing:.4em; font-size:11px; color:#9b6a33;">P R O M P T M A S T E R Y</div>
+            <div style="font-family:'Playfair Display'; font-weight:800; font-size:46px; color:#3a2a14; margin-top:6px;">Certificate of Completion</div>
+            <div style="font-family:'Inter'; font-size:13px; color:#7a5a30; margin-top:2px;">This is to certify that</div>
+            <div style="font-family:'Playfair Display'; font-weight:800; font-size:54px; letter-spacing:.05em; color:#4F46E5; margin-top:14px; text-transform:uppercase;">${escapeHtml(state.name)}</div>
+            <div style="width:60%; height:1px; background:#d4a574; margin:14px auto;"></div>
+            <div style="font-family:'Inter'; font-size:15px; color:#3a2a14; max-width:760px; margin:0 auto; line-height:1.55;">
+              has successfully completed <b>The Real-World AI &amp; Prompt Engineering Course</b>,
+              demonstrating proficiency in prompt engineering across <b>text, image, video, audio, and data AI tools</b>,
+              including ChatGPT, Claude, Gemini, Midjourney, Sora, ElevenLabs, and more.
+            </div>
+
+            <div style="display:flex; align-items:flex-end; justify-content:space-between; margin-top:38px; padding:0 30px;">
+              <div style="text-align:center;">
+                <div style="font-family:'Great Vibes'; font-size:34px; color:#1f2937; line-height:1;">Your AI Mentor</div>
+                <div style="border-top:1px solid #6b5a3a; width:180px; margin-top:4px;"></div>
+                <div style="font-family:'Inter'; font-size:11px; color:#7a5a30; letter-spacing:.15em;">MENTOR · INSTRUCTOR</div>
+              </div>
+              <div class="seal">
+                <div class="ribbon"></div>
+                <div style="text-align:center;line-height:1;">
+                  <div style="font-size:22px;">★</div>
+                  <div style="font-size:10px;letter-spacing:.15em;margin-top:2px;">CERTIFIED</div>
+                  <div style="font-size:18px;font-family:'Playfair Display';margin-top:2px;">P M</div>
+                </div>
+              </div>
+              <div style="text-align:center;">
+                <div style="font-family:'Playfair Display'; font-size:20px; color:#1f2937;">${today}</div>
+                <div style="border-top:1px solid #6b5a3a; width:180px; margin-top:4px;"></div>
+                <div style="font-family:'Inter'; font-size:11px; color:#7a5a30; letter-spacing:.15em;">DATE OF COMPLETION</div>
+              </div>
+            </div>
+
+            <div style="margin-top:18px; font-family:'JetBrains Mono'; font-size:10px; color:#9b6a33;">Certificate ID: ${state.certId}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  lucide.createIcons();
+}
+function shareLinkedIn(){
+  const url = 'https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(location.origin + location.pathname);
+  window.open(url, '_blank');
+}
+async function downloadCertificate(){
+  toast('Preparing your certificate PDF…');
+  const node = document.getElementById('certificate-print');
+  const canvas = await html2canvas(node, {scale:2, useCORS:true, backgroundColor:'#fffdf7'});
+  const img = canvas.toDataURL('image/png');
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF({orientation:'landscape', unit:'mm', format:'a4'});
+  const pw = pdf.internal.pageSize.getWidth();
+  const ph = pdf.internal.pageSize.getHeight();
+  const ratio = canvas.width / canvas.height;
+  let w = pw - 10, h = w / ratio;
+  if (h > ph - 10) { h = ph - 10; w = h * ratio; }
+  pdf.addImage(img, 'PNG', (pw-w)/2, (ph-h)/2, w, h);
+  pdf.save(`PromptMastery-Certificate-${state.name.replace(/\s+/g,'_')}.pdf`);
+  toast('Downloaded! 🎓');
+}
+
+function confetti(){
+  const colors = ['#4F46E5','#D4A574','#10B981','#F59E0B','#EF4444','#818CF8'];
+  for (let i=0;i<140;i++){
+    const p = document.createElement('div');
+    p.className = 'confetti-piece';
+    p.style.left = Math.random()*100+'vw';
+    p.style.top = '-20px';
+    p.style.background = colors[Math.floor(Math.random()*colors.length)];
+    p.style.transform = `rotate(${Math.random()*360}deg)`;
+    document.body.appendChild(p);
+    const dur = 2200 + Math.random()*1800;
+    p.animate([
+      {transform:`translateY(0) rotate(0)`, opacity:1},
+      {transform:`translateY(110vh) rotate(${Math.random()*720}deg)`, opacity:0.9}
+    ], { duration: dur, easing:'cubic-bezier(.2,.7,.4,1)' });
+    setTimeout(()=>p.remove(), dur);
+  }
+}
+
+/* ---------------- TOOLS PAGE ---------------- */
+function renderTools(host) {
+  host.innerHTML = `<p class="text-slate-600 dark:text-slate-400 mb-4">Quick access to every AI platform in this course, ${firstName()}.</p>
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
+      ${TOOLS.map(t=>`<a href="${t.url}" target="_blank" class="p-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:border-brand-400 hover:shadow-soft">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-100 to-gold-100 dark:from-slate-800 dark:to-slate-700 flex items-center justify-center text-xl">${t.emoji}</div>
+          <div>
+            <div class="font-bold leading-tight">${t.name}</div>
+            <div class="text-[11px] uppercase tracking-wider text-brand-600">${t.tag}</div>
+          </div>
+          <i data-lucide="external-link" class="ml-auto w-4 h-4 text-slate-400"></i>
+        </div>
+        <p class="text-sm text-slate-600 dark:text-slate-400">${t.desc}</p>
+      </a>`).join('')}
+    </div>`;
+  lucide.createIcons();
+}
+
+/* ---------------- SEARCH ---------------- */
+function renderSearch(host) {
+  host.innerHTML = `
+    <input id="search-q" placeholder="Search sessions, topics, frameworks, tools..." class="w-full p-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 mb-4"/>
+    <div id="search-res" class="space-y-2"></div>`;
+  const sources = SESSIONS.map(s=>({ id:s.id, title:s.title, body: s.objectives.join(' • ') + ' · ' + s.title }));
+  const inp = document.getElementById('search-q');
+  inp.focus();
+  inp.oninput = ()=>{
+    const q = inp.value.toLowerCase();
+    const res = document.getElementById('search-res');
+    if (!q) { res.innerHTML = `<div class="text-sm text-slate-500">Try "CO-STAR", "Midjourney", "few-shot"...</div>`; return; }
+    const hits = sources.filter(s=> s.title.toLowerCase().includes(q) || s.body.toLowerCase().includes(q));
+    const tools = TOOLS.filter(t=> t.name.toLowerCase().includes(q) || t.desc.toLowerCase().includes(q));
+    res.innerHTML = `
+      ${hits.map(h=>`<a href="#/session/${h.id}" class="block p-3 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-brand-400 bg-white dark:bg-slate-900"><div class="text-xs text-brand-600 font-bold">SESSION ${h.id}</div><div class="font-medium">${h.title}</div><div class="text-xs text-slate-500">${h.body}</div></a>`).join('')}
+      ${tools.map(t=>`<a href="${t.url}" target="_blank" class="block p-3 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-brand-400 bg-white dark:bg-slate-900"><div class="text-xs text-gold-600 font-bold">TOOL</div><div class="font-medium">${t.emoji} ${t.name}</div><div class="text-xs text-slate-500">${t.desc}</div></a>`).join('')}
+      ${(hits.length+tools.length)===0?`<div class="text-sm text-slate-500">No matches. Try another keyword.</div>`:''}`;
+  };
+  inp.dispatchEvent(new Event('input'));
+}
+
+/* ---------------- SETTINGS ---------------- */
+function openSettings(){
+  document.getElementById('settings-name').value = state.name;
+  document.getElementById('settings-dark').textContent = state.dark ? '🌙 On' : '☀️ Off';
+  document.getElementById('settings-modal').classList.remove('hidden');
+  document.getElementById('settings-modal').classList.add('flex');
+}
+function closeSettings(){
+  document.getElementById('settings-modal').classList.add('hidden');
+  document.getElementById('settings-modal').classList.remove('flex');
+}
+function saveSettings(){
+  const n = document.getElementById('settings-name').value.trim();
+  if (n) state.name = n;
+  saveState();
+  closeSettings();
+  router();
+  toast('Saved!');
+}
+function toggleDark(){
+  state.dark = !state.dark;
+  document.documentElement.classList.toggle('dark', state.dark);
+  const lab = document.getElementById('settings-dark');
+  if (lab) lab.textContent = state.dark ? '🌙 On' : '☀️ Off';
+  saveState();
+}
+function resetProgress(){
+  if (!confirm('Reset all progress, journal, and final project? This cannot be undone.')) return;
+  localStorage.removeItem(LS_KEY);
+  state = {...defaultState};
+  saveState();
+  closeSettings();
+  location.hash = '#/welcome';
+  toast('All reset.');
+}
+function exportProgress(){
+  const blob = new Blob([JSON.stringify(state,null,2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href=url; a.download='promptmastery-progress.json'; a.click();
+  URL.revokeObjectURL(url);
+  toast('Progress exported!');
+}
+function demoUnlock(){
+  SESSIONS.forEach(s=> state.progress[s.id] = {done:true, quizScore:null});
+  state.finalProject = state.finalProject || { goal:'Demo unlock', text:'-', image:'-', av:'-', research:'-', reflect:'Demo run.', ts: Date.now() };
+  saveState();
+  toast('Demo unlocked — head to Certificate!');
+  closeSettings();
+  location.hash = '#/certificate';
+}
+
+/* ---------------- TOAST ---------------- */
+let toastTimer = null;
+function toast(msg){
+  const t = document.getElementById('toast');
+  document.getElementById('toast-text').textContent = msg;
+  t.classList.remove('hidden');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=> t.classList.add('hidden'), 2400);
+  lucide.createIcons();
+}
+
+/* ---------------- INIT ---------------- */
+document.documentElement.classList.toggle('dark', !!state.dark);
+if (!location.hash) location.hash = '#/welcome';
+router();
+
+</script>
+<script>lucide.createIcons();</script>
+
+</body>
+</html>

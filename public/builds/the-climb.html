@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Climb, a four-week plan (preview build)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FAFAF7; --card:#FFFFFF; --ink:#1D211C; --ink-soft:#6B7069;
+    --accent:#4A5D45; --accent-soft:#DCE3D9; --gold:#B9862F; --gold-soft:#F1E3C8;
+    --line:#E5E2D8; --radius:14px; --danger:#A24A3D;
+  }
+  [data-theme="dark"]{
+    --bg:#121309; --card:#1B1D15; --ink:#F2F1E8; --ink-soft:#9B9C8C;
+    --accent:#87A879; --accent-soft:#28311F; --gold:#D9A94E; --gold-soft:#332C15;
+    --line:#2B2C22;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{background:var(--bg);color:var(--ink);font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;padding:32px 18px 80px;transition:background .3s,color .3s;}
+  .wrap{max-width:720px;margin:0 auto;}
+
+  header{margin-bottom:28px;display:flex;justify-content:space-between;align-items:flex-start;gap:14px;}
+  .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:8px;}
+  h1{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(30px,6vw,42px);line-height:1.05;margin:0 0 8px;letter-spacing:-.01em;}
+  header p{color:var(--ink-soft);font-size:14.5px;line-height:1.55;margin:0;max-width:52ch;}
+  .theme-btn{flex-shrink:0;width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:var(--card);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--ink);transition:border-color .2s;}
+  .theme-btn:hover{border-color:var(--accent);}
+  .theme-btn svg{width:17px;height:17px;}
+
+  .banner{background:linear-gradient(135deg,var(--accent-soft),var(--card));border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;margin-bottom:24px;}
+  .banner .tag{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:6px;}
+  .banner .msg{font-family:'Fraunces',serif;font-size:16.5px;line-height:1.4;font-weight:500;}
+  .banner .sub{font-size:12.5px;color:var(--ink-soft);margin-top:8px;}
+
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;margin:0 0 32px;}
+  .stat{background:var(--card);padding:16px 14px;}
+  .stat .num{font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:500;}
+  .stat .lbl{font-size:11.5px;color:var(--ink-soft);margin-top:3px;}
+
+  .section-head{display:flex;align-items:baseline;justify-content:space-between;margin:44px 0 14px;}
+  .section-head h2{font-family:'Fraunces',serif;font-weight:600;font-size:19px;margin:0;}
+  .section-head span{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink-soft);}
+
+  .basecamps{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:22px;}
+  .basecamp{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:11px 8px;text-align:center;cursor:pointer;transition:border-color .2s,background .2s;}
+  .basecamp.active{border-color:var(--accent);background:var(--accent-soft);}
+  .basecamp .bc-num{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--ink-soft);}
+  .basecamp .bc-name{font-family:'Fraunces',serif;font-weight:600;font-size:13.5px;margin-top:2px;}
+  .basecamp .bc-frac{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--accent);margin-top:4px;}
+  .month-banner{background:var(--gold-soft);border:1px solid var(--gold);border-radius:var(--radius);padding:14px 16px;margin-bottom:22px;font-size:13.5px;line-height:1.6;}
+  .month-banner button{margin-top:8px;padding:8px 14px;border-radius:8px;border:none;background:var(--gold);color:#2A2205;font-weight:600;font-size:12.5px;cursor:pointer;}
+
+  .trail{position:relative;padding-left:28px;}
+  .trail::before{content:"";position:absolute;left:9px;top:6px;bottom:6px;width:2px;background:var(--line);border-radius:2px;}
+  .trail-fill{position:absolute;left:9px;bottom:6px;width:2px;background:var(--accent);border-radius:2px;transition:height .5s ease;}
+  .checkpoint{position:relative;display:flex;align-items:flex-start;gap:14px;padding:10px 0;cursor:pointer;}
+  .marker{position:absolute;left:-28px;top:12px;width:20px;height:20px;border-radius:50%;background:var(--card);border:2px solid var(--line);display:flex;align-items:center;justify-content:center;transition:all .25s ease;flex-shrink:0;}
+  .marker svg{width:10px;height:10px;opacity:0;transition:opacity .2s;}
+  .checkpoint.done .marker{background:var(--accent);border-color:var(--accent);}
+  .checkpoint.done .marker svg{opacity:1;}
+  .checkpoint.today .marker{border-color:var(--gold);box-shadow:0 0 0 4px var(--gold-soft);}
+  .cp-card{flex:1;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;transition:border-color .2s;}
+  .checkpoint:hover .cp-card{border-color:var(--accent);}
+  .checkpoint.today .cp-card{border-color:var(--gold);}
+  .cp-top{display:flex;justify-content:space-between;align-items:center;gap:10px;}
+  .cp-day{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);}
+  .cp-title{font-weight:600;font-size:15px;margin-top:2px;}
+  .cp-meta{font-size:12.5px;color:var(--ink-soft);margin-top:2px;}
+  .chevron{color:var(--ink-soft);font-size:13px;transition:transform .2s;flex-shrink:0;}
+  .checkpoint.open .chevron{transform:rotate(90deg);}
+  .cp-body{max-height:0;overflow:hidden;transition:max-height .4s ease;}
+  .checkpoint.open .cp-body{max-height:1200px;}
+  .cp-body-inner{padding-top:12px;border-top:1px solid var(--line);margin-top:12px;}
+  .guided-btn{width:100%;padding:10px;border-radius:9px;border:1px dashed var(--accent);background:transparent;color:var(--accent);font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;margin-bottom:12px;}
+  .ex-row{display:flex;align-items:center;gap:8px;padding:7px 0;font-size:13.5px;}
+  .ex-row input{width:16px;height:16px;accent-color:var(--accent);flex-shrink:0;}
+  .ex-name{flex:1;}
+  .ex-name.struck{color:var(--ink-soft);text-decoration:line-through;}
+  .ex-dose{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--ink-soft);white-space:nowrap;}
+  .icon-btn{flex-shrink:0;width:22px;height:22px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--ink-soft);font-size:11px;display:flex;align-items:center;justify-content:center;cursor:pointer;text-decoration:none;transition:border-color .2s,color .2s;}
+  .icon-btn:hover{border-color:var(--accent);color:var(--accent);}
+  .ex-tip{font-size:12px;line-height:1.6;color:var(--ink-soft);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin:0 0 6px 0;}
+  .ex-tip b{color:var(--ink);}
+  .mark-btn{margin-top:8px;width:100%;padding:10px;border-radius:9px;border:1px solid var(--accent);background:var(--accent);color:#fff;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:opacity .2s;}
+  .mark-btn.undo{background:transparent;color:var(--accent);}
+  .mark-btn:active{opacity:.8;}
+  .rest-note{font-size:13px;color:var(--ink-soft);line-height:1.6;padding-top:12px;border-top:1px solid var(--line);margin-top:12px;}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px;}
+  .log-form{display:flex;gap:8px;margin-bottom:16px;}
+  .log-form input{flex:1;border:1px solid var(--line);border-radius:9px;padding:10px 12px;font-family:'IBM Plex Mono',monospace;font-size:14px;color:var(--ink);background:var(--bg);}
+  .log-form input:focus{outline:none;border-color:var(--accent);}
+  .log-form button{padding:10px 16px;border-radius:9px;border:none;background:var(--ink);color:var(--bg);font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;}
+  .empty-chart{text-align:center;padding:30px 10px;color:var(--ink-soft);font-size:13px;}
+  .chart-foot{display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink-soft);margin-top:6px;}
+
+  .about-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;}
+  .about-card h3{font-family:'Fraunces',serif;font-size:18px;margin:0 0 4px;font-weight:600;}
+  .about-card .lead{font-size:13px;color:var(--ink-soft);margin-bottom:18px;line-height:1.55;}
+  .field{margin-bottom:16px;}
+  .field label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;}
+  .field textarea, .field select{width:100%;border:1px solid var(--line);border-radius:9px;padding:10px 12px;font-family:'Inter',sans-serif;font-size:13.5px;color:var(--ink);background:var(--bg);resize:vertical;min-height:44px;}
+  .field textarea:focus,.field select:focus{outline:none;border-color:var(--accent);}
+  .about-save{padding:10px 18px;border-radius:9px;border:none;background:var(--accent);color:#fff;font-weight:600;font-size:13px;cursor:pointer;}
+  .about-summary{font-size:13.5px;line-height:1.7;}
+  .about-summary .q{font-family:'IBM Plex Mono',monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);margin-top:12px;}
+  .about-summary .a{color:var(--ink);margin-top:2px;}
+  .edit-link{font-size:12px;color:var(--accent);cursor:pointer;text-decoration:underline;margin-top:14px;display:inline-block;}
+
+  .why{font-size:13.5px;line-height:1.7;color:var(--ink-soft);}
+  .why b{color:var(--ink);}
+  footer{text-align:center;font-size:11.5px;color:var(--ink-soft);margin-top:50px;font-family:'IBM Plex Mono',monospace;}
+
+  /* Guided overlay */
+  .overlay{position:fixed;inset:0;background:rgba(10,11,7,.55);display:none;align-items:center;justify-content:center;padding:16px;z-index:50;}
+  .overlay.show{display:flex;}
+  .overlay-card{background:var(--card);border-radius:20px;max-width:420px;width:100%;padding:26px 22px;max-height:88vh;overflow-y:auto;}
+  .ov-close{float:right;background:none;border:none;color:var(--ink-soft);font-size:20px;cursor:pointer;line-height:1;}
+  .ov-eyebrow{font-family:'IBM Plex Mono',monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin-bottom:6px;}
+  .ov-title{font-family:'Fraunces',serif;font-size:21px;font-weight:600;margin-bottom:14px;}
+  .mood-grid{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;}
+  .mood-pill{padding:7px 13px;border-radius:20px;border:1px solid var(--line);background:var(--bg);font-size:12.5px;cursor:pointer;color:var(--ink);}
+  .mood-pill.active{border-color:var(--accent);background:var(--accent-soft);color:var(--accent);font-weight:600;}
+  .sound-row{display:flex;gap:8px;margin-bottom:18px;}
+  .sound-row input{flex:1;border:1px solid var(--line);border-radius:9px;padding:9px 11px;font-size:13px;background:var(--bg);color:var(--ink);}
+  .sound-row a.play-btn{flex-shrink:0;padding:9px 14px;border-radius:9px;background:var(--gold);color:#2A2205;font-weight:600;font-size:12.5px;text-decoration:none;display:flex;align-items:center;}
+  .begin-btn{width:100%;padding:13px;border-radius:11px;border:none;background:var(--accent);color:#fff;font-weight:700;font-size:14.5px;cursor:pointer;}
+  .step-progress{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink-soft);margin-bottom:10px;}
+  .step-sub{font-size:12.5px;color:var(--ink-soft);margin-bottom:4px;}
+  .step-label{font-family:'Fraunces',serif;font-size:22px;font-weight:600;margin-bottom:14px;}
+  .step-timer{font-family:'IBM Plex Mono',monospace;font-size:52px;font-weight:500;text-align:center;margin:18px 0;color:var(--accent);}
+  .step-timer.rest{color:var(--gold);}
+  .step-tip{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px 14px;font-size:12.5px;line-height:1.6;color:var(--ink-soft);margin-bottom:16px;}
+  .step-tip b{color:var(--ink);}
+  .step-yt{display:inline-block;font-size:12px;color:var(--accent);text-decoration:none;margin-bottom:16px;}
+  .step-controls{display:flex;gap:8px;}
+  .step-controls button{flex:1;padding:12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font-weight:600;font-size:13px;cursor:pointer;}
+  .step-controls button.primary{background:var(--accent);color:#fff;border:none;}
+  .step-controls button.danger-ghost{color:var(--danger);}
+  .manual-btn{width:100%;padding:16px;border-radius:12px;border:none;background:var(--accent);color:#fff;font-weight:700;font-size:15px;cursor:pointer;margin-bottom:10px;}
+  .done-icon{width:56px;height:56px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:26px;}
+
+  @media (prefers-reduced-motion: reduce){*{transition:none !important;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div>
+      <div class="eyebrow" id="planFor">Personal plan</div>
+      <h1>The Climb</h1>
+      <p>A four-week ascent, built around the hill you already walk home. Tap into any workout for a guided timer, form videos, and your own soundtrack.</p>
+    </div>
+    <button class="theme-btn" id="themeBtn" title="Toggle dark mode">
+      <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></svg>
+    </button>
+  </header>
+
+  <div class="banner" id="dailyBanner">
+    <div class="tag">Today</div>
+    <div class="msg" id="dailyMsg">—</div>
+    <div class="sub" id="dailySub" style="display:none;"></div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="num" id="statStreak">0</div><div class="lbl">day streak</div></div>
+    <div class="stat"><div class="num" id="statWeek">0/7</div><div class="lbl">this week</div></div>
+    <div class="stat"><div class="num" id="statChange">—</div><div class="lbl">since start</div></div>
+  </div>
+
+  <div class="section-head"><h2>A little about you</h2><span id="aboutStatus"></span></div>
+  <div class="about-card" id="aboutCard"></div>
+
+  <div class="section-head"><h2>The month</h2><span id="weekRange">—</span></div>
+  <div class="basecamps" id="basecamps"></div>
+  <div id="monthBannerSlot"></div>
+
+  <div class="trail" id="trail"><div class="trail-fill" id="trailFill" style="height:0%"></div></div>
+
+  <div class="section-head"><h2>Weight log</h2><span>private · saved to this device</span></div>
+  <div class="card">
+    <div class="log-form"><input type="number" step="0.1" id="weightInput" placeholder="Today's weight (kg)"><button id="logBtn">Log</button></div>
+    <div class="chart-wrap" id="chartWrap"><div class="empty-chart">No entries yet — log today's weight to start the line.</div></div>
+  </div>
+
+  <div class="section-head"><h2>Why this works</h2></div>
+  <div class="card why">
+    <p><b>The hill walk is your cardio base</b> — already daily, already consistent. Everything else builds on top of it.</p>
+    <p><b>Strength days create "afterburn" (EPOC)</b> — after a real resistance or circuit session, your body keeps burning extra calories for hours to recover, including while you sleep. That's the honest version of "burning fat overnight" — earned in the 20 minutes before, not magic on its own.</p>
+    <p><b>Four weeks, gently progressive</b> — each week asks slightly more than the last. Rest days are built in on purpose, not as an afterthought.</p>
+    <p><b>Every exercise has an optional form video and a guided timer.</b> Use them if they help, skip them if you already know the move — the ⓘ shows a quick cue, the ▶ opens a form video.</p>
+  </div>
+
+  <footer>logged privately on this device · no data leaves your phone</footer>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="overlay-card" id="overlayCard"></div>
+</div>
+
+<script>
+(function(){
+
+const VISITOR_NAME = (() => {
+  const clean = (v) => (v || "").replace(/[^\p{L}\p{M} .-]/gu, "").replace(/\s+/g, " ").trim().slice(0, 30);
+  try {
+    const fromLink = clean(new URLSearchParams(location.hash.slice(1)).get("name"));
+    if (fromLink) { localStorage.setItem("bfb_visitor_name", fromLink); return fromLink; }
+    return clean(localStorage.getItem("bfb_visitor_name"));
+  } catch (e) { return ""; }
+})();
+
+  const STORAGE_KEY = "bfb-climb-preview-v1";
+  if (VISITOR_NAME) { const el = document.getElementById("planFor"); if (el) el.textContent = "Personal plan for " + VISITOR_NAME; }
+  // Outside Claude there is no window.storage: keep everything in this browser's localStorage instead.
+  if (!window.storage) {
+    window.storage = {
+      get: async (k) => { const v = localStorage.getItem(k); return v === null ? null : { value: v }; },
+      set: async (k, v) => { localStorage.setItem(k, v); return { key: k, value: v }; },
+      delete: async (k) => { localStorage.removeItem(k); return { key: k, deleted: true }; },
+    };
+  }
+  const BASECAMP_NAMES = ["Trailhead","Ridgeline","Ascent","Summit"];
+  const SUN_ICON = '<circle cx="12" cy="12" r="4.5"/><path d="M12 2.5v2M12 19.5v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M2.5 12h2M19.5 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/>';
+  const MOON_ICON = '<path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z"/>';
+
+  const MOODS = [
+    {key:"afrobeats", label:"Afrobeats", query:"afrobeats workout mix"},
+    {key:"hiphop", label:"Hip-Hop", query:"hip hop workout mix"},
+    {key:"rnb", label:"R&B / Soul", query:"rnb soul workout mix"},
+    {key:"gospel", label:"Gospel", query:"gospel workout mix"},
+    {key:"amapiano", label:"Amapiano", query:"amapiano workout mix"},
+    {key:"pop", label:"Pop", query:"pop workout mix"}
+  ];
+
+  const MESSAGES = [
+    {t:"Every rep today is a deposit into the life you're building.", tone:"cheer"},
+    {t:"You don't have to feel ready. Just start — tired you is still capable.", tone:"gentle"},
+    {t:"Strong isn't a size. It's being able to show up for the people you love, for years to come.", tone:"cheer"},
+    {t:"Put on the song that makes your shoulders drop and your chin lift. Then begin.", tone:"cheer"},
+    {t:"Twenty minutes now buys more good years with the people who matter.", tone:"straight"},
+    {t:"You're not doing this to shrink. You're doing this to last.", tone:"straight"},
+    {t:"Future you is already proud you didn't skip today.", tone:"cheer"},
+    {t:"Small and consistent beats big and occasional. Today just needs 20 minutes.", tone:"straight"},
+    {t:"This body carries you toward every future you're dreaming of. Take care of it today.", tone:"gentle"},
+    {t:"The people who love you don't need you perfect. They need you here, strong, and around.", tone:"gentle"},
+    {t:"One more checkpoint on the trail. That's all today is asking.", tone:"straight"},
+    {t:"Tired is allowed. Quitting isn't the plan today.", tone:"gentle"},
+    {t:"Play the song. Do the set. Let the rest sort itself out.", tone:"cheer"},
+    {t:"You started something days ago, walking up that hill. Don't stop now.", tone:"cheer"},
+    {t:"This is for the version of you that dances at every celebration ahead, unbothered.", tone:"cheer"},
+    {t:"Show up for five minutes. Momentum will handle the rest.", tone:"gentle"},
+    {t:"Every gathering, every wedding, every late night with people you love — this is what fuels you to be there fully.", tone:"cheer"},
+    {t:"You're building something today that no one else can see yet. Keep going.", tone:"cheer"},
+    {t:"The best soundtrack for today is whatever gets your feet moving. Press play.", tone:"cheer"},
+    {t:"Nobody regrets a workout once it's done. Not once.", tone:"straight"},
+    {t:"You get to choose who you're becoming, one ordinary weekday at a time.", tone:"straight"},
+    {t:"This isn't about looking a certain way. It's about having the energy for the life you actually want.", tone:"gentle"},
+    {t:"The hill you walk every evening is already proof you don't quit. Bring that here.", tone:"cheer"},
+    {t:"Today's effort is tomorrow's ease.", tone:"straight"},
+    {t:"However tired 5pm made you, this is 20 minutes, not a marathon.", tone:"gentle"},
+    {t:"The people you're building this future with are worth the discipline today.", tone:"cheer"},
+    {t:"You don't need motivation. You need today's checkbox. Go get it.", tone:"straight"},
+    {t:"Someday this will be the season you look back on and say — that's when it started.", tone:"cheer"},
+    {t:"Strength you build today shows up later — at every table, every dance floor, every long walk ahead.", tone:"cheer"},
+    {t:"Rest days count too. If today's one of them, rest like you mean it.", tone:"gentle"}
+  ];
+  const TONE_MAP = {"Cheer me on":"cheer", "Gently remind me":"gentle", "Just tell me straight":"straight", "A mix":"any"};
+
+  const TIP_LIBRARY = [
+    ["burpee", "Full body, cardio", "Keep it low-impact if it suits you better — step back instead of jumping, control the way down."],
+    ["mountain climber", "Core, shoulders, cardio", "Keep hips low and steady, drive knees in with control, not speed."],
+    ["jump lunge", "Glutes, quads, power", "Land soft, knee tracking over ankle — slow this one down if your knees complain."],
+    ["lunge", "Glutes, quads, balance", "Step with control, front knee stacked over your ankle, chest tall."],
+    ["hip thrust", "Glutes, hamstrings", "Drive through your heels, squeeze your glutes hard at the top."],
+    ["glute bridge", "Glutes, hamstrings, core", "Squeeze your glutes at the top, don't overarch your lower back to get there."],
+    ["squat", "Quads, glutes, hamstrings", "Sit back like there's a chair behind you, knees tracking over your toes, chest up."],
+    ["push-up", "Chest, shoulders, triceps, core", "Straight line from head to knees or heels, lower with control — quality over depth."],
+    ["superman", "Lower back, glutes, shoulders", "Lift chest and legs together, hold briefly, stay controlled — don't yank."],
+    ["side plank", "Obliques, core, shoulders", "Stack your hips, lift through the waist, don't let your hips sag toward the floor."],
+    ["plank", "Core, shoulders", "Ribs pulled down, don't let your hips sag or pike up."],
+    ["bicycle crunch", "Abs, obliques", "Slow beats fast here — rotate from the ribs, elbow toward the opposite knee."],
+    ["leg raise", "Lower abs, hip flexors", "Only lower as far as you can keep your lower back flat on the floor."],
+    ["jumping jack", "Full body, cardio", "Land soft on the balls of your feet, keep a steady rhythm."],
+    ["high knee", "Hip flexors, cardio", "Drive your knees up, land light, keep your chest tall."],
+    ["warm-up", "Full body", "Light movement to raise your heart rate — marching, arm circles, easy squats."],
+    ["warm up", "Full body", "Light movement to raise your heart rate — marching, arm circles, easy squats."],
+    ["cool-down", "Full body", "Hold each stretch 20–30 seconds, breathe slowly, don't bounce."],
+    ["cool down", "Full body", "Hold each stretch 20–30 seconds, breathe slowly, don't bounce."],
+    ["walk", "Cardio, legs", "A pace where talking is a little harder than easy is the sweet spot."],
+    ["climber", "Core, shoulders, cardio", "Keep hips low and steady, drive knees in with control, not speed."]
+  ];
+  function getTip(name){
+    const n = name.toLowerCase();
+    for(const [k,target,cue] of TIP_LIBRARY){ if(n.includes(k)) return {target,cue}; }
+    return {target:"Full body", cue:"Move with control — quality over speed."};
+  }
+  function ytLink(name){
+    const clean = name.replace(/\(.*?\)/g,"").replace(/\/side|\/leg/gi,"").trim();
+    return "https://www.youtube.com/results?search_query=" + encodeURIComponent(clean + " proper form tutorial");
+  }
+  function moodLink(query){ return "https://www.youtube.com/results?search_query=" + encodeURIComponent(query); }
+
+  function parseDose(name, d){
+    let m;
+    if(m = d.match(/^(\d+)\s*×\s*(\d+)s\/side$/i)) return {mode:"timed", sets:+m[1]*2, work:+m[2], rest:10, perSide:true};
+    if(m = d.match(/^(\d+)\s*×\s*(\d+)\/leg$/i)) return {mode:"reps", sets:+m[1], reps:+m[2], rest:20, perLeg:true};
+    if(m = d.match(/^(\d+)\s*×\s*(\d+)s$/i)) return {mode:"timed", sets:+m[1], work:+m[2], rest:15};
+    if(m = d.match(/^(\d+)\s*×\s*(\d+)$/i)) return {mode:"reps", sets:+m[1], reps:+m[2], rest:20};
+    if(m = d.match(/^(\d+)\s*min$/i)) return {mode:"duration", minutes:+m[1]};
+    if(m = d.match(/^(\d+)\s*rounds?$/i)){
+      const moves = name.split("→").map(s=>s.trim()).filter(Boolean);
+      return {mode:"circuit", rounds:+m[1], moves: moves.length ? moves : [name]};
+    }
+    return {mode:"reps", sets:1, reps:null, rest:0};
+  }
+
+  function buildSteps(exercises){
+    const steps = [];
+    exercises.forEach(ex=>{
+      const parsed = parseDose(ex.n, ex.d);
+      const tip = getTip(ex.n);
+      if(parsed.mode === "circuit"){
+        for(let r=0;r<parsed.rounds;r++){
+          parsed.moves.forEach((mv,mi)=>{
+            steps.push({type:"work", seconds:30, label:mv, sub:"Round "+(r+1)+" of "+parsed.rounds, exName:mv, tip:getTip(mv)});
+            const last = (r===parsed.rounds-1 && mi===parsed.moves.length-1);
+            if(!last) steps.push({type:"transition", seconds:8, label:"Get ready", sub:"Next: "+parsed.moves[(mi+1)%parsed.moves.length]});
+          });
+          if(r < parsed.rounds-1) steps.push({type:"rest", seconds:45, label:"Rest", sub:"Before round "+(r+2)});
+        }
+      } else if(parsed.mode === "timed"){
+        for(let s=0;s<parsed.sets;s++){
+          const sideTag = parsed.perSide ? (s%2===0 ? " — right side" : " — left side") : "";
+          steps.push({type:"work", seconds:parsed.work, label:ex.n+sideTag, sub:"Set "+(s+1)+" of "+parsed.sets, exName:ex.n, tip});
+          if(s < parsed.sets-1) steps.push({type:"rest", seconds:parsed.rest, label:"Rest", sub:"Next: "+ex.n});
+        }
+      } else if(parsed.mode === "reps" && parsed.reps){
+        for(let s=0;s<parsed.sets;s++){
+          const legTag = parsed.perLeg ? " per leg" : "";
+          steps.push({type:"manual", label:ex.n, sub:"Set "+(s+1)+" of "+parsed.sets+" — "+parsed.reps+legTag+" reps", exName:ex.n, tip});
+          if(s < parsed.sets-1) steps.push({type:"rest", seconds:parsed.rest, label:"Rest", sub:"Next: "+ex.n});
+        }
+      } else if(parsed.mode === "duration"){
+        steps.push({type:"work", seconds:parsed.minutes*60, label:ex.n, sub:"", exName:ex.n, tip});
+      } else {
+        steps.push({type:"manual", label:ex.n, sub:ex.d, exName:ex.n, tip});
+      }
+    });
+    return steps;
+  }
+
+  const WEEKS = [
+    [
+      { day:"Monday", title:"Full-Body Strength", meta:"25 min · foundation", type:"workout", exercises:[
+        {n:"Bodyweight squats", d:"3 × 15"},{n:"Knee push-ups", d:"3 × 10"},{n:"Glute bridges", d:"3 × 15"},
+        {n:"Supermans", d:"3 × 12"},{n:"Plank hold", d:"3 × 30s"},{n:"Cool-down stretch", d:"3 min"}]},
+      { day:"Tuesday", title:"Active Recovery", meta:"hill walk + mobility", type:"rest",
+        note:"Just the hill walk home, plus 10 minutes of easy stretching for hips, hamstrings and shoulders. No extra training — this is where yesterday's work turns into results." },
+      { day:"Wednesday", title:"Fat-Burn Circuit", meta:"20 min · low-impact friendly", type:"workout", exercises:[
+        {n:"Jumping jacks (or step-touch)", d:"4 × 40s"},{n:"Bodyweight squats", d:"4 × 40s"},
+        {n:"Mountain climbers (or marching)", d:"4 × 40s"},{n:"High knees (or marching)", d:"4 × 40s"},{n:"Cool-down stretch", d:"3 min"}]},
+      { day:"Thursday", title:"Full-Body Strength", meta:"25 min · progression", type:"workout", exercises:[
+        {n:"Reverse lunges", d:"3 × 10/leg"},{n:"Push-ups", d:"3 × 10"},{n:"Glute bridge march", d:"3 × 12"},
+        {n:"Side plank", d:"2 × 20s/side"},{n:"Bicycle crunches", d:"3 × 15"},{n:"Cool-down stretch", d:"3 min"}]},
+      { day:"Friday", title:"Steady Cardio + Core", meta:"20 min", type:"workout", exercises:[
+        {n:"Brisk extra walk (or stairs)", d:"15 min"},{n:"Plank", d:"3 × 30s"},{n:"Bicycle crunches", d:"3 × 15"},{n:"Leg raises", d:"3 × 12"}]},
+      { day:"Saturday", title:"Long Combo Session", meta:"30 min · weekend energy", type:"workout", exercises:[
+        {n:"Warm-up", d:"5 min"},{n:"Squats → push-ups → lunges → plank → jacks", d:"3 rounds"},
+        {n:"Extra walk or dance cardio", d:"10 min"},{n:"Cool-down stretch", d:"5 min"}]},
+      { day:"Sunday", title:"Rest & Reset", meta:"recovery day", type:"rest",
+        note:"Full rest, or 15 minutes of gentle yoga if you want to move. Prep meals for the week, hydrate, and log your weight below." }
+    ],
+    [
+      { day:"Monday", title:"Full-Body Strength", meta:"27 min · build", type:"workout", exercises:[
+        {n:"Bodyweight squats", d:"3 × 18"},{n:"Push-ups (knee or full)", d:"3 × 12"},{n:"Single-leg glute bridge", d:"3 × 10/leg"},
+        {n:"Superman with hold", d:"3 × 12"},{n:"Plank hold", d:"3 × 40s"},{n:"Cool-down stretch", d:"3 min"}]},
+      { day:"Tuesday", title:"Active Recovery", meta:"hill walk + mobility", type:"rest",
+        note:"Hill walk, plus 12 minutes of stretching and 5 minutes of slow breathing. Let your legs actually recover." },
+      { day:"Wednesday", title:"Fat-Burn Circuit", meta:"22 min · 5 rounds", type:"workout", exercises:[
+        {n:"Jumping jacks (or step-touch)", d:"5 × 40s"},{n:"Bodyweight squats", d:"5 × 40s"},
+        {n:"Mountain climbers (or marching)", d:"5 × 40s"},{n:"Low-impact burpee step", d:"5 × 40s"},{n:"Cool-down stretch", d:"3 min"}]},
+      { day:"Thursday", title:"Full-Body Strength", meta:"27 min · build", type:"workout", exercises:[
+        {n:"Walking lunges", d:"3 × 12/leg"},{n:"Push-ups", d:"3 × 12"},{n:"Hip thrusts", d:"3 × 15"},
+        {n:"Side plank", d:"2 × 25s/side"},{n:"Bicycle crunches", d:"3 × 20"},{n:"Cool-down stretch", d:"3 min"}]},
+      { day:"Friday", title:"Steady Cardio + Core", meta:"22 min", type:"workout", exercises:[
+        {n:"Brisk extra walk (or stairs)", d:"18 min"},{n:"Plank", d:"3 × 35s"},{n:"Bicycle crunches", d:"3 × 20"},{n:"Leg raises", d:"3 × 15"}]},
+      { day:"Saturday", title:"Long Combo Session", meta:"32 min", type:"workout", exercises:[
+        {n:"Warm-up", d:"5 min"},{n:"Squats → push-ups → lunges → plank → jacks", d:"4 rounds"},
+        {n:"Extra walk or dance cardio", d:"12 min"},{n:"Cool-down stretch", d:"5 min"}]},
+      { day:"Sunday", title:"Rest & Reset", meta:"recovery day", type:"rest",
+        note:"Rest or 15–20 minutes of yoga. Journal one line on how the week actually felt. Log your weight below." }
+    ],
+    [
+      { day:"Monday", title:"Full-Body Strength", meta:"28 min · ascent", type:"workout", exercises:[
+        {n:"Pulse squats", d:"3 × 15"},{n:"Push-ups", d:"4 × 10"},{n:"Glute bridge march", d:"3 × 15"},
+        {n:"Superman pulses", d:"3 × 15"},{n:"Plank hold", d:"3 × 45s"},{n:"Side plank", d:"2 × 20s/side"}]},
+      { day:"Tuesday", title:"Active Recovery", meta:"hill walk + mobility flow", type:"rest",
+        note:"Hill walk, plus a 15-minute mobility flow — slow, controlled movement through hips, spine and shoulders." },
+      { day:"Wednesday", title:"Fat-Burn Circuit", meta:"24 min · 5 rounds", type:"workout", exercises:[
+        {n:"Jumping jacks", d:"5 × 45s"},{n:"Squats", d:"5 × 45s"},{n:"Mountain climbers", d:"5 × 45s"},
+        {n:"Reverse lunge pulses", d:"5 × 45s"},{n:"Cool-down stretch", d:"3 min"}]},
+      { day:"Thursday", title:"Full-Body Strength", meta:"28 min · ascent", type:"workout", exercises:[
+        {n:"Fast alternating lunges", d:"3 × 10/leg"},{n:"Hands-elevated push-ups", d:"3 × 12"},{n:"Single-leg hip thrust", d:"3 × 10/leg"},
+        {n:"Side plank with reach", d:"2 × 30s/side"},{n:"Bicycle crunches", d:"4 × 20"}]},
+      { day:"Friday", title:"Steady Cardio + Core", meta:"24 min · intervals", type:"workout", exercises:[
+        {n:"Walk: 1 min fast / 1 min easy", d:"20 min"},{n:"Plank", d:"4 × 30s"},{n:"Side plank", d:"4 × 20s/side"},{n:"Bicycle crunches", d:"4 × 20"}]},
+      { day:"Saturday", title:"Long Combo Session", meta:"34 min", type:"workout", exercises:[
+        {n:"Warm-up", d:"5 min"},{n:"Squats → push-ups → jump lunges → plank → mountain climbers", d:"4 rounds"},
+        {n:"Extra walk or dance cardio", d:"15 min"},{n:"Cool-down stretch", d:"5 min"}]},
+      { day:"Sunday", title:"Rest & Reset", meta:"recovery day", type:"rest",
+        note:"Rest, or 20 minutes of yoga. Take a look back at where you started three weeks ago. Log your weight below." }
+    ],
+    [
+      { day:"Monday", title:"Full-Body Strength", meta:"30 min · summit", type:"workout", exercises:[
+        {n:"Squat with overhead press (bottles)", d:"4 × 15"},{n:"Push-ups", d:"4 × 12"},{n:"Single-leg glute bridge", d:"3 × 12/leg"},
+        {n:"Superman hold", d:"3 × 30s"},{n:"Plank hold", d:"3 × 60s"}]},
+      { day:"Tuesday", title:"Active Recovery", meta:"hill walk + yin stretch", type:"rest",
+        note:"Hill walk, plus 15 minutes of slow, held stretches. Your body has earned an easy day." },
+      { day:"Wednesday", title:"Fat-Burn Circuit", meta:"26 min · 6 rounds", type:"workout", exercises:[
+        {n:"Jumping jacks", d:"6 × 45s"},{n:"Squats", d:"6 × 45s"},{n:"Mountain climbers", d:"6 × 45s"},
+        {n:"Reverse lunge pulses", d:"6 × 45s"},{n:"Plank finisher", d:"1 × 60s"}]},
+      { day:"Thursday", title:"Full-Body Strength", meta:"30 min · summit", type:"workout", exercises:[
+        {n:"Lunge pulses", d:"4 × 12/leg"},{n:"Push-ups", d:"4 × 12"},{n:"Hip thrusts", d:"4 × 15"},
+        {n:"Side plank", d:"3 × 30s/side"},{n:"Bicycle crunches", d:"4 × 25"}]},
+      { day:"Friday", title:"Steady Cardio + Core", meta:"25 min", type:"workout", exercises:[
+        {n:"Steady brisk walk", d:"20 min"},{n:"Plank → side plank → bicycle crunches → leg raises → supermans", d:"3 rounds"}]},
+      { day:"Saturday", title:"Summit Day", meta:"38 min · challenge", type:"workout", exercises:[
+        {n:"Warm-up", d:"5 min"},{n:"Squats → push-ups → lunges → plank → jacks → mountain climbers", d:"5 rounds"},
+        {n:"Cardio of choice (dance, walk or stairs)", d:"15 min"},{n:"Extended cool-down", d:"8 min"}]},
+      { day:"Sunday", title:"Summit Reflection", meta:"reset day", type:"rest",
+        note:"Full rest. Look back at the whole month — what changed, what you're proud of, what to carry into the next one. Log your weight and, if you like, start a fresh month below." }
+    ]
+  ];
+
+  let state = { theme:"light", checkins:{}, weights:[], profile:{}, lastMood:"afrobeats", lastCustomSound:"" };
+  let selectedWeekIndex = 0;
+  let audioCtx = null;
+  let openDates = new Set();
+
+  function beep(freq, dur){
+    try{
+      if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+      osc.frequency.value = freq; osc.type = "sine";
+      gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur/1000);
+      osc.connect(gain); gain.connect(audioCtx.destination);
+      osc.start(); osc.stop(audioCtx.currentTime + dur/1000);
+    }catch(e){}
+  }
+
+  function todayISO(d=new Date()){ return d.toISOString().slice(0,10); }
+  function mondayOf(dateObj){ const d = new Date(dateObj); const day = d.getDay(); const diff = (day===0?-6:1)-day; d.setDate(d.getDate()+diff); d.setHours(0,0,0,0); return d; }
+  function addDays(dateObj, n){ const d = new Date(dateObj); d.setDate(d.getDate()+n); return d; }
+  function dayIndexOfYear(d=new Date()){ const start = new Date(d.getFullYear(),0,0); return Math.floor((d-start)/86400000); }
+
+  async function load(){
+    try{ const res = await window.storage.get(STORAGE_KEY, false); if(res && res.value){ state = JSON.parse(res.value); } }catch(e){}
+    if(!state.checkins) state.checkins = {};
+    if(!state.weights) state.weights = [];
+    if(!state.profile) state.profile = {};
+    if(!state.theme) state.theme = "light";
+    if(!state.lastMood) state.lastMood = "afrobeats";
+    if(state.lastCustomSound === undefined) state.lastCustomSound = "";
+    if(!state.profile.startDate){ state.profile.startDate = todayISO(); await save(); }
+  }
+  async function save(){ try{ await window.storage.set(STORAGE_KEY, JSON.stringify(state), false); }catch(e){ console.error("save failed", e); } }
+
+  function applyTheme(){
+    document.documentElement.setAttribute("data-theme", state.theme);
+    document.getElementById("themeIcon").innerHTML = state.theme === "dark" ? SUN_ICON : MOON_ICON;
+  }
+  document.getElementById("themeBtn").addEventListener("click", async ()=>{
+    state.theme = state.theme === "dark" ? "light" : "dark";
+    applyTheme(); await save(); renderChart();
+  });
+
+  function renderBanner(){
+    const tone = TONE_MAP[state.profile.coachStyle] || "any";
+    const pool = (tone === "any") ? MESSAGES : MESSAGES.filter(m=>m.tone===tone);
+    const list = pool.length ? pool : MESSAGES;
+    const idx = dayIndexOfYear() % list.length;
+    document.getElementById("dailyMsg").textContent = list[idx].t;
+    const p = state.profile;
+    const sub = document.getElementById("dailySub");
+    if(p.filled && p.soundtrack && p.soundtrack.trim()){
+      sub.style.display = "block"; sub.textContent = "Your soundtrack: " + p.soundtrack.trim();
+    } else { sub.style.display = "none"; }
+  }
+
+  function escapeHTML(s){ return (s||"").replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+
+  function renderAbout(){
+    const card = document.getElementById("aboutCard");
+    const status = document.getElementById("aboutStatus");
+    const p = state.profile;
+    if(p.filled && !p.editing){
+      status.textContent = "saved";
+      const rows = [
+        ["The real goal under the goal", p.goal],
+        ["What 'strong' has felt like before", p.feltStrong],
+        ["What's derailed you before", p.obstacle],
+        ["What your body needs me to know", p.bodyCare],
+        ["How you like to be pushed", p.coachStyle],
+        ["Your soundtrack", p.soundtrack]
+      ].filter(r=>r[1] && String(r[1]).trim());
+      card.innerHTML = '<h3>Your page</h3><p class="lead">This is here for you — edit it any time.</p><div class="about-summary">'
+        + rows.map(r=>'<div class="q">'+r[0]+'</div><div class="a">'+escapeHTML(r[1])+'</div>').join("")
+        + '</div><span class="edit-link" id="editAbout">edit this</span>';
+      document.getElementById("editAbout").addEventListener("click", ()=>{ state.profile.editing = true; renderAbout(); });
+    } else {
+      status.textContent = p.filled ? "editing" : "not started";
+      card.innerHTML =
+        '<h3>A little about you</h3>'
+        + '<p class="lead">Six questions, coach to client — not a fitness form. Answer what you feel like; skip the rest.</p>'
+        + '<div class="field"><label>Underneath "lose weight," what\'s the real goal — more energy, confidence, a health scare, a moment you\'re working toward?</label>'
+        + '<textarea id="f_goal" placeholder="Whatever comes to mind">'+escapeHTML(p.goal)+'</textarea></div>'
+        + '<div class="field"><label>Think of a time you felt strong in your body before. What did that actually feel like, not look like?</label>'
+        + '<textarea id="f_feltStrong" placeholder="A feeling, not a photo">'+escapeHTML(p.feltStrong)+'</textarea></div>'
+        + '<div class="field"><label>What\'s usually made something like this fizzle out before?</label>'
+        + '<textarea id="f_obstacle" placeholder="Honest answer helps me plan around it">'+escapeHTML(p.obstacle)+'</textarea></div>'
+        + '<div class="field"><label>Anything I should train around, not through — old injuries, aches, harder days?</label>'
+        + '<textarea id="f_bodyCare" placeholder="Totally optional, but tell me if there\'s something">'+escapeHTML(p.bodyCare)+'</textarea></div>'
+        + '<div class="field"><label>How do you like to be pushed?</label><select id="f_coachStyle">'
+        + '<option value="">Choose one</option>'
+        + ['Cheer me on','Gently remind me','Just tell me straight','A mix'].map(o=>'<option '+(p.coachStyle===o?'selected':'')+'>'+o+'</option>').join('')
+        + '</select></div>'
+        + '<div class="field"><label>What song or artist gets you moving, even a little?</label>'
+        + '<textarea id="f_soundtrack" placeholder="No wrong answers">'+escapeHTML(p.soundtrack)+'</textarea></div>'
+        + '<button class="about-save" id="saveAbout">Save</button>';
+      document.getElementById("saveAbout").addEventListener("click", async ()=>{
+        state.profile.goal = document.getElementById("f_goal").value;
+        state.profile.feltStrong = document.getElementById("f_feltStrong").value;
+        state.profile.obstacle = document.getElementById("f_obstacle").value;
+        state.profile.bodyCare = document.getElementById("f_bodyCare").value;
+        state.profile.coachStyle = document.getElementById("f_coachStyle").value;
+        state.profile.soundtrack = document.getElementById("f_soundtrack").value;
+        state.profile.filled = true; state.profile.editing = false;
+        await save(); renderAbout(); renderBanner();
+      });
+    }
+  }
+
+  function weekDoneCount(weekMonday){ let c=0; for(let i=0;i<7;i++){ const key=todayISO(addDays(weekMonday,i)); if(state.checkins[key] && state.checkins[key].done) c++; } return c; }
+  function currentWeekIndex(){
+    const startMonday = mondayOf(new Date(state.profile.startDate));
+    const nowMonday = mondayOf(new Date());
+    let diff = Math.round((nowMonday - startMonday)/(7*86400000));
+    return Math.max(0, Math.min(3, diff));
+  }
+  function renderBasecamps(){
+    const box = document.getElementById("basecamps"); box.innerHTML = "";
+    const startMonday = mondayOf(new Date(state.profile.startDate));
+    const rawDiff = Math.round((mondayOf(new Date()) - startMonday)/(7*86400000));
+    for(let w=0; w<4; w++){
+      const wMonday = addDays(startMonday, w*7);
+      const done = weekDoneCount(wMonday);
+      const el = document.createElement("div");
+      el.className = "basecamp" + (w===selectedWeekIndex ? " active" : "");
+      el.innerHTML = '<div class="bc-num">Week '+(w+1)+'</div><div class="bc-name">'+BASECAMP_NAMES[w]+'</div><div class="bc-frac">'+done+'/7</div>';
+      el.addEventListener("click", ()=>{ selectedWeekIndex = w; renderAll(false); });
+      box.appendChild(el);
+    }
+    const slot = document.getElementById("monthBannerSlot");
+    if(rawDiff >= 4){
+      slot.innerHTML = '<div class="month-banner">You\'ve reached the summit — the four weeks are complete. You can keep repeating Summit week, or start a fresh month (your logs and weight history stay exactly as they are).<br><button id="restartMonth">Start a new month</button></div>';
+      document.getElementById("restartMonth").addEventListener("click", async ()=>{
+        state.profile.startDate = todayISO(); selectedWeekIndex = 0; await save(); renderAll(true);
+      });
+    } else { slot.innerHTML = ""; }
+  }
+
+  const trail = document.getElementById("trail");
+  const trailFill = document.getElementById("trailFill");
+  const weekRangeEl = document.getElementById("weekRange");
+  function fmtRange(mondayDate){ const end = addDays(mondayDate,6); const opts={month:"short",day:"numeric"}; return mondayDate.toLocaleDateString("en-US",opts)+" – "+end.toLocaleDateString("en-US",opts); }
+
+  async function markDone(dateKey, value){
+    if(!state.checkins[dateKey]) state.checkins[dateKey] = {done:false, exercises:{}};
+    state.checkins[dateKey].done = value;
+    await save(); renderAll(false);
+  }
+
+  function renderTrail(){
+    trail.querySelectorAll(".checkpoint").forEach(n=>n.remove());
+    const startMonday = mondayOf(new Date(state.profile.startDate));
+    const weekMonday = addDays(startMonday, selectedWeekIndex*7);
+    const plan = WEEKS[selectedWeekIndex];
+    const todayStr = todayISO();
+    let doneCount = 0;
+
+    plan.forEach((item, idx)=>{
+      const dateKey = todayISO(addDays(weekMonday, idx));
+      const cp = state.checkins[dateKey] || {done:false, exercises:{}};
+      const isToday = dateKey === todayStr;
+      if(cp.done) doneCount++;
+
+      const el = document.createElement("div");
+      el.className = "checkpoint" + (cp.done?" done":"") + (isToday?" today":"") + (openDates.has(dateKey)?" open":"");
+      const marker = '<div class="marker"><svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>';
+
+      let bodyHTML = "";
+      if(item.type === "workout"){
+        const exHTML = item.exercises.map((ex,exi)=>{
+          const checked = cp.exercises && cp.exercises[exi] ? "checked" : "";
+          const struck = cp.exercises && cp.exercises[exi] ? "struck" : "";
+          const tip = getTip(ex.n);
+          return '<div class="ex-row"><input type="checkbox" data-idx="'+exi+'" '+checked+'>'
+            + '<span class="ex-name '+struck+'">'+ex.n+'</span><span class="ex-dose">'+ex.d+'</span>'
+            + '<button type="button" class="icon-btn tip-toggle" data-exi="'+exi+'" title="Tip">i</button>'
+            + '<a class="icon-btn yt-link" href="'+ytLink(ex.n)+'" target="_blank" rel="noopener" title="Watch form on YouTube">&#9654;</a></div>'
+            + '<div class="ex-tip" data-tip-for="'+exi+'" style="display:none;"><b>'+tip.target+'</b> — '+tip.cue+'</div>';
+        }).join("");
+        bodyHTML = '<div class="cp-body-inner"><button type="button" class="guided-btn" data-action="guided">&#9654; Start guided workout</button>'
+          + exHTML
+          + '<button class="mark-btn '+(cp.done?'undo':'')+'" data-action="toggle-done">'+(cp.done ? "Mark as not done" : "Mark day complete")+'</button></div>';
+      } else {
+        bodyHTML = '<div class="cp-body-inner"><div class="rest-note">'+item.note+'</div>'
+          + '<button class="mark-btn '+(cp.done?'undo':'')+'" data-action="toggle-done">'+(cp.done ? "Mark as not done" : "Mark day complete")+'</button></div>';
+      }
+
+      el.innerHTML = marker + '<div class="cp-card"><div class="cp-top"><div>'
+          + '<div class="cp-day">'+item.day+(isToday ? " · today" : "")+'</div>'
+          + '<div class="cp-title">'+item.title+'</div><div class="cp-meta">'+item.meta+'</div>'
+          + '</div><div class="chevron">›</div></div>'
+          + '<div class="cp-body"><div class="cp-body-content">'+bodyHTML+'</div></div></div>';
+
+      el.addEventListener("click", (e)=>{
+        if(e.target.closest("input[type=checkbox]") || e.target.closest("[data-action]") || e.target.closest(".yt-link")) return;
+        if(openDates.has(dateKey)) openDates.delete(dateKey); else openDates.add(dateKey);
+        el.classList.toggle("open");
+      });
+      el.querySelectorAll("input[type=checkbox]").forEach(cb=>{
+        cb.addEventListener("click", async (e)=>{
+          e.stopPropagation();
+          const exi = cb.dataset.idx;
+          if(!state.checkins[dateKey]) state.checkins[dateKey] = {done:false, exercises:{}};
+          if(!state.checkins[dateKey].exercises) state.checkins[dateKey].exercises = {};
+          state.checkins[dateKey].exercises[exi] = cb.checked;
+          await save();
+          renderTrail();
+        });
+      });
+      el.querySelectorAll(".tip-toggle").forEach(btn=>{
+        btn.addEventListener("click", (e)=>{
+          e.stopPropagation();
+          const exi = btn.dataset.exi;
+          const tipEl = el.querySelector('.ex-tip[data-tip-for="'+exi+'"]');
+          if(tipEl) tipEl.style.display = tipEl.style.display === "none" ? "block" : "none";
+        });
+      });
+      const btn = el.querySelector('[data-action="toggle-done"]');
+      if(btn) btn.addEventListener("click", async (e)=>{ e.stopPropagation(); await markDone(dateKey, !cp.done); });
+      const guidedBtn = el.querySelector('[data-action="guided"]');
+      if(guidedBtn) guidedBtn.addEventListener("click", (e)=>{ e.stopPropagation(); openGuided(item, dateKey); });
+
+      trail.appendChild(el);
+    });
+
+    trailFill.style.height = (doneCount/7*100) + "%";
+    weekRangeEl.textContent = fmtRange(weekMonday);
+  }
+
+  function computeStreak(){
+    let streak = 0; let d = new Date();
+    while(true){ const key = todayISO(d); const cp = state.checkins[key]; if(cp && cp.done){ streak++; d.setDate(d.getDate()-1); } else break; }
+    return streak;
+  }
+  function renderStats(){
+    const startMonday = mondayOf(new Date(state.profile.startDate));
+    const weekMonday = addDays(startMonday, selectedWeekIndex*7);
+    document.getElementById("statWeek").textContent = weekDoneCount(weekMonday) + "/7";
+    document.getElementById("statStreak").textContent = computeStreak();
+    const w = state.weights.slice().sort((a,b)=>a.date.localeCompare(b.date));
+    const changeEl = document.getElementById("statChange");
+    if(w.length >= 2){ const diff = (w[w.length-1].kg - w[0].kg).toFixed(1); changeEl.textContent = (diff > 0 ? "+" : "") + diff + "kg"; }
+    else { changeEl.textContent = "—"; }
+  }
+  function renderChart(){
+    const wrap = document.getElementById("chartWrap");
+    const w = state.weights.slice().sort((a,b)=>a.date.localeCompare(b.date));
+    if(w.length === 0){ wrap.innerHTML = '<div class="empty-chart">No entries yet — log today\'s weight to start the line.</div>'; return; }
+    if(w.length === 1){ wrap.innerHTML = '<div class="empty-chart">One entry logged ('+w[0].kg+'kg on '+w[0].date+'). Log again in a few days to see your line.</div>'; return; }
+    const vals = w.map(p=>p.kg); const min = Math.min(...vals), max = Math.max(...vals);
+    const pad = (max-min) < 1 ? 1 : (max-min)*0.15; const yMin = min-pad, yMax = max+pad;
+    const W=640,H=160,M=8;
+    const pts = w.map((p,i)=>{ const x=M+(i/(w.length-1))*(W-2*M); const y=H-M-((p.kg-yMin)/(yMax-yMin))*(H-2*M); return [x,y]; });
+    const accentColor = state.theme === "dark" ? "#87A879" : "#4A5D45";
+    const linePath = pts.map((p,i)=>(i===0?"M":"L")+p[0].toFixed(1)+","+p[1].toFixed(1)).join(" ");
+    const areaPath = linePath + " L"+pts[pts.length-1][0].toFixed(1)+","+(H-M)+" L"+pts[0][0].toFixed(1)+","+(H-M)+" Z";
+    const dots = pts.map(p=>'<circle cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="3.5" fill="'+accentColor+'" stroke="var(--bg)" stroke-width="1.5"/>').join("");
+    wrap.innerHTML = '<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:150px;overflow:visible;">'
+      + '<defs><linearGradient id="fillGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="'+accentColor+'" stop-opacity="0.18"/><stop offset="100%" stop-color="'+accentColor+'" stop-opacity="0"/></linearGradient></defs>'
+      + '<path d="'+areaPath+'" fill="url(#fillGrad)"/><path d="'+linePath+'" fill="none" stroke="'+accentColor+'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'+dots+'</svg>'
+      + '<div class="chart-foot"><span>'+w[0].date+'</span><span>'+w[w.length-1].kg+'kg latest</span><span>'+w[w.length-1].date+'</span></div>';
+  }
+
+  document.getElementById("logBtn").addEventListener("click", async ()=>{
+    const input = document.getElementById("weightInput"); const val = parseFloat(input.value);
+    if(!val || val <= 0){ input.focus(); return; }
+    const today = todayISO();
+    state.weights = state.weights.filter(w=>w.date !== today);
+    state.weights.push({date:today, kg:val});
+    await save(); input.value = ""; renderChart(); renderStats();
+  });
+  document.getElementById("weightInput").addEventListener("keydown", (e)=>{ if(e.key === "Enter") document.getElementById("logBtn").click(); });
+
+  // ---------- Guided workout overlay ----------
+  const overlay = document.getElementById("overlay");
+  const overlayCard = document.getElementById("overlayCard");
+  let guidedSteps = [], guidedIndex = 0, guidedRemaining = 0, guidedTimerId = null, guidedPaused = false, guidedDateKey = null;
+
+  function openGuided(item, dateKey){
+    guidedDateKey = dateKey;
+    guidedSteps = buildSteps(item.exercises);
+    guidedIndex = -1;
+    renderGuidedIntro(item);
+    overlay.classList.add("show");
+  }
+  function closeGuided(){
+    overlay.classList.remove("show");
+    if(guidedTimerId){ clearInterval(guidedTimerId); guidedTimerId = null; }
+  }
+
+  function renderGuidedIntro(item){
+    const moodPills = MOODS.map(m=>'<div class="mood-pill '+(state.lastMood===m.key?'active':'')+'" data-mood="'+m.key+'">'+m.label+'</div>').join("");
+    overlayCard.innerHTML =
+      '<button class="ov-close" id="ovClose">&times;</button>'
+      + '<div class="ov-eyebrow">'+item.day+'</div>'
+      + '<div class="ov-title">'+item.title+'</div>'
+      + '<p style="font-size:13px;color:var(--ink-soft);margin-bottom:14px;">Pick a soundtrack, press play in a new tab, then begin whenever you\'re ready.</p>'
+      + '<div class="mood-grid" id="moodGrid">'+moodPills+'</div>'
+      + '<div class="sound-row"><input id="customSound" placeholder="Or type a song / artist" value="'+escapeHTML(state.lastCustomSound || state.profile.soundtrack || "")+'">'
+      + '<a class="play-btn" id="playSound" href="#" target="_blank" rel="noopener">&#9654; Play</a></div>'
+      + '<button class="begin-btn" id="beginBtn">Begin workout</button>';
+
+    document.getElementById("ovClose").addEventListener("click", closeGuided);
+    overlayCard.querySelectorAll(".mood-pill").forEach(p=>{
+      p.addEventListener("click", async ()=>{
+        state.lastMood = p.dataset.mood;
+        overlayCard.querySelectorAll(".mood-pill").forEach(x=>x.classList.remove("active"));
+        p.classList.add("active");
+        await save();
+      });
+    });
+    function currentSoundQuery(){
+      const custom = document.getElementById("customSound").value.trim();
+      if(custom) return custom;
+      const mood = MOODS.find(m=>m.key===state.lastMood) || MOODS[0];
+      return mood.query;
+    }
+    document.getElementById("playSound").addEventListener("click", async (e)=>{
+      e.currentTarget.href = moodLink(currentSoundQuery());
+      state.lastCustomSound = document.getElementById("customSound").value.trim();
+      await save();
+    });
+    document.getElementById("beginBtn").addEventListener("click", async ()=>{
+      state.lastCustomSound = document.getElementById("customSound").value.trim();
+      await save();
+      guidedIndex = 0;
+      runGuidedStep();
+    });
+  }
+
+  function runGuidedStep(){
+    if(guidedTimerId){ clearInterval(guidedTimerId); guidedTimerId = null; }
+    if(guidedIndex >= guidedSteps.length){ renderGuidedDone(); return; }
+    const step = guidedSteps[guidedIndex];
+    guidedPaused = false;
+
+    if(step.type === "manual"){
+      overlayCard.innerHTML =
+        '<button class="ov-close" id="ovClose">&times;</button>'
+        + '<div class="step-progress">Step '+(guidedIndex+1)+' of '+guidedSteps.length+'</div>'
+        + '<div class="step-sub">'+step.sub+'</div>'
+        + '<div class="step-label">'+step.label+'</div>'
+        + '<div class="step-tip"><b>'+step.tip.target+'</b> — '+step.tip.cue+'</div>'
+        + '<a class="step-yt" href="'+ytLink(step.exName||step.label)+'" target="_blank" rel="noopener">&#9654; Watch proper form</a>'
+        + '<button class="manual-btn" id="manualDone">Done — next</button>'
+        + '<div class="step-controls"><button id="skipStep">Skip</button><button class="danger-ghost" id="exitStep">Exit</button></div>';
+      document.getElementById("ovClose").addEventListener("click", closeGuided);
+      document.getElementById("exitStep").addEventListener("click", closeGuided);
+      document.getElementById("skipStep").addEventListener("click", ()=>{ guidedIndex++; runGuidedStep(); });
+      document.getElementById("manualDone").addEventListener("click", ()=>{ beep(880,150); guidedIndex++; runGuidedStep(); });
+      return;
+    }
+
+    guidedRemaining = step.seconds;
+    const isRest = step.type === "rest" || step.type === "transition";
+    overlayCard.innerHTML =
+      '<button class="ov-close" id="ovClose">&times;</button>'
+      + '<div class="step-progress">Step '+(guidedIndex+1)+' of '+guidedSteps.length+'</div>'
+      + '<div class="step-sub">'+step.sub+'</div>'
+      + '<div class="step-label">'+step.label+'</div>'
+      + '<div class="step-timer '+(isRest?"rest":"")+'" id="stepTimer">'+fmtTime(guidedRemaining)+'</div>'
+      + (step.tip ? '<div class="step-tip"><b>'+step.tip.target+'</b> — '+step.tip.cue+'</div>' : '')
+      + (step.exName ? '<a class="step-yt" href="'+ytLink(step.exName)+'" target="_blank" rel="noopener">&#9654; Watch proper form</a>' : '')
+      + '<div class="step-controls"><button id="pauseStep">Pause</button><button id="skipStep">Skip</button><button class="danger-ghost" id="exitStep">Exit</button></div>';
+
+    document.getElementById("ovClose").addEventListener("click", closeGuided);
+    document.getElementById("exitStep").addEventListener("click", closeGuided);
+    document.getElementById("skipStep").addEventListener("click", ()=>{ guidedIndex++; runGuidedStep(); });
+    const pauseBtn = document.getElementById("pauseStep");
+    pauseBtn.addEventListener("click", ()=>{ guidedPaused = !guidedPaused; pauseBtn.textContent = guidedPaused ? "Resume" : "Pause"; });
+
+    guidedTimerId = setInterval(()=>{
+      if(guidedPaused) return;
+      guidedRemaining--;
+      const tEl = document.getElementById("stepTimer");
+      if(tEl) tEl.textContent = fmtTime(guidedRemaining);
+      if(guidedRemaining <= 3 && guidedRemaining > 0) beep(660,90);
+      if(guidedRemaining <= 0){
+        clearInterval(guidedTimerId); guidedTimerId = null;
+        beep(880,180);
+        guidedIndex++;
+        runGuidedStep();
+      }
+    }, 1000);
+  }
+
+  function fmtTime(sec){ const s = Math.max(0,sec); const m = Math.floor(s/60); const r = s%60; return m+":"+(r<10?"0":"")+r; }
+
+  function renderGuidedDone(){
+    overlayCard.innerHTML =
+      '<button class="ov-close" id="ovClose">&times;</button>'
+      + '<div class="done-icon">&#10003;</div>'
+      + '<div class="ov-title" style="text-align:center;">Nice work.</div>'
+      + '<p style="font-size:13px;color:var(--ink-soft);text-align:center;margin-bottom:18px;">That\'s the whole session.</p>'
+      + '<button class="begin-btn" id="markComplete">Mark today complete</button>'
+      + '<button class="step-controls" style="margin-top:10px;width:100%;border:1px solid var(--line);border-radius:10px;padding:10px;background:var(--bg);color:var(--ink);font-weight:600;font-size:13px;" id="justClose">Close</button>';
+    document.getElementById("ovClose").addEventListener("click", closeGuided);
+    document.getElementById("justClose").addEventListener("click", closeGuided);
+    document.getElementById("markComplete").addEventListener("click", async ()=>{ await markDone(guidedDateKey, true); closeGuided(); });
+  }
+
+  function renderAll(resetWeekSelection){
+    if(resetWeekSelection) selectedWeekIndex = currentWeekIndex();
+    applyTheme(); renderBanner(); renderAbout(); renderBasecamps(); renderTrail(); renderStats(); renderChart();
+  }
+
+  (async function init(){
+    await load();
+    selectedWeekIndex = currentWeekIndex();
+    renderAll(false);
+  })();
+})();
+</script>
+</body>
+</html>
