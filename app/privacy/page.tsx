@@ -47,6 +47,20 @@ export default function PrivacyPage() {
         </section>
 
         <section>
+          <h2 className="text-lg font-medium text-foreground">remembering how you read</h2>
+          <ul className="mt-2 list-disc space-y-2 pl-5">
+            <li>
+              If you pick &quot;i&apos;m hiring&quot; or &quot;just looking around&quot;, your browser keeps that choice (in local
+              storage, not a cookie) so the page opens the same way next time. It never leaves your device, and clearing
+              your browser data removes it.
+            </li>
+            <li>
+              Your theme choice (dark or light) is remembered the same way.
+            </li>
+          </ul>
+        </section>
+
+        <section>
           <h2 className="text-lg font-medium text-foreground">hosting logs</h2>
           <p className="mt-2">
             Like any website, Vercel keeps short-lived server logs (for example, IP addresses and pages requested) to keep the
