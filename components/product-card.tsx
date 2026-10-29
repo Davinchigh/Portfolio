@@ -5,7 +5,8 @@ import { useRef } from "react"
 import { ghs, type Product } from "@/lib/store"
 
 /** Plain HTML card. A CSS-only tilt and a bronze glow that follows the pointer give it depth for zero bytes. */
-export function ProductCard({ p }: { p: Product }) {
+export function ProductCard({ p, tone = "dark" }: { p: Product; tone?: "dark" | "light" }) {
+  const light = tone === "light"
   const ref = useRef<HTMLAnchorElement>(null)
   const move = (e: React.PointerEvent) => {
     const el = ref.current
@@ -30,7 +31,7 @@ export function ProductCard({ p }: { p: Product }) {
       onPointerLeave={reset}
       className="card-glow group block rounded-2xl transition-transform duration-500 ease-out"
     >
-      <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-espresso">
+      <div className={`relative aspect-[4/5] overflow-hidden rounded-2xl ${light ? "bg-linen" : "bg-espresso"}`}>
         <img src={p.images[0].src.replace(".webp", "-sm.webp")} alt={p.images[0].alt} loading="lazy" className="h-full w-full object-cover object-top transition-transform duration-700 group-hover:scale-[1.03]" />
         <span aria-hidden="true" className="glow pointer-events-none absolute inset-0" />
         <div className="absolute left-3 right-3 top-3 flex flex-wrap gap-2">
@@ -40,10 +41,10 @@ export function ProductCard({ p }: { p: Product }) {
       </div>
       <div className="mt-3 sm:flex sm:items-start sm:justify-between sm:gap-3">
         <div>
-          <h3 className="font-display text-lg leading-snug">{p.name}</h3>
-          <p className="mt-0.5 text-xs tracking-[0.14em] text-ash">{p.code}</p>
+          <h3 className={`font-display text-lg leading-snug ${light ? "text-ink" : ""}`}>{p.name}</h3>
+          <p className={`mt-0.5 text-xs tracking-[0.14em] ${light ? "text-stone" : "text-ash"}`}>{p.code}</p>
         </div>
-        <p className="mt-1 whitespace-nowrap text-sm text-gold sm:mt-0">{ghs(p.price)}</p>
+        <p className={`mt-1 whitespace-nowrap text-sm sm:mt-0 ${light ? "font-medium text-gold-deep" : "text-gold"}`}>{ghs(p.price)}</p>
       </div>
     </Link>
   )

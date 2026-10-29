@@ -8,26 +8,45 @@ import { canRun3D } from "@/lib/gate"
 import type { Look } from "@/lib/scene"
 import { askLink, findProduct, ghs } from "@/lib/store"
 
-const LOOKS: (Look & { alt: string })[] = [
-  { src: "/campaign/look-blazer.webp", silk: "#C9A45C", side: "right", alt: "A woman in a black blazer, cream silk camisole and sand wide-leg trousers, a champagne silk scarf streaming from her hand" },
-  { src: "/campaign/look-emerald.webp", silk: "#2F6B52", side: "right", alt: "A woman mid-turn in an emerald silk wrap dress, the skirt swirling around her" },
-  { src: "/campaign/look-menswear.webp", silk: "#8C5A2B", side: "right", alt: "A man in a tailored charcoal two-piece suit and cream open-collar shirt, adjusting his cuff" },
-  { src: "/campaign/product-bag.webp", silk: "#C9A45C", side: "right", alt: "A black top-handle bag with a round gold clasp and gold chain on a dark marble plinth" },
-  { src: "/campaign/look-blazer.webp", silk: "#B8742F", side: "right", alt: "" },
+/** poster: the still used when 3D is off (the hero poster already has the scarf in her hand) */
+const LOOKS: (Look & { alt: string; poster?: string })[] = [
+  { src: "/campaign/look-hero.webp", poster: "/campaign/look-blazer.webp", hand: [0.782, 0.218], handMask: { src: "/campaign/look-hero-hand.png", box: [0.7305, 0.1836, 0.1074, 0.0716] }, silk: "#D6BC8C", alt: "A woman in a black blazer, cream silk camisole and sand wide-leg trousers, holding a champagne silk scarf that streams in the wind" },
+  { src: "/campaign/look-emerald.webp", silk: "#D6BC8C", alt: "A woman mid-turn in an emerald silk wrap dress, the skirt swirling around her" },
+  { src: "/campaign/look-menswear.webp", silk: "#D6BC8C", alt: "A man in a tailored charcoal two-piece suit and cream open-collar shirt, adjusting his cuff" },
+  { src: "/campaign/product-bag.webp", silk: "#D6BC8C", alt: "A black top-handle bag with a round gold clasp and gold chain on a dark marble plinth" },
+  { src: "/campaign/product-pumps.webp", silk: "#D6BC8C", alt: "" },
 ]
 
 function StaticLook({ i, hidden }: { i: number; hidden: boolean }) {
   const l = LOOKS[i]
   return (
     <img
-      src={l.src}
+      src={l.poster ?? l.src}
       alt={l.alt}
       loading={i === 0 ? "eager" : "lazy"}
       fetchPriority={i === 0 ? "high" : "auto"}
       aria-hidden={l.alt ? undefined : true}
-      className={`pointer-events-none absolute inset-0 h-full w-full object-cover object-top transition-opacity duration-1000 md:left-auto md:right-[4%] md:w-[46%] md:object-contain ${hidden ? "opacity-0" : "opacity-100"}`}
+      className={`pointer-events-none absolute inset-0 h-full w-full object-contain object-top transition-opacity duration-1000 md:left-auto md:right-[3%] md:w-[53%] md:object-bottom ${hidden ? "opacity-0" : "opacity-100"}`}
       style={{ maskImage: "radial-gradient(75% 70% at 50% 45%, #000 60%, transparent 100%)", WebkitMaskImage: "radial-gradient(75% 70% at 50% 45%, #000 60%, transparent 100%)" }}
     />
+  )
+}
+
+/** The gold FITTED word as SVG text: a gradient fill that every browser paints, unlike background-clip text. */
+function FittedWord() {
+  return (
+    <svg viewBox="0 0 520 112" className="block h-auto w-[clamp(15rem,78vw,32rem)]" role="img" aria-label="Fitted">
+      <defs>
+        <linearGradient id="fitted-gold" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#F3E2B8" />
+          <stop offset="0.55" stopColor="#D1AE69" />
+          <stop offset="1" stopColor="#A9792F" />
+        </linearGradient>
+      </defs>
+      <text x="0" y="100" fill="url(#fitted-gold)" fontFamily="'Bodoni Moda Variable', Georgia, serif" fontWeight="600" fontSize="128" letterSpacing="2" textLength="516" lengthAdjust="spacingAndGlyphs">
+        FITTED
+      </text>
+    </svg>
   )
 }
 
@@ -85,8 +104,8 @@ export function Experience() {
     sections.current[i] = n
   }
   const panel = "relative z-10 flex min-h-[100svh] items-end pb-24 md:items-center md:pb-0"
-  const copy = "wrap relative w-full"
-  const mobileShade = "pointer-events-none absolute inset-0 bg-gradient-to-t from-onyx via-onyx/75 to-transparent md:hidden"
+  const copy = "wrap relative w-full [text-shadow:0_1px_24px_rgba(13,12,11,0.75)]"
+  const mobileShade = "pointer-events-none absolute inset-0 bg-gradient-to-t from-onyx from-10% via-onyx/55 via-45% to-transparent to-70% md:hidden"
 
   return (
     <div className="relative">
@@ -100,10 +119,10 @@ export function Experience() {
         <div className={mobileShade} />
         <div className={copy}>
           <div className="max-w-xl">
-            <Monogram className="draw-in h-14 w-14 text-gold md:h-16 md:w-16" />
-            <p className="mt-6 text-[15px] font-light tracking-caps text-champagne sm:text-lg">HAVE YOU BEEN</p>
-            <h1 id="hero-title" className="mt-2 bg-gradient-to-b from-[#EFD9A8] via-gold to-[#B8742F] bg-clip-text font-display text-[clamp(3.6rem,15vw,7.6rem)] font-semibold leading-[0.9] tracking-[0.02em] text-transparent">
-              FITTED
+            <Monogram className="draw-in hidden h-16 w-16 text-gold md:block" />
+            <p className="text-[15px] font-light tracking-caps text-champagne sm:text-lg md:mt-6">HAVE YOU BEEN</p>
+            <h1 id="hero-title" className="mt-2">
+              <FittedWord />
             </h1>
             <p className="mt-3 text-[15px] font-light tracking-caps text-champagne sm:text-lg">THIS SEASON?</p>
             <div className="mt-8 border-l-2 border-gold pl-5">

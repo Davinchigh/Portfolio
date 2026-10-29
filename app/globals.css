@@ -8,8 +8,8 @@
 
 @layer base {
   html {
-    background: #0e0b09;
-    color: #efe4d2;
+    background: #0d0c0b;
+    color: #f1ebe1;
     -webkit-text-size-adjust: 100%;
   }
   body {
@@ -23,7 +23,7 @@
   }
   ::selection {
     background: #c9a45c;
-    color: #0e0b09;
+    color: #0d0c0b;
   }
   :focus-visible {
     outline: 2px solid #e0c27a;
@@ -62,10 +62,10 @@
     height: 9px;
     transform: translateX(-50%) rotate(45deg);
     border: 1px solid rgba(201, 164, 92, 0.7);
-    background: #0e0b09;
+    background: #0d0c0b;
   }
   .card-glow .glow {
-    background: radial-gradient(40% 40% at var(--gx, 50%) var(--gy, 40%), rgba(201, 133, 46, 0.28), transparent 70%);
+    background: radial-gradient(40% 40% at var(--gx, 50%) var(--gy, 40%), rgba(201, 164, 92, 0.22), transparent 70%);
     opacity: 0;
     transition: opacity 0.5s ease;
   }

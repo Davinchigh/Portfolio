@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   icons: { icon: "/brand/icon.svg" },
 }
 
-export const viewport: Viewport = { themeColor: "#0E0B09" }
+export const viewport: Viewport = { themeColor: "#0D0C0B" }
 
 const store = {
   "@context": "https://schema.org",
