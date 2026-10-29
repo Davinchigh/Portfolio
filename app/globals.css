@@ -1,0 +1,90 @@
+@import "@fontsource/fraunces/latin-600.css";
+@import "@fontsource/atkinson-hyperlegible/latin-400.css";
+@import "@fontsource/atkinson-hyperlegible/latin-700.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-padding-top: 6rem;
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    @apply bg-paper font-sans text-ink antialiased;
+    font-size: 1.0625rem;
+    line-height: 1.65;
+  }
+  h1,
+  h2,
+  h3 {
+    @apply font-display text-balance;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+  }
+  :focus-visible {
+    outline: 3px solid #f2b84b;
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+  .on-paper :focus-visible {
+    outline-color: #8a5300;
+  }
+}
+
+@layer components {
+  .wrap {
+    @apply mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8;
+  }
+  .link {
+    @apply font-bold text-lamp-deep underline decoration-2 underline-offset-4 hover:decoration-4;
+  }
+  .link-night {
+    @apply font-bold text-lamp underline decoration-2 underline-offset-4 hover:decoration-4;
+  }
+  .btn {
+    @apply inline-flex min-h-[48px] items-center justify-center gap-2 rounded-full px-6 py-3 font-bold transition-colors;
+  }
+  .btn-lamp {
+    @apply btn bg-lamp text-night hover:bg-lamp-soft;
+  }
+  .btn-ghost {
+    @apply btn border-2 border-mist-muted text-mist hover:border-lamp hover:text-lamp;
+  }
+  .btn-ink {
+    @apply btn bg-night text-mist hover:bg-night-3;
+  }
+  .eyebrow {
+    @apply text-sm font-bold uppercase tracking-[0.18em];
+  }
+  .prose-hall p + p {
+    @apply mt-4;
+  }
+  .placeholder {
+    @apply rounded bg-lamp-soft px-1.5 py-0.5 font-bold text-ink ring-1 ring-lamp-deep/40;
+  }
+}
+
+/* The one motion moment: windows light up once. */
+@keyframes light-on {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.window-lit {
+  opacity: 0;
+  animation: light-on 1.2s ease-out forwards;
+}
+@media (prefers-reduced-motion: reduce) {
+  .window-lit {
+    opacity: 1;
+    animation: none;
+  }
+  html {
+    scroll-behavior: auto;
+  }
+}
