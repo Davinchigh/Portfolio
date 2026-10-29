@@ -189,7 +189,7 @@ function TimelineView() {
                     onBlur={() => setHovered(null)}
                     aria-pressed={isActive}
                     aria-label={`${r.company}, ${r.role}, ${range(r)}`}
-                    className={`absolute inset-y-0 flex items-center gap-2 overflow-hidden rounded-lg border px-3 text-left text-sm transition-[transform,box-shadow,background-color,border-color,color] duration-200 ease-out hover:-translate-y-0.5 hover:shadow-lg hover:shadow-route/10 focus-visible:-translate-y-0.5 motion-reduce:transform-none motion-reduce:transition-none ${
+                    className={`absolute inset-y-0 flex items-center gap-2 overflow-hidden rounded-lg border ${narrow ? "justify-center px-2" : "px-3"} text-left text-sm transition-[transform,box-shadow,background-color,border-color,color] duration-200 ease-out hover:-translate-y-0.5 hover:shadow-lg hover:shadow-route/10 focus-visible:-translate-y-0.5 motion-reduce:transform-none motion-reduce:transition-none ${
                       isActive
                         ? "border-route bg-route/15 text-foreground"
                         : isHovered
@@ -200,9 +200,9 @@ function TimelineView() {
                     }`}
                     style={{ left: `${left}%`, width: `${width}%`, minWidth: 44 }}
                   >
-                    {r.logo && !narrow && (
-                      <img src={r.logo} alt="" aria-hidden="true" className={`h-5 w-5 shrink-0 rounded bg-white object-contain transition-opacity ${dimmed ? "opacity-50" : ""}`} />
-                    )}
+                    {r.logo ? (
+                      <img src={r.logo} alt="" aria-hidden="true" className={`h-6 w-6 shrink-0 rounded bg-white object-contain transition-opacity ${narrow ? "mx-auto" : ""} ${dimmed ? "opacity-50" : ""}`} />
+                    ) : null}
                     <span className={narrow ? "sr-only" : "truncate"}>{r.company}</span>
                   </button>
                   <span

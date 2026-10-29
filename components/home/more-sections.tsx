@@ -3,7 +3,7 @@ import { CertificateViewer } from "@/components/home/certificate-viewer"
 import { ArrowUpRight } from "lucide-react"
 import { HandNote } from "@/components/site/hand-note"
 import { Section } from "@/components/site/section"
-import { ToolIcon } from "@/components/site/tool-icon"
+import { ToolIcon, brandColor } from "@/components/site/tool-icon"
 import { certifications, designs, stack, ventures } from "@/lib/site"
 
 export function Designs() {
@@ -72,7 +72,7 @@ export function Stack() {
       id="stack"
       eyebrow="stack"
       title="tools i reach for"
-      intro="the languages and tools i reach for. hover or tab to see names."
+      intro="the languages and tools i reach for. hover or tab to see each one in its colours."
       aside={
         <HandNote arrow="down-left" className="hidden -rotate-3 text-xl md:inline-flex">
           claude does a lot of heavy lifting
@@ -88,7 +88,8 @@ export function Stack() {
                 <li key={tool.name}>
                   <span
                     tabIndex={0}
-                    className="group relative flex h-14 w-14 items-center justify-center rounded-xl border bg-card text-muted-foreground transition-[color,transform] hover:-translate-y-0.5 hover:text-foreground focus-visible:text-foreground motion-reduce:transition-none"
+                    style={{ "--brand": brandColor(tool.icon) } as React.CSSProperties}
+                    className="group relative flex h-14 w-14 items-center justify-center rounded-xl border bg-card text-muted-foreground transition-[color,transform,border-color] hover:-translate-y-0.5 hover:border-[var(--brand)] hover:text-[var(--brand)] focus-visible:text-[var(--brand)] motion-reduce:transition-none"
                   >
                     <ToolIcon icon={tool.icon} name={tool.name} />
                     <span className="sr-only">{tool.name}</span>
