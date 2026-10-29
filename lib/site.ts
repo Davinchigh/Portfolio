@@ -248,11 +248,12 @@ export const designs = [
   {
     slug: "glee-garden",
     title: "Glee Garden",
-    note: "landing page",
-    summary: "a landing page for a home gardening service, led by product photography and one clear call to action.",
-    image: "/images/gardening-website.png",
-    imageAlt: "Glee Garden landing page with the headline 'Gardening in your home' beside potted orchids",
-    href: "https://www.figma.com/design/L7RpsFVTDxXhtsFduDBIc7/Gardening-Website?node-id=0-1&t=cXSSNo4etJVdy4xk-1",
+    note: "brand, logo and website",
+    summary: "a home gardening brand i took from a rough landing page to a finished site: new logo, palette, a planting guide for southern ghana and a booking flow.",
+    image: "/images/glee-garden.webp",
+    imageAlt: "Glee Garden home page: the headline 'Gardening in your home, made joyful' beside a sunlit garden patio",
+    href: "https://glee-garden.vercel.app",
+    linkLabel: "live site",
   },
 ]
 

@@ -9,7 +9,7 @@ import { certifications, designs, stack, ventures } from "@/lib/site"
 
 export function Designs() {
   return (
-    <Section id="designs" eyebrow="design work" title="screens i've designed" intro="ui and ux work in figma. open one to explore the full file.">
+    <Section id="designs" eyebrow="design work" title="screens i've designed" intro="ui and ux work, from figma files to finished sites. open one to explore it.">
       <div className="grid gap-10 md:grid-cols-2">
         {designs.map((d) => (
           <article key={d.slug}>
@@ -23,7 +23,7 @@ export function Designs() {
                   <p className="meta mt-1">{d.note}</p>
                 </div>
                 <span className="inline-flex items-center gap-1 pt-1 text-sm text-muted-foreground group-hover:text-foreground">
-                  figma <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+                  {"linkLabel" in d && d.linkLabel ? d.linkLabel : "figma"} <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
                   <span className="sr-only">(opens in a new tab)</span>
                 </span>
               </div>
