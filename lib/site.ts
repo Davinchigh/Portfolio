@@ -251,7 +251,7 @@ export const designs = [
     note: "brand, logo and website",
     summary: "a home gardening brand i took from a rough landing page to a finished site: new logo, palette, a planting guide for southern ghana and a booking flow.",
     image: "/images/glee-garden.webp",
-    imageAlt: "Glee Garden home page: the headline 'Gardening in your home, made joyful' beside a sunlit garden patio",
+    imageAlt: "Glee Garden home page: a floating glass nav and the headline 'Gardening in your home, made joyful' above a sunlit garden patio",
     href: "https://glee-garden.vercel.app",
     linkLabel: "live site",
   },
