@@ -7,13 +7,13 @@ export const metadata: Metadata = {
   icons: { icon: "/icon.svg" },
   openGraph: { title: "Glee Garden", description: "Gardening in your home, made joyful.", images: ["/img/hero.webp"] },
 }
-export const viewport: Viewport = { themeColor: "#F7F2E8" }
+export const viewport: Viewport = { themeColor: "#FFFFFF" }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en-GH">
       <body>
-        <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-full focus:bg-forest focus:px-4 focus:py-2 focus:text-cream">
+        <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-full focus:bg-ink focus:px-4 focus:py-2 focus:text-white">
           Skip to content
         </a>
         {children}
