@@ -1,0 +1,70 @@
+@import "@fontsource-variable/fraunces";
+@import "@fontsource-variable/fraunces/wght-italic.css";
+@import "@fontsource-variable/manrope";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    background: #f7f2e8;
+    color: #14231b;
+    scroll-behavior: smooth;
+    scroll-padding-top: 88px;
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    @apply font-sans antialiased;
+    font-size: 17px;
+  }
+  h1, h2, h3 {
+    @apply font-display;
+    font-variation-settings: "SOFT" 100, "WONK" 1;
+    letter-spacing: -0.02em;
+  }
+  ::selection { background: #7fb069; color: #0f271d; }
+  :focus-visible { outline: 3px solid #c8673e; outline-offset: 3px; border-radius: 8px; }
+}
+
+@layer components {
+  .wrap { @apply mx-auto w-full max-w-6xl px-5 sm:px-8; }
+  .btn { @apply inline-flex min-h-12 items-center justify-center gap-2 rounded-full px-6 text-[15px] font-semibold transition-[transform,background-color,box-shadow] duration-200; }
+  .btn-primary { @apply btn bg-forest text-cream shadow-[0_10px_24px_-12px_rgba(24,58,44,0.8)] hover:-translate-y-0.5 hover:bg-moss; }
+  .btn-light { @apply btn border border-forest/20 bg-white/70 text-forest backdrop-blur hover:-translate-y-0.5 hover:bg-white; }
+  .eyebrow { @apply inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-moss; }
+}
+
+/* the hero sprout draws itself, then its leaves sway */
+.sprout-stem { stroke-dasharray: 220; stroke-dashoffset: 220; animation: draw 1.6s cubic-bezier(0.3, 0.7, 0.2, 1) 0.2s forwards; }
+.sprout-leaf { transform-box: fill-box; opacity: 0; animation: pop 0.7s cubic-bezier(0.3, 1.6, 0.5, 1) forwards, sway 5s ease-in-out 2s infinite; }
+.sprout-leaf.l { transform-origin: 100% 100%; animation-delay: 1.1s, 2.2s; }
+.sprout-leaf.r { transform-origin: 0% 100%; animation-delay: 1.35s, 2.5s; }
+@keyframes draw { to { stroke-dashoffset: 0; } }
+@keyframes pop { from { opacity: 0; transform: scale(0.2); } to { opacity: 1; transform: scale(1); } }
+@keyframes sway { 0%, 100% { rotate: 0deg; } 50% { rotate: -6deg; } }
+
+/* sections rise in as they scroll into view */
+@supports (animation-timeline: view()) {
+  .rise { animation: rise linear both; animation-timeline: view(); animation-range: entry 0% entry 60%; }
+}
+@keyframes rise { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: none; } }
+
+/* the services word band */
+.marquee { animation: marquee 38s linear infinite; }
+@keyframes marquee { to { transform: translateX(-50%); } }
+
+/* the how-it-works vine grows as you scroll */
+@supports (animation-timeline: view()) {
+  .vine { stroke-dasharray: 1; stroke-dashoffset: 1; animation: vine linear both; animation-timeline: view(); animation-range: entry 20% cover 55%; }
+}
+@keyframes vine { to { stroke-dashoffset: 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .sprout-stem { animation: none; stroke-dashoffset: 0; }
+  .sprout-leaf { animation: none; opacity: 1; }
+  .rise, .vine { animation: none !important; }
+  .vine { stroke-dashoffset: 0; }
+  .marquee { animation: none; }
+}
