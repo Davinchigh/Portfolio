@@ -31,7 +31,7 @@ export function ProductCard({ p }: { p: Product }) {
       className="card-glow group block rounded-2xl transition-transform duration-500 ease-out"
     >
       <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-espresso">
-        <img src={p.images[0].src} alt={p.images[0].alt} loading="lazy" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.03]" />
+        <img src={p.images[0].src.replace(".webp", "-sm.webp")} alt={p.images[0].alt} loading="lazy" className="h-full w-full object-cover object-top transition-transform duration-700 group-hover:scale-[1.03]" />
         <span aria-hidden="true" className="glow pointer-events-none absolute inset-0" />
         <div className="absolute left-3 right-3 top-3 flex flex-wrap gap-2">
           {status && <span className="rounded-full bg-onyx/85 px-2.5 py-1 text-[11px] font-medium text-champagne">{status}</span>}

@@ -3,7 +3,6 @@ import { notFound } from "next/navigation"
 import Link from "next/link"
 import { OrderPanel } from "@/components/order-panel"
 import { ProductCard } from "@/components/product-card"
-import { Spotlight } from "@/components/spotlight"
 import { collections, findProduct, ghs, productUrl, products, shop } from "@/lib/store"
 
 export const dynamicParams = false
@@ -57,8 +56,8 @@ export default async function ProductPage({ params }: Props) {
         </nav>
         <div className="mt-8 grid gap-10 md:grid-cols-12">
           <div className="md:col-span-7">
-            <div className="relative aspect-[4/5] overflow-hidden rounded-[28px] ring-1 ring-gold/20">
-              <Spotlight src={p.images[0].src} alt={p.images[0].alt} priority />
+            <div className="relative aspect-[4/5] overflow-hidden rounded-[28px] bg-espresso ring-1 ring-gold/20">
+              <img src={p.images[0].src} alt={p.images[0].alt} fetchPriority="high" className="h-full w-full object-cover object-top" />
             </div>
             {p.images.length > 1 && (
               <ul className="mt-4 grid grid-cols-4 gap-3">
