@@ -53,7 +53,7 @@ export default function ResumePage() {
           <a href={person.cv} download className="pill-button">
             <Download className="h-4 w-4" aria-hidden="true" /> download cv (pdf)
           </a>
-          <a href={`mailto:${person.email}`} className="link break-all py-2 font-mono text-sm text-muted-foreground">
+          <a href={`mailto:${person.email}`} className="link break-all py-2 text-sm text-muted-foreground">
             {person.email}
           </a>
           {socials.slice(0, 2).map((s) => (
@@ -76,7 +76,7 @@ export default function ResumePage() {
                       <ul className="mt-2 space-y-1.5">
                         {r.bullets.map((b) => (
                           <li key={b} className="flex gap-2">
-                            <span className="text-amber" aria-hidden="true">
+                            <span className="text-route" aria-hidden="true">
                               *
                             </span>
                             <span>{b}</span>

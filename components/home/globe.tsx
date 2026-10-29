@@ -5,6 +5,8 @@ import createGlobe from "cobe"
 import Link from "next/link"
 import { useTheme } from "next-themes"
 import { HandNote } from "@/components/site/hand-note"
+import { Stop } from "@/components/site/route"
+import { useVisitor } from "@/lib/visitor"
 
 type Place = { city: string; country?: string; lat: number; lon: number; tempC?: number | null }
 type Here = { home: Place; visitor: Place | null }
@@ -43,10 +45,32 @@ function countryName(code?: string) {
   }
 }
 
+/**
+ * Where a lat/lon lands on the canvas, using cobe's own maths (marker position,
+ * rotation matrix and 0.8 radius from its shader). Returns fractions of the canvas
+ * size and depth (z > 0 means the front of the globe).
+ */
+function project(lat: number, lon: number, phi: number, theta: number) {
+  const la = (lat * Math.PI) / 180
+  const lo = (lon * Math.PI) / 180 - Math.PI
+  const a = Math.cos(la)
+  const w = [-a * Math.cos(lo), Math.sin(la), a * Math.sin(lo)]
+  const c = Math.cos(theta)
+  const d = Math.cos(phi)
+  const e = Math.sin(theta)
+  const f = Math.sin(phi)
+  const x = d * w[0] + f * w[2]
+  const y = f * e * w[0] + c * w[1] - d * e * w[2]
+  const z = -f * c * w[0] + e * w[1] + d * c * w[2]
+  return { x: (0.8 * x + 1) / 2, y: (1 - 0.8 * y) / 2, z }
+}
+
 const Hi = ({ children }: { children: React.ReactNode }) => <span className="text-foreground">{children}</span>
 
 export function Globe() {
   const canvas = useRef<HTMLCanvasElement>(null)
+  const youDot = useRef<HTMLSpanElement>(null)
+  const { mode, company } = useVisitor()
   const pointer = useRef<number | null>(null)
   const drag = useRef(0)
   const [here, setHere] = useState<Here>({ home: ACCRA, visitor: null })
@@ -89,8 +113,10 @@ export function Globe() {
     const onResize = () => (width = el.offsetWidth)
     window.addEventListener("resize", onResize)
 
+    // Only Ben's dot is drawn by cobe (one colour for all markers). The visitor's dot is an
+    // orange element placed over the canvas each frame with the same projection.
     const markers = [{ location: [here.home.lat, here.home.lon] as [number, number], size: 0.08 }]
-    if (here.visitor) markers.push({ location: [here.visitor.lat, here.visitor.lon], size: 0.06 })
+    const visitor = here.visitor
 
     const globe = createGlobe(el, {
       devicePixelRatio: 2,
@@ -103,15 +129,22 @@ export function Globe() {
       mapSamples: 16000,
       mapBrightness: dark ? 5 : 8,
       mapBaseBrightness: dark ? 0 : 0.05,
-      baseColor: dark ? [0.18, 0.18, 0.17] : [0.95, 0.94, 0.92],
-      markerColor: dark ? [0.98, 0.75, 0.14] : [0.7, 0.33, 0.04],
-      glowColor: dark ? [0.12, 0.12, 0.11] : [0.88, 0.87, 0.84],
+      baseColor: dark ? [0.11, 0.18, 0.21] : [0.93, 0.96, 0.97],
+      markerColor: dark ? [0.3, 0.78, 0.81] : [0.04, 0.42, 0.45],
+      glowColor: dark ? [0.07, 0.13, 0.15] : [0.84, 0.9, 0.92],
       markers,
       onRender: (state) => {
         if (pointer.current === null && !reduced) phi += 0.0025
         state.phi = phi + drag.current
         state.width = width * 2
         state.height = width * 2
+        const dot = youDot.current
+        if (dot && visitor) {
+          const p = project(visitor.lat, visitor.lon, state.phi, 0.2)
+          dot.style.left = `${p.x * 100}%`
+          dot.style.top = `${p.y * 100}%`
+          dot.style.opacity = String(Math.max(0, Math.min(1, p.z * 5)))
+        }
       },
     })
     requestAnimationFrame(() => (el.style.opacity = "1"))
@@ -128,9 +161,12 @@ export function Globe() {
     <section id="now" aria-labelledby="now-title" className="wrap scroll-mt-20 py-16 sm:py-20">
       <div className="grid items-center gap-10 md:grid-cols-2">
         <div>
-          <p className="eyebrow">right now</p>
-          <h2 id="now-title" className="mt-3 text-3xl sm:text-4xl">
-            two dots on a globe
+          <p className="eyebrow relative text-signal">
+            <Stop you />
+            where you come in
+          </p>
+          <h2 id="now-title" className="mt-3 text-3xl sm:text-[2.6rem] sm:leading-[1.05]">
+            {mode === "recruiter" ? `next stop: ${company ? company : "your team"}` : "next stop: wherever you're headed"}
           </h2>
           <div className="mt-8 space-y-4 text-lg leading-relaxed text-muted-foreground">
             <p aria-live="polite">
@@ -174,6 +210,11 @@ export function Globe() {
               )}
               .{now && visitorTz ? ` ${gap(offset(now, visitorTz) - offset(now, HOME_TZ))}` : ""}
             </p>
+            <p className="text-foreground">
+              {mode === "recruiter"
+                ? "every stop on this road added something: data, testing, teaching, then ai. i'd like the next one to be with you."
+                : "a few years ago i was a statistics student with a lot of curiosity and no plan. if that road led here, yours can lead somewhere good too."}
+            </p>
           </div>
           <HandNote arrow="none" className="mt-8 -rotate-2 text-xl">
             give it a spin
@@ -208,13 +249,20 @@ export function Globe() {
               if (pointer.current !== null) drag.current = (e.clientX - pointer.current) / 200
             }}
           />
-          <div className="pointer-events-none absolute bottom-2 left-1/2 flex -translate-x-1/2 gap-4 font-mono text-[11px] text-subtle">
+          {visitor && (
+            <span
+              ref={youDot}
+              aria-hidden="true"
+              className="pointer-events-none absolute h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-signal opacity-0 ring-4 ring-signal/25"
+            />
+          )}
+          <div className="pointer-events-none absolute bottom-2 left-1/2 flex -translate-x-1/2 gap-4 text-xs text-subtle">
             <span className="flex items-center gap-1.5">
-              <span className="h-2 w-2 rounded-full bg-amber" aria-hidden="true" /> me
+              <span className="h-2 w-2 rounded-full bg-route" aria-hidden="true" /> me
             </span>
             {visitor && (
               <span className="flex items-center gap-1.5">
-                <span className="h-1.5 w-1.5 rounded-full bg-amber/70" aria-hidden="true" /> you
+                <span className="h-2 w-2 rounded-full bg-signal" aria-hidden="true" /> you
               </span>
             )}
           </div>

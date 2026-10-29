@@ -5,6 +5,7 @@ import { ChevronDown } from "lucide-react"
 import { HandNote } from "@/components/site/hand-note"
 import { Section } from "@/components/site/section"
 import { roles, type Role } from "@/lib/site"
+import { ForMode } from "@/lib/visitor"
 
 const MONTHS = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"]
 
@@ -31,7 +32,7 @@ const sorted = [...roles].sort((a, b) => decimal(b.start) - decimal(a.start))
 function Initials({ company, current, logo }: { company: string; current?: boolean; logo?: string }) {
   if (logo)
     return (
-      <span className="relative flex h-11 w-11 shrink-0 overflow-hidden rounded-xl border bg-white transition-transform duration-200 group-hover:scale-110 group-hover:border-amber/60 motion-reduce:transform-none">
+      <span className="relative flex h-11 w-11 shrink-0 overflow-hidden rounded-xl border bg-white transition-transform duration-200 group-hover:scale-110 group-hover:border-route/60 motion-reduce:transform-none">
         <img src={logo} alt="" aria-hidden="true" className="h-full w-full object-contain" />
         {current && <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-live ring-2 ring-background" />}
       </span>
@@ -46,7 +47,7 @@ function Initials({ company, current, logo }: { company: string; current?: boole
     .toUpperCase()
   return (
     <span
-      className={`relative flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border transition-transform duration-200 group-hover:scale-110 group-hover:border-amber/60 motion-reduce:transform-none font-mono text-xs font-semibold text-muted-foreground ${
+      className={`relative flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border transition-transform duration-200 group-hover:scale-110 group-hover:border-route/60 motion-reduce:transform-none font-mono text-xs font-semibold text-muted-foreground ${
         logo ? "overflow-hidden bg-white" : "bg-card"
       }`}
     >
@@ -86,7 +87,7 @@ function ListView() {
                 aria-expanded={isOpen}
                 aria-controls={panelId}
                 onClick={() => setOpen(isOpen ? null : r.id)}
-                className="group -mx-2 flex w-[calc(100%+1rem)] items-start gap-4 rounded-xl px-2 py-2 text-left transition-colors hover:bg-accent/60 hover:[&_.font-medium]:text-amber"
+                className="group -mx-2 flex w-[calc(100%+1rem)] items-start gap-4 rounded-xl px-2 py-2 text-left transition-colors hover:bg-accent/60 hover:[&_.font-medium]:text-route"
               >
                 {header}
               </button>
@@ -100,7 +101,7 @@ function ListView() {
                   <ul className="mt-2 space-y-1.5">
                     {r.bullets.map((b) => (
                       <li key={b} className="flex gap-2">
-                        <span className="text-amber" aria-hidden="true">
+                        <span className="text-route" aria-hidden="true">
                           *
                         </span>
                         <span>{b}</span>
@@ -155,7 +156,7 @@ function TimelineView() {
             {/* Highlight band across the hovered role's years */}
             <li
               aria-hidden="true"
-              className={`pointer-events-none absolute -top-8 bottom-0 rounded-lg border-x border-dashed border-amber/50 bg-amber/[0.06] transition-[left,width,opacity] duration-300 ease-out motion-reduce:transition-none ${
+              className={`pointer-events-none absolute -top-8 bottom-0 rounded-lg border-x border-dashed border-route/50 bg-route/[0.06] transition-[left,width,opacity] duration-300 ease-out motion-reduce:transition-none ${
                 hovered && band ? "opacity-100" : "opacity-0"
               } ${band ? "" : "hidden"}`}
               style={band ? { left: `${band.left}%`, width: `${band.width}%` } : undefined}
@@ -188,11 +189,11 @@ function TimelineView() {
                     onBlur={() => setHovered(null)}
                     aria-pressed={isActive}
                     aria-label={`${r.company}, ${r.role}, ${range(r)}`}
-                    className={`absolute inset-y-0 flex items-center gap-2 overflow-hidden rounded-lg border px-3 text-left text-sm transition-[transform,box-shadow,background-color,border-color,color] duration-200 ease-out hover:-translate-y-0.5 hover:shadow-lg hover:shadow-amber/10 focus-visible:-translate-y-0.5 motion-reduce:transform-none motion-reduce:transition-none ${
+                    className={`absolute inset-y-0 flex items-center gap-2 overflow-hidden rounded-lg border px-3 text-left text-sm transition-[transform,box-shadow,background-color,border-color,color] duration-200 ease-out hover:-translate-y-0.5 hover:shadow-lg hover:shadow-route/10 focus-visible:-translate-y-0.5 motion-reduce:transform-none motion-reduce:transition-none ${
                       isActive
-                        ? "border-amber bg-amber/15 text-foreground"
+                        ? "border-route bg-route/15 text-foreground"
                         : isHovered
-                          ? "border-amber/60 bg-amber/10 text-foreground"
+                          ? "border-route/60 bg-route/10 text-foreground"
                           : dimmed
                             ? "border-border/40 bg-transparent text-muted-foreground"
                             : "bg-card text-muted-foreground"
@@ -206,7 +207,7 @@ function TimelineView() {
                   </button>
                   <span
                     aria-hidden="true"
-                    className={`pointer-events-none absolute -top-7 z-10 whitespace-nowrap rounded-md bg-foreground px-2 py-0.5 font-mono text-[11px] text-background shadow transition-all duration-200 motion-reduce:transition-none ${
+                    className={`pointer-events-none absolute -top-7 z-10 whitespace-nowrap rounded-md bg-foreground px-2 py-0.5 text-[11px] tabular-nums text-background shadow transition-all duration-200 motion-reduce:transition-none ${
                       isHovered ? "translate-y-0 opacity-100" : "translate-y-1 opacity-0"
                     }`}
                     style={labelOnLeft ? { right: `${100 - left - width}%` } : { left: `${left}%` }}
@@ -267,7 +268,12 @@ export function Experience() {
   )
 
   return (
-    <Section id="experience" eyebrow="experience" title="where i've worked" aside={toggle}>
+    <Section
+      id="experience"
+      eyebrow={<ForMode recruiter="experience" explorer="the road so far" />}
+      title={<ForMode recruiter="where i've worked" explorer="every stop taught me something" />}
+      aside={toggle}
+    >
       {view === "list" ? <ListView /> : <TimelineView />}
     </Section>
   )

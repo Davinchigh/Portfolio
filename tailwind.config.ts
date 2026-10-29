@@ -51,6 +51,8 @@ const config: Config = {
         border: 'hsl(var(--border))',
         subtle: 'hsl(var(--subtle))',
         amber: 'hsl(var(--amber))',
+        route: 'hsl(var(--route))',
+        signal: 'hsl(var(--signal))',
         live: 'hsl(var(--live))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',

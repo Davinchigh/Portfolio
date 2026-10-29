@@ -9,7 +9,7 @@ export function CaseStudy({ item, index, headingLevel = "h3" }: { item: WorkItem
     <article className="grid gap-6 border-t py-10 md:grid-cols-12 md:gap-10">
       <div className="md:col-span-5">
         <p className="meta flex gap-3">
-          <span className="text-amber">{String(index + 1).padStart(2, "0")}</span>
+          <span className="text-route">{String(index + 1).padStart(2, "0")}</span>
           <span>{item.org}</span>
         </p>
         <Heading className="mt-3 text-2xl">{item.title}</Heading>

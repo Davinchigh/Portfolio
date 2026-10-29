@@ -8,6 +8,7 @@ import Navbar from "@/components/navbar"
 import Footer from "@/components/footer"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/toaster"
+import { VisitorProvider } from "@/lib/visitor"
 
 const title = "Benedict Frimpong Boateng | AI engineer and software developer"
 const description =
@@ -27,9 +28,14 @@ export const viewport: Viewport = {
   ],
 }
 
+const visitorScript = `try{var f=new URLSearchParams(location.search).get("for");var s=localStorage.getItem("bfb-visitor");if((f&&/^[a-z0-9][a-z0-9-]{0,31}$/i.test(f.trim()))||s==="recruiter"||s==="explorer")document.documentElement.setAttribute("data-visitor","")}catch(e){}`
+
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable}`} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: visitorScript }} />
+      </head>
       <body className="font-sans antialiased">
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} disableTransitionOnChange>
           <a
@@ -38,9 +44,11 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           >
             skip to content
           </a>
+          <VisitorProvider>
           <Navbar />
           <div id="main">{children}</div>
           <Footer />
+          </VisitorProvider>
           <Toaster />
         </ThemeProvider>
       </body>

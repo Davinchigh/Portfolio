@@ -5,6 +5,36 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Menu, X } from "lucide-react"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { useVisitor } from "@/lib/visitor"
+
+/** Switch between the recruiter view and the story view. Home page only. */
+function ViewSwitch({ className = "" }: { className?: string }) {
+  const { mode, setMode } = useVisitor()
+  const views = [
+    { mode: "recruiter" as const, label: "hiring" },
+    { mode: "explorer" as const, label: "exploring" },
+  ]
+  return (
+    <div role="group" aria-label="View the site as" className={`flex rounded-full border bg-card p-0.5 ${className}`}>
+      {views.map((v) => {
+        const on = mode === v.mode
+        return (
+          <button
+            key={v.mode}
+            type="button"
+            aria-pressed={on}
+            onClick={() => setMode(v.mode)}
+            className={`min-h-8 rounded-full px-3 text-xs font-medium transition-colors ${
+              on ? "bg-foreground text-background" : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            {v.label}
+          </button>
+        )
+      })}
+    </div>
+  )
+}
 
 const links = [
   { label: "work", href: "/#work" },
@@ -48,7 +78,7 @@ export default function Navbar() {
       }`}
     >
       <nav className="wrap flex h-16 items-center justify-between" aria-label="Main">
-        <Link href="/" className="text-lg font-semibold tracking-tight" aria-label="bfb, Benedict Frimpong Boateng, home">
+        <Link href="/" className="font-display text-xl font-bold tracking-tight" aria-label="bfb, Benedict Frimpong Boateng, home">
           bfb
         </Link>
 
@@ -69,6 +99,7 @@ export default function Navbar() {
             )
           })}
           <span className="mx-2 h-5 w-px bg-border" aria-hidden="true" />
+          {pathname === "/" && <ViewSwitch className="mr-1" />}
           <ThemeToggle />
         </div>
 
@@ -90,6 +121,12 @@ export default function Navbar() {
 
       {open && (
         <div id="mobile-menu" className="border-t md:hidden">
+          {pathname === "/" && (
+            <div className="wrap flex items-center justify-between pt-4">
+              <span className="text-sm text-muted-foreground">view the site as</span>
+              <ViewSwitch />
+            </div>
+          )}
           <ul className="wrap py-2">
             {links.map((l) => (
               <li key={l.href}>

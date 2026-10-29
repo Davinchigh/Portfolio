@@ -4,9 +4,11 @@ import { useState } from "react"
 import { ArrowUpRight, Check, Copy } from "lucide-react"
 import { HandNote } from "@/components/site/hand-note"
 import { person, socials } from "@/lib/site"
+import { useVisitor } from "@/lib/visitor"
 
 export function Contact() {
   const [copied, setCopied] = useState(false)
+  const { mode, company } = useVisitor()
 
   const copy = async () => {
     try {
@@ -19,13 +21,15 @@ export function Contact() {
   }
 
   return (
-    <section id="contact" aria-labelledby="contact-title" className="wrap scroll-mt-20 py-24 sm:py-32">
-      <p className="eyebrow">contact</p>
-      <h2 id="contact-title" className="mt-4 max-w-3xl text-4xl leading-[1.05] tracking-[-0.04em] sm:text-6xl">
-        building something with ai? i&apos;d like to help ship it.
+    <section id="contact" aria-labelledby="contact-title" className="wrap scroll-mt-20 border-t py-24 sm:py-32">
+      <p className="eyebrow">{mode === "recruiter" ? "your move" : "say hello"}</p>
+      <h2 id="contact-title" className="mt-4 max-w-4xl text-4xl leading-[1.02] sm:text-7xl">
+        {mode === "recruiter" ? "you've seen my story. i'd like to be part of yours." : "building something? i'd love to hear about it."}
       </h2>
-      <p className="mt-5 max-w-xl text-lg text-muted-foreground">
-        open to full time roles and freelance projects, remote or in accra. the fastest way to reach me is email.
+      <p className="mt-6 max-w-xl text-lg text-muted-foreground">
+        {mode === "recruiter"
+          ? `open to full time roles and freelance projects, remote or in accra, and i can start right away.${company ? ` i'd love to hear what ${company} is building.` : ""}`
+          : "a question about ai, a project you're stuck on, or just to say hi. i read everything and reply within a day or two."}
       </p>
 
       <div className="mt-10 flex flex-wrap items-center gap-3">
@@ -43,7 +47,7 @@ export function Contact() {
           {copied ? "Email address copied" : ""}
         </span>
       </div>
-      <p className="mt-4 break-all font-mono text-sm text-muted-foreground">{person.email}</p>
+      <p className="mt-4 break-all text-sm text-muted-foreground">{person.email}</p>
 
       <div className="mt-12 flex flex-wrap items-center gap-x-6 gap-y-2">
         {socials.map((s) => (

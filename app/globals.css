@@ -29,6 +29,8 @@
     --input: 45 8% 74%;
     --ring: 60 5% 8%;
     --amber: 26 90% 37%; /* #b45309 on light, readable as text */
+    --route: 26 90% 37%; /* Ben's path through the page: the same amber */
+    --signal: 60 5% 8%; /* "you", the visitor: plain ink */
     --live: 142 70% 32%;
     --radius: 0.75rem;
   }
@@ -55,6 +57,8 @@
     --input: 60 3% 22%;
     --ring: 43 13% 92%;
     --amber: 43 96% 56%; /* #fbbf24 */
+    --route: 43 96% 56%;
+    --signal: 43 13% 92%; /* "you": soft white beside Ben's amber */
     --live: 142 69% 58%;
   }
 }
@@ -98,6 +102,10 @@
   }
   .eyebrow {
     @apply font-mono text-[11px] uppercase tracking-[0.14em] text-subtle;
+  }
+
+  .font-display {
+    font-family: var(--font-geist-sans), sans-serif;
   }
 
   /* Handwritten margin notes */
@@ -157,4 +165,9 @@
   .settle > * {
     animation: none;
   }
+}
+
+/* A returning visitor or a tailored link: hide the "choose a path" hero until their view loads, so it never flashes. */
+html[data-visitor] .hero-pending {
+  visibility: hidden;
 }

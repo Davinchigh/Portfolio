@@ -329,3 +329,49 @@ export const stats = [
   { value: certificateCount, suffix: "", label: "certifications earned" },
   { value: roles.length, suffix: "", label: "roles, internships and volunteer posts" },
 ]
+
+// ---------- Personalisation ----------
+
+/**
+ * Tailored links: /?for=<slug> greets that company by name and opens the recruiter view.
+ * Add the companies you apply to here so their names are spelled properly.
+ * Unknown slugs still work and are title-cased (zof-ai becomes "Zof AI").
+ */
+export const companies: Record<string, string> = {
+  "zof-ai": "Zof AI",
+  fruum: "Fruum",
+  "generation-ghana": "Generation Ghana",
+}
+
+/** The road so far, in one line per stop. Shown in the hero for anyone who wants the story. */
+export const road = [
+  { year: "2022", place: "legon", line: "started statistics with computer science at the university of ghana" },
+  { year: "2022", place: "a supermarket", line: "volunteered to set up its store databases in odoo" },
+  { year: "2023", place: "kng", line: "learned java and object-oriented programming as an intern" },
+  { year: "2025", place: "alx", line: "finished the ai starter kit with a grade of 100" },
+  { year: "2025", place: "coderaccoon", line: "sap consultant, course builder, tester, then team lead" },
+  { year: "now", place: "accra", line: "building with claude and looking for the next stop" },
+]
+
+/** For recruiters: what you get, backed by the work further down the page. */
+export const proof = [
+  { title: "i ship working things", line: "live apps, tested code and a card game heading to print, all linked below." },
+  { title: "i test properly", line: "led software, ai and beta testing on a learning platform, and write tests for my own code." },
+  { title: "i make tech learnable", line: "built sap courses and simulations, then taught my team prompt engineering." },
+]
+
+/** For everyone else: things the road taught me. All true, all from the stops above. */
+export const lessons = [
+  {
+    title: "start before you feel ready",
+    line: "my first database job was a volunteer post at a supermarket. three years later i was leading a team.",
+  },
+  {
+    title: "rebuild what you lose",
+    line: "i lost my laptop and every college project on it. so i rebuilt them, and they came back better.",
+  },
+  {
+    title: "teach what you learn",
+    line: "after earning a prompt engineering certificate, i trained my team on it. you learn a thing twice when you teach it.",
+  },
+]

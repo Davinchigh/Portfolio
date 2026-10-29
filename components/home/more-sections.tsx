@@ -36,14 +36,14 @@ export function Designs() {
 
 export function Ventures() {
   return (
-    <Section id="started" eyebrow="side projects" title="things i build on the side" intro="built on my own time, mostly with claude code. amber means still in progress.">
+    <Section id="started" eyebrow="side projects" title="things i build on the side" intro="built on my own time, mostly with claude code. route means still in progress.">
       <ul className="grid gap-4 md:grid-cols-3">
         {ventures.map((v) => {
           const active = v.status === "in progress"
           return (
-            <li key={v.title} className={`flex flex-col rounded-xl border p-5 ${active ? "border-amber/60" : ""}`}>
+            <li key={v.title} className={`flex flex-col rounded-xl border p-5 ${active ? "border-route/60" : ""}`}>
               <p className="meta flex items-center gap-2">
-                <span className={`h-2 w-2 rounded-full ${active ? "bg-amber" : "bg-subtle"}`} aria-hidden="true" />
+                <span className={`h-2 w-2 rounded-full ${active ? "bg-route" : "bg-subtle"}`} aria-hidden="true" />
                 {v.status}
               </p>
               <h3 className="mt-3 text-lg">
