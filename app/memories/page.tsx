@@ -30,7 +30,7 @@ export default function MemoriesPage() {
         </h2>
         <ul className="mt-8 grid gap-5 md:grid-cols-2">
           <li>
-            <figure className="h-full rounded-3xl bg-night p-7 text-mist">
+            <figure className="h-full on-night rounded-2xl bg-night p-7 text-mist">
               <blockquote className="font-display text-xl leading-snug sm:text-2xl">
                 <Ph value={site.benMemory} />
               </blockquote>
@@ -39,7 +39,7 @@ export default function MemoriesPage() {
               </figcaption>
             </figure>
           </li>
-          <li className="flex items-center justify-center rounded-3xl border-2 border-dashed border-ink/25 p-7 text-center text-ink-muted">
+          <li className="flex items-center justify-center rounded-2xl border border-dashed border-ink/20 p-7 text-center text-ink-muted">
             <p>Your story could go here.</p>
           </li>
         </ul>

@@ -81,11 +81,11 @@ const faqs: { q: string; a: React.ReactNode }[] = [
     ),
   },
   {
-    q: "Are those photos of the hall?",
+    q: "Why are there no photos of the hall?",
     a: (
       <>
-        No. The two pictures on this site are illustrative and AI-generated, and they're labelled that way. The building
-        drawing on the home page is an illustration, not the real building.
+        We only use photos we have permission to use, and we don't want to pass off other buildings as this one. If you
+        took photos of the hall yourself and are happy to share them, see the Memories page.
       </>
     ),
   },
@@ -108,7 +108,7 @@ export default function FaqPage() {
     <>
       <PageHead eyebrow="FAQ" title="Quick answers" />
       <section className="wrap py-12 sm:py-16" aria-label="Questions and answers">
-        <div className="max-w-3xl divide-y divide-ink/10 rounded-3xl border border-ink/10 bg-white">
+        <div className="max-w-3xl divide-y divide-ink/10 rounded-2xl border border-line bg-white">
           {faqs.map((f) => (
             <details key={f.q} className="group p-0">
               <summary className="flex min-h-[56px] cursor-pointer list-none items-center justify-between gap-4 px-6 py-4 text-lg font-bold">

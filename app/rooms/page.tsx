@@ -51,8 +51,8 @@ export default function RoomsPage() {
         </h2>
         <ol className="mt-8 grid gap-5 md:grid-cols-2">
           {steps.map((s, i) => (
-            <li key={s.title} className="flex gap-4 rounded-3xl border border-ink/10 bg-white p-6">
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-night font-display text-lg text-lamp" aria-hidden="true">
+            <li key={s.title} className="flex gap-4 reveal rounded-2xl border border-line bg-white p-7 transition-[transform,box-shadow] duration-500 ease-out hover:-translate-y-1 hover:shadow-[0_24px_50px_-30px_rgba(15,17,21,0.35)]">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-ink/15 font-display text-lg text-lamp-deep" aria-hidden="true">
                 {i + 1}
               </span>
               <div>
@@ -70,7 +70,7 @@ export default function RoomsPage() {
         </p>
       </section>
 
-      <section className="bg-night text-mist">
+      <section className="on-night bg-night text-mist">
         <div className="wrap py-14">
           <h2 className="text-3xl sm:text-4xl">Official links</h2>
           <p className="mt-3 max-w-prose text-mist-muted">These take you off this site to the University's own pages.</p>

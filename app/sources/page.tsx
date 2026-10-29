@@ -50,15 +50,8 @@ export default function SourcesPage() {
 
       <Section title="Credits" id="credits">
         <ul className="list-disc space-y-2 pl-5">
-          <li>
-            The study desk and basketball court pictures are illustrative and AI-generated. They are not photos of Jean
-            Nelson Aka Hall and show no real people.
-          </li>
-          <li>The building drawing, the map sketch and the candle mark are original illustrations made for this site.</li>
-          <li>
-            Fonts: Fraunces (Undercase Type) and Atkinson Hyperlegible (Braille Institute), both under the SIL Open Font
-            Licence.
-          </li>
+          <li>The map sketch and the JN monogram are original graphics made for this site. The monogram is not the hall&apos;s crest.</li>
+          <li>Fonts: Newsreader (Production Type) and Inter (Rasmus Andersson), both under the SIL Open Font Licence.</li>
           <li>No University of Ghana or hall logos, crests or photos are used.</li>
         </ul>
         <div className="mt-6">

@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { AiFigure, Callout, Cite, PageHead, Ph, Section } from "@/components/ui"
+import { Callout, Cite, PageHead, Ph, Section } from "@/components/ui"
 import { site } from "@/lib/site"
 
 export const metadata: Metadata = {
@@ -51,7 +51,7 @@ export default function LifePage() {
         </h2>
         <ul className="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
           {traditions.map((t) => (
-            <li key={t.title} className="rounded-3xl border border-ink/10 bg-white p-6">
+            <li key={t.title} className="reveal rounded-2xl border border-line bg-white p-7 transition-[transform,box-shadow] duration-500 ease-out hover:-translate-y-1 hover:shadow-[0_24px_50px_-30px_rgba(15,17,21,0.35)]">
               <h3 className="text-2xl">{t.title}</h3>
               <p className="mt-3 text-ink-muted">
                 {t.body}
@@ -66,28 +66,26 @@ export default function LifePage() {
         </p>
       </section>
 
-      <section className="bg-paper-2">
-        <div className="wrap grid items-center gap-10 py-14 lg:grid-cols-2">
-          <AiFigure src="/img/court.webp" alt="An empty outdoor basketball court at sunset with a ball resting near the hoop." />
-          <div>
-            <h2 className="text-3xl sm:text-4xl">Facilities</h2>
-            <ul className="mt-5 list-disc space-y-2 pl-5">
-              <li>
-                Self-contained rooms, 430 of them.<Cite id="cloth" />
-              </li>
-              <li>
-                Ceiling fans in the rooms, installed by the JCR, with more donated in 2016.<Cite id="cloth" />
-                <Cite id="fans" />
-              </li>
-              <li>
-                The Rose Aka Conference Room: about 100 seats, air-conditioned, with a 65-inch screen and sound system.
-                <Cite id="rose" />
-              </li>
-              <li>
-                Rainwater harvesting and biogas facilities, built into the four new halls.<Cite id="graphic2013" />
-              </li>
-            </ul>
+      <section aria-labelledby="fac-h" className="on-night relative isolate overflow-hidden bg-night text-mist">
+        <span aria-hidden="true" className="glow-drift absolute -left-20 top-0 -z-10 h-[30rem] w-[30rem] rounded-full bg-[radial-gradient(closest-side,rgba(212,178,106,0.3),transparent)] blur-3xl" />
+        <div className="wrap grid gap-12 py-20 sm:py-28 lg:grid-cols-[1fr_2fr] lg:gap-16">
+          <div className="reveal">
+            <p className="label flex items-center gap-3 text-lamp"><span className="rule" aria-hidden="true" /> In the building</p>
+            <h2 id="fac-h" className="mt-5 text-4xl sm:text-5xl">Facilities</h2>
           </div>
+          <dl className="reveal grid gap-px overflow-hidden rounded-2xl bg-white/10 sm:grid-cols-2">
+            {[
+              ["430", "self-contained rooms", <Cite key="a" id="cloth" />],
+              ["Fans", "ceiling fans in the rooms, installed by the JCR, with more donated in 2016", <><Cite id="cloth" /><Cite id="fans" /></>],
+              ["~100", "seats in the Rose Aka Conference Room, air-conditioned, with a 65-inch screen", <Cite key="c" id="rose" />],
+              ["Green", "rainwater harvesting and biogas, built into the four new halls", <Cite key="d" id="graphic2013" />],
+            ].map(([k, v, c], i) => (
+              <div key={i} className="bg-night p-7 sm:p-8">
+                <dt className="font-display text-4xl text-mist">{k}</dt>
+                <dd className="mt-3 text-mist-muted">{v}{c}</dd>
+              </div>
+            ))}
+          </dl>
         </div>
       </section>
 

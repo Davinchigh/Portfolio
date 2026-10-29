@@ -45,10 +45,10 @@ export default function HallPage() {
         <h2 id="tl-h" className="text-3xl sm:text-4xl">
           Timeline
         </h2>
-        <ol className="mt-6 max-w-2xl border-l-4 border-lamp pl-6">
+        <ol className="mt-6 max-w-2xl border-l border-line pl-8">
           {timeline.map((t) => (
             <li key={t.when} className="relative pb-6 last:pb-0">
-              <span className="absolute -left-[2.15rem] top-1.5 h-4 w-4 rounded-full border-4 border-paper bg-night" aria-hidden="true" />
+              <span className="absolute -left-[2.4rem] top-2.5 h-3 w-3 rounded-full border-2 border-paper bg-lamp-deep" aria-hidden="true" />
               <p className="font-bold">{t.when}</p>
               <p className="text-ink-muted">
                 {t.what}
