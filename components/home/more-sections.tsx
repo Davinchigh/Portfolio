@@ -1,9 +1,10 @@
 import Link from "next/link"
 import { CertificateViewer } from "@/components/home/certificate-viewer"
+import { CertGrid } from "@/components/home/cert-grid"
 import { ArrowUpRight } from "lucide-react"
 import { HandNote } from "@/components/site/hand-note"
 import { Section } from "@/components/site/section"
-import { ToolIcon, brandColor } from "@/components/site/tool-icon"
+import { BrandGradients, ToolIcon, brandColor } from "@/components/site/tool-icon"
 import { certifications, designs, stack, ventures } from "@/lib/site"
 
 export function Designs() {
@@ -79,6 +80,7 @@ export function Stack() {
         </HandNote>
       }
     >
+      <BrandGradients />
       <div className="grid gap-10 md:grid-cols-3">
         {stack.map((group) => (
           <div key={group.label}>
@@ -91,7 +93,7 @@ export function Stack() {
                     style={{ "--brand": brandColor(tool.icon) } as React.CSSProperties}
                     className="group relative flex h-14 w-14 items-center justify-center rounded-xl border bg-card text-muted-foreground transition-[color,transform,border-color] hover:-translate-y-0.5 hover:border-[var(--brand)] hover:text-[var(--brand)] focus-visible:text-[var(--brand)] motion-reduce:transition-none"
                   >
-                    <ToolIcon icon={tool.icon} name={tool.name} />
+                    <ToolIcon icon={tool.icon} name={tool.name} reveal />
                     <span className="sr-only">{tool.name}</span>
                     <span
                       aria-hidden="true"
@@ -118,17 +120,17 @@ export function Certifications() {
       title="things i've been certified in"
       intro="most recent first. open any certificate to see the original, and verify it where the issuer allows."
     >
-      <ul>
+      <CertGrid>
         {certifications.map((c) => (
-          <li key={c.issuer} className="grid gap-3 border-t py-5 sm:grid-cols-[1fr_auto] sm:gap-8">
+          <li key={c.issuer} className="cert-row grid gap-3 border-t py-5 sm:grid-cols-[1fr_auto] sm:gap-8">
             <div>
-              <h3 className="font-medium">{c.issuer}</h3>
+              <h3 className="cert-issuer font-medium">{c.issuer}</h3>
               {c.items.length === 1 ? (
                 <p className="mt-1 text-sm text-muted-foreground">{c.items[0]}</p>
               ) : (
                 <ul className="mt-3 flex flex-wrap gap-2">
                   {c.items.map((item) => (
-                    <li key={item} className="rounded-full border px-3 py-1 text-xs text-muted-foreground">
+                    <li key={item} className="cert-chip rounded-full border bg-background/60 px-3 py-1 text-xs text-muted-foreground">
                       {item}
                     </li>
                   ))}
@@ -140,10 +142,10 @@ export function Certifications() {
                 </div>
               )}
             </div>
-            <p className="meta sm:pt-1">{c.year}</p>
+            <p className="cert-year meta sm:pt-1">{c.year}</p>
           </li>
         ))}
-      </ul>
+      </CertGrid>
     </Section>
   )
 }

@@ -92,7 +92,7 @@ function ListView() {
                 {header}
               </button>
             ) : (
-              <div className="flex items-start gap-4">{header}</div>
+              <div className="group -mx-2 flex w-[calc(100%+1rem)] items-start gap-4 rounded-xl px-2 py-2 transition-colors hover:bg-accent/60 hover:[&_.font-medium]:text-route">{header}</div>
             )}
             {hasDetails && isOpen && (
               <div id={panelId} className="ml-[60px] max-w-2xl pt-3 text-sm leading-relaxed text-muted-foreground">
@@ -171,10 +171,14 @@ function TimelineView() {
               return (
                 <li key={r.id} className="relative h-10">
                   {narrow && (
+                    // The name beside a narrow bar is part of the bar: hovering or clicking it does the same thing.
+                    // (Keyboard users reach the bar button itself, which carries the full label.)
                     <span
                       aria-hidden="true"
-                      className={`pointer-events-none absolute inset-y-0 flex items-center whitespace-nowrap px-2 text-sm transition-colors ${
-                        isHovered ? "text-foreground" : "text-muted-foreground"
+                      onMouseEnter={() => setHovered(r.id)}
+                      onClick={() => setActive(r.id)}
+                      className={`absolute inset-y-0 flex cursor-pointer items-center whitespace-nowrap rounded-md px-2 text-sm transition-colors ${
+                        isHovered ? "text-foreground underline decoration-route/60 underline-offset-4" : "text-muted-foreground"
                       }`}
                       style={labelOnLeft ? { right: `${100 - left}%` } : { left: `calc(${left + width}% + 4px)` }}
                     >

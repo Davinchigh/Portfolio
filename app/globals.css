@@ -8,30 +8,31 @@
 */
 @layer base {
   :root {
-    --background: 45 14% 95%; /* #f4f3ef */
-    --foreground: 60 5% 8%; /* #161614 */
-    --card: 45 12% 92%;
-    --card-foreground: 60 5% 8%;
-    --popover: 45 14% 97%;
-    --popover-foreground: 60 5% 8%;
-    --primary: 60 5% 8%;
-    --primary-foreground: 45 14% 95%;
-    --secondary: 45 10% 89%;
-    --secondary-foreground: 60 5% 8%;
-    --muted: 45 10% 89%;
-    --muted-foreground: 50 4% 33%; /* body secondary, ~7:1 */
-    --subtle: 50 3% 40%; /* meta text, ~5.5:1 */
-    --accent: 45 10% 87%;
-    --accent-foreground: 60 5% 8%;
+    /* Light: warm paper, white cards that lift off it, ink text, a deep amber route. */
+    --background: 40 23% 95%; /* #f5f3ee */
+    --foreground: 30 8% 9%; /* #181614 */
+    --card: 0 0% 100%;
+    --card-foreground: 30 8% 9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 30 8% 9%;
+    --primary: 30 8% 9%;
+    --primary-foreground: 40 23% 96%;
+    --secondary: 38 18% 90%;
+    --secondary-foreground: 30 8% 9%;
+    --muted: 38 18% 90%;
+    --muted-foreground: 30 5% 32%; /* body secondary, ~7.5:1 */
+    --subtle: 30 4% 40%; /* meta text, ~5.6:1 */
+    --accent: 36 30% 90%;
+    --accent-foreground: 30 8% 9%;
     --destructive: 0 70% 40%;
     --destructive-foreground: 0 0% 100%;
-    --border: 45 8% 82%;
-    --input: 45 8% 74%;
-    --ring: 60 5% 8%;
-    --amber: 26 90% 37%; /* #b45309 on light, readable as text */
-    --route: 26 90% 37%; /* Ben's path through the page: the same amber */
-    --signal: 60 5% 8%; /* "you", the visitor: plain ink */
-    --live: 142 70% 32%;
+    --border: 36 14% 84%;
+    --input: 36 10% 72%;
+    --ring: 30 8% 9%;
+    --amber: 24 92% 36%; /* #b14a07, readable as text on paper and white */
+    --route: 24 92% 36%;
+    --signal: 30 8% 9%;
+    --live: 142 70% 30%;
     --radius: 0.75rem;
   }
 
@@ -189,4 +190,125 @@ html[data-visitor] .hero-pending {
 }
 @media (prefers-reduced-motion: reduce) {
   .cert-dialog[open], .cert-dialog[open]::backdrop { animation: none; }
+}
+
+/* ---------- Light mode only: depth and texture. Nothing here applies in dark mode. ---------- */
+html:not(.dark) body {
+  background-image: radial-gradient(hsl(30 8% 9% / 0.05) 1px, transparent 1px);
+  background-size: 24px 24px;
+  background-attachment: fixed;
+}
+html:not(.dark) .bg-card,
+html:not(.dark) .shot {
+  box-shadow: 0 1px 2px hsl(30 20% 20% / 0.05), 0 8px 24px -12px hsl(30 30% 20% / 0.14);
+}
+html:not(.dark) .pill-button {
+  box-shadow: 0 6px 18px -8px hsl(30 8% 9% / 0.45);
+}
+
+/* ---------- Certifications: a grid that draws in as you scroll, a spotlight that follows the pointer ---------- */
+.cert-grid {
+  position: relative;
+  isolation: isolate;
+}
+.cert-grid::before {
+  content: "";
+  position: absolute;
+  inset: -28px -20px;
+  z-index: -1;
+  pointer-events: none;
+  background-image: linear-gradient(hsl(var(--route) / 0.32) 1px, transparent 1px),
+    linear-gradient(90deg, hsl(var(--route) / 0.32) 1px, transparent 1px);
+  background-size: 36px 36px;
+  -webkit-mask-image: radial-gradient(420px 300px at var(--mx, 50%) var(--my, 30%), #000 0%, rgb(0 0 0 / 0.35) 45%, rgb(0 0 0 / 0.12) 100%),
+    linear-gradient(180deg, transparent, #000 15%, #000 85%, transparent);
+  mask-image: radial-gradient(420px 300px at var(--mx, 50%) var(--my, 30%), #000 0%, rgb(0 0 0 / 0.35) 45%, rgb(0 0 0 / 0.12) 100%),
+    linear-gradient(180deg, transparent, #000 15%, #000 85%, transparent);
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+  opacity: 0.9;
+}
+.cert-row {
+  position: relative;
+  transition: background-color 0.3s ease, transform 0.3s cubic-bezier(0.2, 0.7, 0.1, 1);
+}
+.cert-row::before {
+  content: "";
+  position: absolute;
+  left: -14px;
+  top: 18px;
+  bottom: 18px;
+  width: 2px;
+  border-radius: 2px;
+  background: hsl(var(--route));
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.1, 1);
+}
+.cert-row:hover::before,
+.cert-row:focus-within::before {
+  transform: scaleY(1);
+}
+.cert-row::after {
+  content: "";
+  position: absolute;
+  inset: 6px -14px;
+  z-index: -1;
+  border-radius: 14px;
+  background: linear-gradient(90deg, hsl(var(--route) / 0.09), hsl(var(--route) / 0.02) 70%, transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.cert-row:hover::after,
+.cert-row:focus-within::after {
+  opacity: 1;
+}
+.cert-row .cert-issuer {
+  transition: transform 0.3s cubic-bezier(0.2, 0.7, 0.1, 1), color 0.2s;
+}
+.cert-row:hover .cert-issuer,
+.cert-row:focus-within .cert-issuer {
+  transform: translateX(6px);
+  color: hsl(var(--route));
+}
+.cert-row .cert-chip {
+  transition: border-color 0.2s, color 0.2s, transform 0.2s;
+}
+.cert-row:hover .cert-chip {
+  border-color: hsl(var(--route) / 0.5);
+  color: hsl(var(--foreground));
+}
+.cert-row .cert-chip:hover {
+  transform: translateY(-2px);
+}
+.cert-row .cert-year {
+  transition: color 0.2s;
+}
+.cert-row:hover .cert-year {
+  color: hsl(var(--route));
+}
+/* each row rises in as it scrolls into view (browsers with scroll-driven animations) */
+@supports (animation-timeline: view()) {
+  .cert-row {
+    animation: cert-rise linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 70%;
+  }
+  .cert-grid::before {
+    animation: grid-draw linear both;
+    animation-timeline: view();
+    animation-range: entry 0% cover 40%;
+  }
+}
+@keyframes cert-rise {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes grid-draw {
+  from { opacity: 0; background-size: 72px 72px; }
+  to { opacity: 0.9; background-size: 36px 36px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cert-row, .cert-grid::before { animation: none !important; }
+  .cert-row .cert-issuer { transition: none; transform: none !important; }
 }

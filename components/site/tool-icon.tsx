@@ -49,18 +49,69 @@ const ICONS: Record<string, IconType> = {
   git: SiGit,
 }
 
-/** Official brand colours, used on hover. "fg" = the brand is black or white, so it follows the theme. */
+/**
+ * Each brand shown the way its own logo looks.
+ * - LOGO: multi-colour official artwork (from devicon, MIT), shown as is
+ * - GRADIENT: brands whose mark is a gradient, painted with an SVG gradient
+ * - BRAND: single-colour marks; "fg" means the mark is black or white, so it follows the theme
+ */
+const LOGO: Record<string, string> = {
+  python: "/logos/tools/python.svg", typescript: "/logos/tools/typescript.svg", javascript: "/logos/tools/javascript.svg",
+  java: "/logos/tools/java.svg", react: "/logos/tools/react.svg", mysql: "/logos/tools/mysql.svg",
+  mongodb: "/logos/tools/mongodb.svg", figma: "/logos/tools/figma.svg", git: "/logos/tools/git.svg",
+}
+const GRADIENT: Record<string, [string, string, string]> = {
+  gemini: ["#1C7DFF", "#8E6CE6", "#E2669B"],
+  sap: ["#00B8F1", "#1D8DE0", "#1D61BC"],
+}
 export const BRAND: Record<string, string> = {
-  python: "#3776AB", typescript: "#3178C6", javascript: "#F7DF1E", java: "#ED8B00", nextjs: "fg", react: "#61DAFB",
-  mysql: "#4479A1", mongodb: "#47A248", claude: "#D97757", claudecode: "#D97757", mcp: "fg", openai: "#10A37F",
-  gemini: "#8E75B2", n8n: "#EA4B71", v0: "fg", copilot: "fg", perplexity: "#1FB8CD", sap: "#0FAAFF",
-  figma: "#F24E1E", excel: "#21A366", odoo: "#A24689", git: "#F05032", rise: "#F97316",
+  python: "#3776AB", typescript: "#3178C6", javascript: "#F0DB4F", java: "#E76F00", nextjs: "fg", react: "#61DAFB",
+  mysql: "#00758F", mongodb: "#47A248", claude: "#D97757", claudecode: "#D97757", mcp: "fg", openai: "fg",
+  gemini: "#8E6CE6", n8n: "#EA4B71", v0: "fg", copilot: "fg", perplexity: "#20808D", sap: "#1D8DE0",
+  figma: "#A259FF", excel: "#107C41", odoo: "#714B67", git: "#F05032", rise: "#E8682B",
 }
 export const brandColor = (icon: string) => (BRAND[icon] && BRAND[icon] !== "fg" ? BRAND[icon] : "hsl(var(--foreground))")
 
-/** Brand icon for a tool, or its initials when there's no icon (e.g. Rise 360). */
-export function ToolIcon({ icon, name, className = "h-6 w-6" }: { icon: string; name: string; className?: string }) {
+/** Gradient definitions, rendered once on the page so gradient marks can use them. */
+export function BrandGradients() {
+  return (
+    <svg width="0" height="0" aria-hidden="true" className="absolute">
+      <defs>
+        {Object.entries(GRADIENT).map(([k, [a, b, c]]) => (
+          <linearGradient key={k} id={`brand-${k}`} x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stopColor={a} />
+            <stop offset="0.55" stopColor={b} />
+            <stop offset="1" stopColor={c} />
+          </linearGradient>
+        ))}
+      </defs>
+    </svg>
+  )
+}
+
+/** The tool in its real colours (used on hover). */
+function Colour({ icon, Icon, className }: { icon: string; Icon?: IconType; className: string }) {
+  if (LOGO[icon]) return <img src={LOGO[icon]} alt="" aria-hidden="true" className={`${className} object-contain`} />
+  if (!Icon) return null
+  if (GRADIENT[icon]) return <Icon aria-hidden="true" className={className} style={{ fill: `url(#brand-${icon})` }} />
+  return <Icon aria-hidden="true" className={className} style={{ color: brandColor(icon) }} />
+}
+
+/**
+ * Brand icon for a tool, or its initials when there's no icon (e.g. Rise 360).
+ * With `reveal`, the quiet monochrome icon cross-fades to the brand's own colours when its parent `.group` is hovered or focused.
+ */
+export function ToolIcon({ icon, name, className = "h-6 w-6", reveal = false }: { icon: string; name: string; className?: string; reveal?: boolean }) {
   const Icon = ICONS[icon]
+  if (Icon && reveal)
+    return (
+      <span className="relative inline-flex">
+        <Icon aria-hidden="true" className={`${className} transition-opacity duration-200 group-hover:opacity-0 group-focus-visible:opacity-0`} />
+        <span className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-visible:opacity-100">
+          <Colour icon={icon} Icon={Icon} className={className} />
+        </span>
+      </span>
+    )
   if (Icon) return <Icon aria-hidden="true" className={className} />
   const initials = name
     .split(/\s+/)
