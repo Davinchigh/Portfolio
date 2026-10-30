@@ -6,8 +6,8 @@ export function Monogram({ className = "", title }: { className?: string; title?
     const aDeg = 250 - i * 17 // bottom-left up to upper-left
     const a = (aDeg * Math.PI) / 180
     const r = 42
-    const x = 60 + side * Math.cos(a) * r
-    const y = 62 - Math.sin(a) * r
+    const x = Math.round((60 + side * Math.cos(a) * r) * 1000) / 1000
+    const y = Math.round((62 - Math.sin(a) * r) * 1000) / 1000
     const tangent = aDeg - 90 // direction of travel (clockwise up the left side)
     const rot = side === 1 ? -tangent - 28 : -(180 - tangent) + 28
     return <ellipse key={`${side}${i}`} cx={x} cy={y} rx="7.5" ry="2.8" transform={`rotate(${rot} ${x} ${y})`} />

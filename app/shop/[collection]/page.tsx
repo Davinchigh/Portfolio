@@ -37,9 +37,10 @@ export default async function CollectionPage({ params }: Props) {
           </Link>
         ))}
       </nav>
-      <h1 className="mt-10 text-5xl">{c.name}</h1>
+      <h1 data-split className="mt-10 text-6xl md:text-8xl">{c.name}</h1>
       <p className="mt-3 text-ash">{c.line}</p>
       <div className="nkyemu mt-10" />
+      <h2 className="sr-only">Pieces</h2>
       {items.length ? (
         <ul className="mt-10 grid grid-cols-2 gap-x-5 gap-y-10 md:grid-cols-3">
           {items.map((p) => (

@@ -2,9 +2,10 @@
 
 import Link from "next/link"
 import { useEffect, useRef, useState } from "react"
-import { Menu, X } from "lucide-react"
+import { usePathname } from "next/navigation"
 import { BagButton } from "@/components/bag"
 import { Lockup } from "@/components/logo"
+import { scrollState } from "@/components/motion"
 import { askLink, collections, hasSamples, shop } from "@/lib/store"
 
 const nav = [
@@ -13,62 +14,123 @@ const nav = [
   { href: "/how-to-order/", label: "How to order" },
 ]
 
+/** The image that floats beside each menu link on hover. */
+const menuImage: Record<string, string> = {
+  "/shop/women/": "/campaign/look-emerald-sm.webp",
+  "/shop/men/": "/campaign/look-menswear-sm.webp",
+  "/shop/bags-shoes/": "/campaign/product-bag-sm.webp",
+  "/shop/new-in/": "/campaign/look-blazer-sm.webp",
+  "/how-to-order/": "/campaign/product-pumps-sm.webp",
+}
+
 export function Header() {
   const [open, setOpen] = useState(false)
-  const menu = useRef<HTMLDivElement>(null)
+  const [hover, setHover] = useState<string | null>(null)
+  const [scrolled, setScrolled] = useState(false)
+  const button = useRef<HTMLButtonElement>(null)
+  const first = useRef<HTMLAnchorElement>(null)
+  const pathname = usePathname()
+
+  useEffect(() => setOpen(false), [pathname])
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false)
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && open) {
+        setOpen(false)
+        button.current?.focus()
+      }
+    }
     window.addEventListener("keydown", onKey)
     return () => window.removeEventListener("keydown", onKey)
+  }, [open])
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 40)
+    onScroll()
+    window.addEventListener("scroll", onScroll, { passive: true })
+    return () => window.removeEventListener("scroll", onScroll)
   }, [])
+  useEffect(() => {
+    document.documentElement.classList.toggle("menu-open", open)
+    if (open) {
+      scrollState.lenis?.stop()
+      setTimeout(() => first.current?.focus(), 350)
+    } else scrollState.lenis?.start()
+  }, [open])
 
   return (
-    <header className="sticky top-0 z-40 border-b border-gold/15 bg-onyx/90 backdrop-blur">
+    <header className={`sticky top-0 z-40 transition-colors duration-500 ${scrolled && !open ? "bg-onyx/90 backdrop-blur-md" : "bg-onyx"}`}>
       {hasSamples && (
         <p className="bg-espresso px-4 py-1.5 text-center text-xs text-champagne">
           Preview: sample pieces, prices and AI-generated campaign images. Her real products and photos are coming.
         </p>
       )}
-      <nav aria-label="Main" className="wrap flex h-[72px] items-center justify-between gap-6">
-        <Link href="/" aria-label={`${shop.name}, home`}>
+      <nav aria-label="Main" className="relative z-50 mx-auto grid h-[72px] w-full max-w-[1600px] grid-cols-[1fr_auto_1fr] items-center px-5 sm:px-8">
+        <button
+          ref={button}
+          type="button"
+          data-cursor={open ? "Close" : "Menu"}
+          className="group flex h-12 items-center gap-3 justify-self-start pr-3 text-[12px] font-medium tracking-caps text-champagne"
+          aria-expanded={open}
+          aria-controls="site-menu"
+          onClick={() => setOpen((o) => !o)}
+        >
+          <span aria-hidden="true" className="relative block h-3 w-7">
+            <span className={`absolute left-0 top-0 h-px w-7 bg-current transition-transform duration-500 ${open ? "translate-y-1.5 rotate-45" : "group-hover:w-5"}`} />
+            <span className={`absolute bottom-0 left-0 h-px bg-current transition-all duration-500 ${open ? "w-7 -translate-y-1.5 -rotate-45" : "w-5 group-hover:w-7"}`} />
+          </span>
+          <span className="hidden sm:inline">{open ? "CLOSE" : "MENU"}</span>
+          <span className="sr-only sm:hidden">{open ? "Close menu" : "Open menu"}</span>
+        </button>
+        <Link href="/" className="justify-self-center">
           <Lockup />
         </Link>
-        <ul className="hidden items-center gap-1 lg:flex">
-          {nav.map((n) => (
-            <li key={n.href}>
-              <Link href={n.href} className="rounded-full px-3 py-3 text-[13px] font-medium tracking-[0.12em] text-champagne/85 hover:text-gold">
-                {n.label.toUpperCase()}
-              </Link>
-            </li>
-          ))}
-        </ul>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1 justify-self-end">
+          <a href={askLink("a fitting")} target="_blank" rel="noopener noreferrer" className="hidden rounded-full px-4 py-3 text-[12px] font-medium tracking-caps text-champagne/85 hover:text-gold md:block">
+            BOOK A FITTING<span className="sr-only"> on WhatsApp (opens in a new tab)</span>
+          </a>
           <BagButton />
-          <button
-            type="button"
-            className="grid h-12 w-12 place-items-center rounded-full text-champagne hover:bg-espresso lg:hidden"
-            aria-expanded={open}
-            aria-controls="mobile-menu"
-            onClick={() => setOpen((o) => !o)}
-          >
-            {open ? <X className="h-5 w-5" aria-hidden="true" /> : <Menu className="h-5 w-5" aria-hidden="true" />}
-            <span className="sr-only">{open ? "Close menu" : "Open menu"}</span>
-          </button>
         </div>
       </nav>
-      {open && (
-        <div id="mobile-menu" ref={menu} className="border-t border-gold/15 lg:hidden">
-          <ul className="wrap py-3">
-            {nav.map((n) => (
-              <li key={n.href}>
-                <Link href={n.href} onClick={() => setOpen(false)} className="block py-3 text-lg text-champagne">
-                  {n.label}
+
+      <div id="site-menu" className={`site-menu ${open ? "is-open" : ""}`} inert={!open}>
+        <div className="mx-auto grid h-full w-full max-w-[1600px] grid-rows-[1fr_auto] px-5 pb-8 pt-28 sm:px-8 md:grid-cols-[1.4fr_1fr] md:grid-rows-1 md:pt-36">
+          <ul className="flex flex-col justify-center gap-1" onMouseLeave={() => setHover(null)}>
+            {nav.map((n, i) => (
+              <li key={n.href} className="overflow-hidden">
+                <Link
+                  ref={i === 0 ? first : undefined}
+                  href={n.href}
+                  onMouseEnter={() => setHover(n.href)}
+                  onFocus={() => setHover(n.href)}
+                  className="menu-link group flex items-baseline gap-5 py-1 font-display text-[clamp(2.6rem,7.5vw,6.5rem)] leading-[1.02] text-champagne"
+                  style={{ transitionDelay: open ? `${120 + i * 60}ms` : "0ms" }}
+                >
+                  <span className="font-sans text-xs tracking-caps text-gold/80">0{i + 1}</span>
+                  <span className={`transition-[color,transform] duration-500 group-hover:translate-x-3 group-hover:italic group-hover:text-gold ${hover && hover !== n.href ? "text-champagne/35" : ""}`}>{n.label}</span>
                 </Link>
               </li>
             ))}
           </ul>
+          <div className="relative hidden md:block">
+            {Object.entries(menuImage).map(([href, src]) => (
+              <img
+                key={href}
+                src={src}
+                alt=""
+                loading="lazy"
+                className={`absolute inset-y-8 right-0 h-[calc(100%-4rem)] w-[78%] rounded-sm object-cover transition-[opacity,transform,clip-path] duration-700 ${hover === href ? "opacity-100 [clip-path:inset(0)]" : "opacity-0 [clip-path:inset(12%_8%_12%_8%)]"}`}
+              />
+            ))}
+            {!hover && (
+              <div className="absolute inset-y-8 right-0 flex w-[78%] flex-col justify-end text-sm text-ash">
+                <p className="font-display text-2xl italic text-champagne">Cut in Accra, worn everywhere.</p>
+                <p className="mt-3">WhatsApp {shop.phoneDisplay}</p>
+                <p>Instagram @{shop.instagram}</p>
+              </div>
+            )}
+          </div>
+          <p className="self-end text-xs tracking-caps text-ash md:hidden">WHATSAPP {shop.phoneDisplay}</p>
         </div>
-      )}
+      </div>
     </header>
   )
 }
@@ -131,6 +193,7 @@ export function Footer() {
 
 export function WhatsAppFab() {
   return (
+    <aside aria-label="WhatsApp chat">
     <a
       href={askLink()}
       target="_blank"
@@ -143,5 +206,6 @@ export function WhatsAppFab() {
       </svg>
       <span className="hidden sm:inline" aria-hidden="true">Chat with us</span>
     </a>
+    </aside>
   )
 }

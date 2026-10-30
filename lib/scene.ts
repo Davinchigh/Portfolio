@@ -23,8 +23,9 @@ export type Look = {
    * A short looping clip of the same look (she breathes, blinks, smiles). Coordinates are in the video frame.
    * `track` is a JSON list of per-frame [dx, dy] pixel offsets of her fist, so the scarf stays in her grip.
    * The clip is a graded ping-pong loop, so it never jumps when it repeats. `mask` is her fist cut from the clip.
+   * `packed` clips carry her matte in the bottom half, so a wordmark can sit behind her.
    */
-  video?: { src: string; track: string; mask?: string; fps: number; size: [number, number]; hand: [number, number]; box: [number, number, number, number] }
+  video?: { src: string; track: string; mask?: string; packed?: boolean; fps: number; size: [number, number]; hand: [number, number]; box: [number, number, number, number] }
 }
 
 const stageVertex = /* glsl */ `
@@ -41,6 +42,8 @@ uniform sampler2D uA;
 uniform sampler2D uB;
 uniform float uDecA;   // 1 when the slot holds the video, which three hands to custom shaders still in sRGB
 uniform float uDecB;
+uniform float uPackA;  // 1 when the slot is the packed clip: colour in the top half, her matte in the bottom half
+uniform float uPackB;
 uniform vec4 uRectA;   // x0, y0, w, h in world units
 uniform vec4 uRectB;
 uniform vec3 uBg;
@@ -48,25 +51,36 @@ uniform vec4 uLine;    // Y, amplitude, frequency, phase
 uniform float uTilt;
 uniform float uActive;
 uniform float uTime;
+uniform sampler2D uText;   // the giant wordmark, drawn in screen space
+uniform float uTextAmt;
+uniform vec2 uView;
+uniform vec2 uTextShift;
 varying vec2 vWorld;
 
 vec3 srgbToLinear(vec3 c) { return mix(c / 12.92, pow((c + 0.055) / 1.055, vec3(2.4)), step(vec3(0.04045), c)); }
-vec3 look(sampler2D t, vec4 r, vec2 p, float dec) {
+// rgb: the look melted into the page; a: how much of her body covers this pixel (0 when there is no matte)
+vec4 look(sampler2D t, vec4 r, vec2 p, float dec, float pack) {
   vec2 uv = (p - r.xy) / r.zw;
-  vec3 c = texture2D(t, clamp(uv, 0.001, 0.999)).rgb;
+  vec2 cuv = clamp(uv, 0.002, 0.998);
+  vec3 c = texture2D(t, pack > 0.5 ? vec2(cuv.x, 0.5 + cuv.y * 0.5) : cuv).rgb;
   if (dec > 0.5) c = srgbToLinear(c);
+  float matte = pack > 0.5 ? smoothstep(0.12, 0.85, texture2D(t, vec2(cuv.x, cuv.y * 0.5)).r) : 0.0;
   // melt the photo into the page on every side
   float m = smoothstep(0.0, 0.18, uv.x) * smoothstep(1.0, 0.82, uv.x)
           * smoothstep(-0.02, 0.07, uv.y) * smoothstep(1.0, 0.8, uv.y);
-  return mix(uBg, c, m);
+  float inside = step(0.0, uv.x) * step(uv.x, 1.0) * step(0.0, uv.y) * step(uv.y, 1.0);
+  return vec4(mix(uBg, c, m), matte * inside);
 }
 
 void main() {
-  vec3 a = look(uA, uRectA, vWorld, uDecA);
-  vec3 b = look(uB, uRectB, vWorld, uDecB);
+  vec4 a = look(uA, uRectA, vWorld, uDecA, uPackA);
+  // the wordmark sits behind her: wherever her matte is, she wins
+  vec4 tx = texture2D(uText, vWorld / uView + 0.5 + uTextShift);
+  vec3 ca = mix(a.rgb, tx.rgb, tx.a * uTextAmt * (1.0 - a.a));
+  vec4 b = look(uB, uRectB, vWorld, uDecB, uPackB);
   float edge = vWorld.y - (uLine.x + uLine.y * sin(vWorld.x * uLine.z + uLine.w) + uTilt * vWorld.x);
   float reveal = uActive * smoothstep(-0.015, 0.015, edge);
-  vec3 col = mix(a, b, reveal);
+  vec3 col = mix(ca, b.rgb, reveal);
   // light catching the edge of the silk
   col += vec3(0.85, 0.7, 0.45) * smoothstep(0.06, 0.0, abs(edge)) * uActive * 0.25;
   gl_FragColor = vec4(col, 1.0);
@@ -112,7 +126,7 @@ void main() {
   float s = aniso(T, normalize(L1 + V), 90.0) * 0.9 + aniso(T, normalize(L1 + V), 12.0) * 0.18;
   float rim = pow(1.0 - max(dot(N, V), 0.0), 3.0);
   vec3 col = uColor * (0.07 + 0.78 * d1 + 0.14 * d2)
-           + vec3(1.0, 0.9, 0.72) * s
+           + vec3(1.0, 0.84, 0.58) * s * 0.85
            + uColor * rim * 0.25;
   if (back) col *= 0.72;
   gl_FragColor = vec4(col, 1.0);
@@ -126,13 +140,14 @@ uniform sampler2D uMask;  // her fist cut out (alpha only is used)
 uniform vec4 uBox;        // the fist's box in the frame: x, y from the top, width, height (0..1)
 uniform float uOpacity;
 uniform float uDec;
+uniform float uPack;
 varying vec2 vUv;
 vec3 srgbToLinear(vec3 c) { return mix(c / 12.92, pow((c + 0.055) / 1.055, vec3(2.4)), step(vec3(0.04045), c)); }
 void main() {
   vec2 uv = vec2(uBox.x + vUv.x * uBox.z, 1.0 - (uBox.y + (1.0 - vUv.y) * uBox.w));
-  vec3 c = texture2D(uTex, uv).rgb;
+  vec3 c = texture2D(uTex, uPack > 0.5 ? vec2(uv.x, 0.5 + uv.y * 0.5) : uv).rgb;
   if (uDec > 0.5) c = srgbToLinear(c);
-  float a = texture2D(uMask, vUv).a;
+  float a = uPack > 0.5 ? smoothstep(0.12, 0.85, texture2D(uTex, vec2(uv.x, uv.y * 0.5)).r) : texture2D(uMask, vUv).a;
   gl_FragColor = vec4(c, a * uOpacity);
   #include <colorspace_fragment>
 }`
@@ -177,7 +192,7 @@ function makeCloth(C: number, R: number) {
   return { C, R, N, pos, prev, a: Int32Array.from(A), b: Int32Array.from(B), k: Uint8Array.from(K), id }
 }
 
-export function createExperience(canvas: HTMLCanvasElement, looks: Look[], onReady: () => void) {
+export function createExperience(canvas: HTMLCanvasElement, looks: Look[], onReady: () => void, opts: { word?: string } = {}) {
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false, powerPreference: "high-performance" })
   const small = window.innerWidth < 768
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, small ? 1.5 : 1.75))
@@ -200,6 +215,12 @@ export function createExperience(canvas: HTMLCanvasElement, looks: Look[], onRea
     uB: { value: null as THREE.Texture | null },
     uDecA: { value: 0 },
     uDecB: { value: 0 },
+    uPackA: { value: 0 },
+    uPackB: { value: 0 },
+    uText: { value: null as THREE.Texture | null },
+    uTextAmt: { value: 0 },
+    uView: { value: new THREE.Vector2(1, 1) },
+    uTextShift: { value: new THREE.Vector2() },
     uRectA: { value: new THREE.Vector4() },
     uRectB: { value: new THREE.Vector4() },
     uBg: { value: new THREE.Vector3(bg.r, bg.g, bg.b) },
@@ -214,6 +235,46 @@ export function createExperience(canvas: HTMLCanvasElement, looks: Look[], onRea
   )
   stage.renderOrder = 0
   scene.add(stage)
+
+  // ---------- the wordmark behind her (a 2D canvas, sampled in screen space) ----------
+  const wordCanvas = document.createElement("canvas")
+  const wordTex = new THREE.CanvasTexture(wordCanvas)
+  wordTex.colorSpace = THREE.SRGBColorSpace
+  wordTex.minFilter = THREE.LinearFilter
+  wordTex.generateMipmaps = false
+  let wordReady = false
+  const drawWord = () => {
+    const word = opts.word
+    if (!word) return
+    const w = Math.max(2, Math.round(canvas.clientWidth * Math.min(window.devicePixelRatio, 1.5)))
+    const h = Math.max(2, Math.round(canvas.clientHeight * Math.min(window.devicePixelRatio, 1.5)))
+    wordCanvas.width = w
+    wordCanvas.height = h
+    const g = wordCanvas.getContext("2d")
+    if (!g) return
+    g.clearRect(0, 0, w, h)
+    const family = '"Bodoni Moda Variable", "Bodoni Moda", Georgia, serif'
+    let size = h * 0.5
+    g.font = `500 ${size}px ${family}`
+    const target = w * (mobile ? 0.94 : 0.84)
+    size *= target / Math.max(g.measureText(word).width, 1)
+    size = Math.min(size, h * (mobile ? 0.3 : 0.56))
+    g.font = `500 ${size}px ${family}`
+    g.textAlign = "center"
+    g.textBaseline = "middle"
+    if ("letterSpacing" in g) (g as CanvasRenderingContext2D & { letterSpacing: string }).letterSpacing = `${-size * 0.02}px`
+    const cy = h * (mobile ? 0.24 : 0.45)
+    const grad = g.createLinearGradient(0, cy - size / 2, 0, cy + size / 2)
+    grad.addColorStop(0, "#EAD6A6")
+    grad.addColorStop(0.6, "#C9A45C")
+    grad.addColorStop(1, "#6E5323")
+    g.fillStyle = grad
+    g.fillText(word, w / 2, cy)
+    wordTex.needsUpdate = true
+    wordReady = true
+    stageU.uText.value = wordTex
+  }
+  if (opts.word && document.fonts) document.fonts.load(`500 100px "Bodoni Moda Variable"`).finally(drawWord)
 
   // ---------- cloth ----------
   const cloth = makeCloth(small ? 18 : 24, small ? 24 : 32)
@@ -294,6 +355,7 @@ export function createExperience(canvas: HTMLCanvasElement, looks: Look[], onRea
     uBox: { value: new THREE.Vector4() },
     uOpacity: { value: 1 },
     uDec: { value: 0 },
+    uPack: { value: 0 },
   }
   const hand = new THREE.Mesh(
     new THREE.PlaneGeometry(1, 1),
@@ -355,9 +417,9 @@ export function createExperience(canvas: HTMLCanvasElement, looks: Look[], onRea
             vt.generateMipmaps = false
             textures[0]?.dispose()
             textures[0] = vt
-            aspects[0] = v.videoWidth / v.videoHeight
+            aspects[0] = vcfg.packed ? vcfg.size[0] / vcfg.size[1] : v.videoWidth / v.videoHeight
             vid = v
-            if (vcfg.mask) loader.load(vcfg.mask, (m) => (handU.uMask.value = m))
+            if (vcfg.mask && !vcfg.packed) loader.load(vcfg.mask, (m) => (handU.uMask.value = m))
             const firstLoad = !useVideo && !stageU.uA.value
             useVideo = true
             layout()
@@ -387,11 +449,13 @@ export function createExperience(canvas: HTMLCanvasElement, looks: Look[], onRea
     const header = document.querySelector("header")
     headerWorld = ((header?.getBoundingClientRect().height ?? 0) / Math.max(h, 1)) * viewH
     stage.scale.set(viewW * 1.25, viewH * 1.25, 1)
+    stageU.uView.value.set(viewW, viewH)
+    if (wordReady) drawWord()
     layout()
   }
 
   /** contain-fit a look below the header: desktop on the right, phones at the top */
-  const rectFor = (aspect: number, breathe = 1) => {
+  const rectFor = (aspect: number, breathe = 1, centre = false) => {
     const top = viewH / 2 - headerWorld - viewH * 0.03
     const bottom = -viewH / 2 + viewH * 0.01
     if (mobile) {
@@ -402,8 +466,9 @@ export function createExperience(canvas: HTMLCanvasElement, looks: Look[], onRea
       w *= breathe
       return new THREE.Vector4(-w / 2, top - h, w, h)
     }
-    const x0 = -viewW / 2 + viewW * 0.44
-    const x1 = viewW / 2 - viewW * 0.03
+    // the hero stands centre stage in front of the wordmark; the other looks sit right of the copy
+    const x0 = centre ? -viewW * 0.3 : -viewW / 2 + viewW * 0.44
+    const x1 = centre ? viewW * 0.3 : viewW / 2 - viewW * 0.03
     let h = top - bottom
     let w = h * aspect
     if (w > x1 - x0) (w = x1 - x0), (h = w / aspect)
@@ -412,11 +477,12 @@ export function createExperience(canvas: HTMLCanvasElement, looks: Look[], onRea
     return new THREE.Vector4((x0 + x1) / 2 - w / 2, bottom, w, h)
   }
 
+  const centreHero = () => !!opts.word
   const handWorld = new THREE.Vector3()
   const handRect = new THREE.Vector4()
   let breathe = 1
   function layout() {
-    const r = rectFor(aspects[0], breathe)
+    const r = rectFor(aspects[0], breathe, centreHero())
     handRect.copy(r)
     let hp: [number, number] = looks[0]?.hand ?? [0.78, 0.215]
     let b: [number, number, number, number] = looks[0]?.handMask?.box ?? [0, 0, 0, 0]
@@ -596,8 +662,15 @@ export function createExperience(canvas: HTMLCanvasElement, looks: Look[], onRea
     stageU.uDecA.value = isVid(textures[i])
     stageU.uDecB.value = isVid(textures[next])
     handU.uDec.value = isVid(textures[0])
-    if (textures[i]) (stageU.uA.value = textures[i]), stageU.uRectA.value.copy(rectFor(aspects[i], i === 0 ? breathe : 1))
-    if (textures[next]) (stageU.uB.value = textures[next]), stageU.uRectB.value.copy(rectFor(aspects[next], next === 0 ? breathe : 1))
+    const isPacked = (t?: THREE.Texture) => (t instanceof THREE.VideoTexture && vcfg?.packed ? 1 : 0)
+    stageU.uPackA.value = isPacked(textures[i])
+    stageU.uPackB.value = isPacked(textures[next])
+    handU.uPack.value = isPacked(textures[0])
+    // the wordmark fades and drifts as she leaves; a touch of parallax against the pointer
+    stageU.uTextAmt.value = wordReady && i === 0 ? 1 - ss(0, 0.35, f) : 0
+    stageU.uTextShift.value.set(-pointer.x * 0.006, -pointer.y * 0.004 - f * 0.08)
+    if (textures[i]) (stageU.uA.value = textures[i]), stageU.uRectA.value.copy(rectFor(aspects[i], i === 0 ? breathe : 1, i === 0 && centreHero()))
+    if (textures[next]) (stageU.uB.value = textures[next]), stageU.uRectB.value.copy(rectFor(aspects[next], next === 0 ? breathe : 1, next === 0 && centreHero()))
     if (!stageU.uA.value && textures[0]) stageU.uA.value = textures[0]
     if (!stageU.uB.value) stageU.uB.value = stageU.uA.value
 
@@ -666,7 +739,7 @@ export function createExperience(canvas: HTMLCanvasElement, looks: Look[], onRea
     silk.visible = shadow.visible = visible
     shadow.position.set(0.09, -0.12, 0)
     shadowU.uOpacity.value = 0.2 * (1 - release * 0.5)
-    hand.visible = i === 0 && release < 0.999 && !!handU.uTex.value && !!handU.uMask.value
+    hand.visible = i === 0 && release < 0.999 && !!handU.uTex.value && (!!handU.uMask.value || handU.uPack.value > 0.5)
     // the clip only plays while she is on screen
     if (vid) {
       if (p > 1.05 && !vid.paused) vid.pause()
@@ -697,6 +770,7 @@ export function createExperience(canvas: HTMLCanvasElement, looks: Look[], onRea
       vid?.pause()
       if (vid) vid.removeAttribute("src")
       textures.forEach((t) => t?.dispose())
+      wordTex.dispose()
       ;[stage, silk, shadow, hand].forEach((m) => (m.material as THREE.Material).dispose())
       stage.geometry.dispose()
       hand.geometry.dispose()
