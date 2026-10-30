@@ -164,7 +164,7 @@ Deno.serve(async (req) => {
   }
   if (!(await authorised(req))) return json({ error: "Unauthorised" }, 401)
   let body: Record<string, any>
-  try { body = await req.json() } catch { return json({ error: "Send JSON" }, 400) }
+  try { const t = await req.text(); body = t.trim() ? JSON.parse(t) : {} } catch { return json({ error: "Send JSON" }, 400) }
 
   // Vapi and similar voice platforms: a batch of tool calls
   const calls = body?.message?.toolCallList ?? body?.message?.toolCalls
@@ -179,10 +179,14 @@ Deno.serve(async (req) => {
     return json({ results })
   }
 
-  // { tool, args } or flat { tool, p_code: ... }
-  const tool = body.tool ?? body.name
+  // { tool, args }, flat { tool, p_code: ... }, or ?tool=check_stock&channel=phone with the arguments as the body
+  // (voice platforms such as ElevenLabs send only the arguments, so the tool and channel ride in the URL)
+  const q = new URL(req.url).searchParams
+  const tool = body.tool ?? q.get("tool") ?? body.name
   let args = body.args ?? body.arguments
-  if (args === undefined) { const { tool: _t, name: _n, ...rest } = body; args = rest }
+  if (args === undefined) { const { tool: _t, ...rest } = body; args = rest }
   if (typeof args === "string") { try { args = JSON.parse(args) } catch { args = {} } }
+  const ch = q.get("channel")
+  if (ch && CHANNELS.includes(ch) && TOOLS[tool]?.params.p_channel) args.p_channel = ch
   return json(await run(tool, args))
 })
