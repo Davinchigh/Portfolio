@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react"
 import { ArrowDown } from "lucide-react"
 import { canRun3D } from "@/lib/gate"
 import type { Look } from "@/lib/scene"
+import { openEsi } from "@/components/concierge"
 import { askLink, findProduct, ghs } from "@/lib/store"
 
 /** poster: the still used when 3D is off (the hero poster already has the scarf in her hand) */
@@ -134,9 +135,9 @@ export function Experience() {
             <p data-reveal className="mt-1 hidden max-w-sm text-champagne/75 sm:block md:ml-auto">Men&apos;s and women&apos;s wear, bags and shoes. Delivery and pick-up worldwide.</p>
             <div data-reveal className="mt-6 flex flex-wrap gap-3 md:justify-end">
               <Link href="/shop/new-in/" data-magnetic data-cursor="Shop" className="btn-gold">See what&apos;s new</Link>
-              <a href={askLink("a fitting")} target="_blank" rel="noopener noreferrer" data-magnetic className="btn-ghost bg-onyx/40 backdrop-blur-sm">
-                Book a fitting on WhatsApp
-              </a>
+              <button type="button" onClick={() => openEsi("I'd like to book a fitting")} data-magnetic className="btn-ghost bg-onyx/40 backdrop-blur-sm">
+                Book a fitting
+              </button>
             </div>
           </div>
         </div>

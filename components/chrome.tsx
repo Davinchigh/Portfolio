@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react"
 import { usePathname } from "next/navigation"
 import { BagButton } from "@/components/bag"
 import { Lockup } from "@/components/logo"
+import { openEsi } from "@/components/concierge"
 import { scrollState } from "@/components/motion"
 import { askLink, collections, hasSamples, shop } from "@/lib/store"
 
@@ -84,9 +85,9 @@ export function Header() {
           <Lockup />
         </Link>
         <div className="flex items-center gap-1 justify-self-end">
-          <a href={askLink("a fitting")} target="_blank" rel="noopener noreferrer" className="hidden rounded-full px-4 py-3 text-[12px] font-medium tracking-caps text-champagne/85 hover:text-gold md:block">
-            BOOK A FITTING<span className="sr-only"> on WhatsApp (opens in a new tab)</span>
-          </a>
+          <button type="button" onClick={() => openEsi("I'd like to book a fitting")} className="hidden rounded-full px-4 py-3 text-[12px] font-medium tracking-caps text-champagne/85 hover:text-gold md:block">
+            BOOK A FITTING
+          </button>
           <BagButton />
         </div>
       </nav>

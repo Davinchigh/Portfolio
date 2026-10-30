@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next"
 import "./globals.css"
 import { BagProvider } from "@/components/bag"
 import { Footer, Header, WhatsAppFab } from "@/components/chrome"
+import { Concierge } from "@/components/concierge"
 import { Curtain, INTRO_SCRIPT } from "@/components/curtain"
 import { Motion } from "@/components/motion"
 import { shop } from "@/lib/store"
@@ -44,6 +45,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <main id="main" tabIndex={-1} className="outline-none">{children}</main>
           <Footer />
           <WhatsAppFab />
+          <Concierge />
           <Motion />
           <Curtain />
         </BagProvider>

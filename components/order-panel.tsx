@@ -1,7 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useBag } from "@/components/bag"
+import { liveStock, type StockInfo } from "@/lib/live"
 import { askLink, ghs, usd, whatsappLink, type Product } from "@/lib/store"
 
 const NOT_SURE = "Not sure, please advise"
@@ -12,6 +13,19 @@ export function OrderPanel({ p }: { p: Product }) {
   const [size, setSize] = useState(p.sizes.length === 1 ? p.sizes[0] : "")
   const [added, setAdded] = useState(false)
   const { add, open } = useBag()
+  const [stock, setStock] = useState<StockInfo | null>(null)
+  useEffect(() => {
+    const ac = new AbortController()
+    liveStock(p.code, ac.signal).then(setStock)
+    return () => ac.abort()
+  }, [p.code])
+  // what the back office says about the chosen colour and size
+  const opt = stock?.options.find((o) => (!colour || o.colour === colour) && o.size === size)
+  const stockLine = !stock || !size || size === NOT_SURE || !opt
+    ? null
+    : opt.in_stock > 0
+      ? opt.in_stock <= 2 ? `Only ${opt.in_stock} left in ${opt.size}` : `In stock in ${opt.size}`
+      : opt.can_make ? `Made for you in ${opt.size}. ${p.leadTime}` : `${opt.size} is sold out`
   const ready = Boolean(colour && size) && p.availability !== "sold-out"
   const line = { code: p.code, name: p.name, colour, size, price: p.price }
 
@@ -45,6 +59,14 @@ export function OrderPanel({ p }: { p: Product }) {
       {p.colours.length > 1 && <Chips label="Colour" options={p.colours} value={colour} set={setColour} />}
       {p.colours.length === 1 && <p className="mt-6 text-sm"><span className="text-ash">Colour: </span>{p.colours[0]}</p>}
       {p.sizes.length > 1 && <Chips label="Size" options={[...p.sizes, NOT_SURE]} value={size} set={setSize} />}
+      <p role="status" className="mt-4 flex min-h-5 items-center gap-2 text-sm text-champagne/85">
+        {stockLine && (
+          <>
+            <span aria-hidden="true" className={`h-2 w-2 rounded-full ${opt && opt.in_stock > 0 ? "bg-[#7BC47F]" : opt?.can_make ? "bg-gold" : "bg-ash"}`} />
+            {stockLine}
+          </>
+        )}
+      </p>
 
       <div className="mt-8 flex flex-col gap-3 sm:flex-row">
         {ready ? (

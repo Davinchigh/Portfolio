@@ -89,12 +89,15 @@ void main() {
 
 const silkVertex = /* glsl */ `
 attribute vec3 tangent3;
+attribute float ao;
 varying vec3 vNormal;
 varying vec3 vTangent;
 varying vec3 vPos;
 varying vec2 vUv;
+varying float vAO;
 void main() {
   vUv = uv;
+  vAO = ao;
   vNormal = normalize(normalMatrix * normal);
   vTangent = normalize(normalMatrix * tangent3);
   vec4 mv = modelViewMatrix * vec4(position, 1.0);
@@ -102,34 +105,99 @@ void main() {
   gl_Position = projectionMatrix * mv;
 }`
 
+/**
+ * Silk charmeuse. Built up the way a lighting artist would:
+ * - a soft wrapped diffuse whose shadows turn deeper and warmer, as dyed silk does
+ * - two shifted anisotropic lobes along the weave (a white primary, a coloured secondary), the "liquid" streak
+ * - a studio softbox reflected in the surface with Fresnel, so the folds read as glossy
+ * - Charlie sheen at grazing angles, light glowing through where the cloth is backlit
+ * - fold occlusion from the simulation, a fine crinkle in the normal, and a rolled hem catching light
+ */
 const silkFragment = /* glsl */ `
 precision highp float;
 uniform vec3 uColor;
+uniform vec3 uDeep;
+uniform float uTime;
+uniform float uOpacity;
 varying vec3 vNormal;
 varying vec3 vTangent;
 varying vec3 vPos;
 varying vec2 vUv;
+varying float vAO;
 
-float aniso(vec3 T, vec3 H, float e) { float th = dot(T, H); return pow(sqrt(max(1.0 - th * th, 0.0)), e); }
+float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+float noise(vec2 p) {
+  vec2 i = floor(p), f = fract(p);
+  vec2 u = f * f * (3.0 - 2.0 * f);
+  return mix(mix(hash(i), hash(i + vec2(1, 0)), u.x), mix(hash(i + vec2(0, 1)), hash(i + vec2(1, 1)), u.x), u.y);
+}
+float fbm(vec2 p) { float v = 0.0, a = 0.5; for (int i = 0; i < 4; i++) { v += a * noise(p); p *= 2.03; a *= 0.5; } return v; }
+
+// a warm studio: big softbox upper left, a thin strip light right, dark floor
+vec3 studio(vec3 r) {
+  vec3 c = vec3(0.012, 0.009, 0.007);
+  c += vec3(1.0, 0.82, 0.58) * 2.4 * smoothstep(0.55, 0.92, dot(r, normalize(vec3(-0.55, 0.7, 0.45))));
+  c += vec3(1.0, 0.9, 0.75) * 0.9 * smoothstep(0.9, 0.985, dot(r, normalize(vec3(0.85, 0.1, 0.5))));
+  c += vec3(0.35, 0.22, 0.12) * 0.25 * smoothstep(-0.2, 0.6, r.y);
+  return c;
+}
+
+float strand(vec3 T, vec3 H, float e) { float th = dot(T, H); return pow(sqrt(max(1.0 - th * th, 0.0)), e); }
 
 void main() {
   vec3 N = normalize(vNormal);
   bool back = !gl_FrontFacing;
   if (back) N = -N;
+  vec3 T = normalize(vTangent - N * dot(vTangent, N));
+  vec3 B = cross(N, T);
+  // fine crinkle: long soft ripples along the weave, barely there
+  vec2 q = vec2(vUv.x * 9.0, vUv.y * 2.6);
+  float h1 = fbm(q + vec2(0.0, 0.0)), h2 = fbm(q + vec2(0.07, 0.0)), h3 = fbm(q + vec2(0.0, 0.07));
+  N = normalize(N + (T * (h1 - h2) + B * (h1 - h3)) * 1.6);
+  T = normalize(T - N * dot(T, N));
+
   vec3 V = normalize(-vPos);
-  vec3 T = normalize(vTangent);
   vec3 L1 = normalize(vec3(-0.55, 0.75, 0.6));  // warm key, upper left (matches the photos)
-  vec3 L2 = normalize(vec3(0.7, -0.2, 0.5));    // soft fill
-  float d1 = max(dot(N, L1), 0.0);
-  float d2 = max(dot(N, L2), 0.0);
-  // satin: a long anisotropic highlight along the weave, plus a broad soft one
-  float s = aniso(T, normalize(L1 + V), 90.0) * 0.9 + aniso(T, normalize(L1 + V), 12.0) * 0.18;
-  float rim = pow(1.0 - max(dot(N, V), 0.0), 3.0);
-  vec3 col = uColor * (0.07 + 0.78 * d1 + 0.14 * d2)
-           + vec3(1.0, 0.84, 0.58) * s * 0.85
-           + uColor * rim * 0.25;
-  if (back) col *= 0.72;
-  gl_FragColor = vec4(col, 1.0);
+  vec3 L2 = normalize(vec3(0.8, -0.1, 0.45));   // cool-ish rim from the right
+  float nl1 = dot(N, L1), nl2 = dot(N, L2), nv = max(dot(N, V), 0.0);
+
+  // diffuse: wrapped, with shadows sliding to a deeper, warmer dye
+  float w1 = clamp((nl1 + 0.35) / 1.35, 0.0, 1.0);
+  vec3 base = mix(uDeep, uColor, smoothstep(0.0, 0.85, w1));
+  vec3 col = base * (0.06 + 0.82 * w1) + uColor * 0.12 * max(nl2, 0.0);
+
+  // two shifted anisotropic lobes along the weave
+  vec3 H1 = normalize(L1 + V);
+  vec3 Ts1 = normalize(T + N * 0.12), Ts2 = normalize(T - N * 0.18);
+  float spec1 = strand(Ts1, H1, 140.0);
+  float spec2 = strand(Ts2, H1, 22.0);
+  col += vec3(1.0, 0.9, 0.72) * spec1 * 0.75 * smoothstep(-0.1, 0.4, nl1);
+  col += uColor * spec2 * 0.55 * smoothstep(-0.2, 0.3, nl1);
+  col += vec3(1.0, 0.95, 0.88) * strand(T, normalize(L2 + V), 90.0) * 0.25 * smoothstep(0.0, 0.3, nl2);
+
+  // the softbox reflected, stretched along the weave
+  vec3 R = reflect(-V, normalize(N + T * 0.08 * sin(vUv.x * 40.0)));
+  float F = 0.04 + 0.96 * pow(1.0 - nv, 5.0);
+  col += studio(R) * mix(uColor, vec3(1.0), 0.22) * (0.1 + F * 0.7);
+
+  // sheen at grazing angles
+  float sinH = sqrt(max(1.0 - pow(dot(N, H1), 2.0), 0.0));
+  col += uColor * pow(sinH, 2.2) * pow(1.0 - nv, 2.0) * 0.5;
+
+  // thin silk glows where the key light comes through from behind
+  float trans = max(dot(-N, L1), 0.0) * pow(max(dot(V, -L1) * 0.5 + 0.5, 0.0), 2.0);
+  col += uColor * vec3(1.0, 0.75, 0.45) * trans * 0.55;
+
+  // folds hold shadow; a rolled hem catches a line of light
+  col *= mix(0.45, 1.0, vAO);
+  float hem = 1.0 - smoothstep(0.0, 0.012, min(min(vUv.x, 1.0 - vUv.x), min(vUv.y, 1.0 - vUv.y)));
+  col += vec3(1.0, 0.88, 0.66) * hem * (0.15 + 0.5 * spec2);
+  if (back) col *= 0.82;
+
+  // filmic shoulder so highlights roll off like a photograph instead of clipping
+  col = col / (1.0 + col * 0.28);
+  col += (hash(gl_FragCoord.xy + uTime) - 0.5) / 255.0;
+  gl_FragColor = vec4(col, uOpacity);
   #include <colorspace_fragment>
 }`
 
@@ -277,7 +345,7 @@ export function createExperience(canvas: HTMLCanvasElement, looks: Look[], onRea
   if (opts.word && document.fonts) document.fonts.load(`500 100px "Bodoni Moda Variable"`).finally(drawWord)
 
   // ---------- cloth ----------
-  const cloth = makeCloth(small ? 18 : 24, small ? 24 : 32)
+  const cloth = makeCloth(small ? 20 : 28, small ? 26 : 36)
   const { C, R, N, pos, prev, id } = cloth
   // the simulated grid is coarse; the rendered surface is a smooth Catmull-Rom patch through it
   const SUB = small ? 2 : 3
@@ -315,6 +383,10 @@ export function createExperience(canvas: HTMLCanvasElement, looks: Look[], onRea
   const tanAttr = new THREE.BufferAttribute(tan, 3)
   tanAttr.setUsage(THREE.DynamicDrawUsage)
   geo.setAttribute("tangent3", tanAttr)
+  const aoArr = new Float32Array(RN).fill(1)
+  const aoAttr = new THREE.BufferAttribute(aoArr, 1)
+  aoAttr.setUsage(THREE.DynamicDrawUsage)
+  geo.setAttribute("ao", aoAttr)
   const uvs = new Float32Array(RN * 2)
   const index: number[] = []
   for (let r = 0; r < RR; r++)
@@ -328,7 +400,7 @@ export function createExperience(canvas: HTMLCanvasElement, looks: Look[], onRea
   geo.setIndex(index)
   const simNormals = new Float32Array(N * 3)
 
-  const silkU = { uColor: { value: new THREE.Color("#CFB283") } }
+  const silkU = { uColor: { value: new THREE.Color("#D9BE8A") }, uDeep: { value: new THREE.Color("#5E3A14") }, uTime: { value: 0 }, uOpacity: { value: 1 } }
   const silk = new THREE.Mesh(
     geo,
     new THREE.ShaderMaterial({ vertexShader: silkVertex, fragmentShader: silkFragment, uniforms: silkU, side: THREE.DoubleSide }),
@@ -503,7 +575,8 @@ export function createExperience(canvas: HTMLCanvasElement, looks: Look[], onRea
   }
 
   // ---------- cloth simulation ----------
-  const held = { dx: small ? 0.055 : 0.05, dy: small ? 0.065 : 0.06 }
+  // held size per segment, scaled so the scarf keeps its size whatever the grid resolution
+  const held = { dx: (small ? 0.055 * 17 : 0.05 * 23) / (C - 1), dy: (small ? 0.065 * 23 : 0.06 * 31) / (R - 1) }
   let dx = held.dx
   let dy = held.dy
   const pinned = new Float32Array(N) // weight 0..1
@@ -609,6 +682,22 @@ export function createExperience(canvas: HTMLCanvasElement, looks: Look[], onRea
         tan[i + 2] = rpos[h + 2] - rpos[l + 2]
       }
     tanAttr.needsUpdate = true
+    // fold occlusion: how far each point sits inside the surrounding cloth (the Laplacian along the normal)
+    const span = 2
+    for (let r = 0; r < RR; r++)
+      for (let c = 0; c < RC; c++) {
+        const v = r * RC + c, i = v * 3
+        const c0 = Math.max(c - span, 0), c1 = Math.min(c + span, RC - 1), r0 = Math.max(r - span, 0), r1 = Math.min(r + span, RR - 1)
+        const ids = [r * RC + c0, r * RC + c1, r0 * RC + c, r1 * RC + c]
+        let lx = 0, ly = 0, lz = 0
+        for (const o of ids) (lx += rpos[o * 3] - rpos[i]), (ly += rpos[o * 3 + 1] - rpos[i + 1]), (lz += rpos[o * 3 + 2] - rpos[i + 2])
+        // measured against the normal that faces the camera: valleys darken, ridges stay lit
+        const sg = nrm[i + 2] >= 0 ? 1 : -1
+        const conc = ((lx * nrm[i] + ly * nrm[i + 1] + lz * nrm[i + 2]) / 4) * sg
+        const target = 1 - Math.min(Math.max(conc, 0) / (dy * 0.6), 1) * 0.85
+        aoArr[v] += (target - aoArr[v]) * 0.5
+      }
+    aoAttr.needsUpdate = true
     for (let r = 0; r < R; r++)
       for (let c = 0; c < C; c++) {
         const j = id(c, r) * 3, q = (r * SUB * RC + c * SUB) * 3
@@ -751,6 +840,7 @@ export function createExperience(canvas: HTMLCanvasElement, looks: Look[], onRea
     stageU.uTilt.value = tilt
     stageU.uActive.value = k > 0 ? 1 : 0
     stageU.uTime.value = t
+    silkU.uTime.value = t
 
     renderer.render(scene, camera)
   }
