@@ -10,7 +10,7 @@ import { askLink, findProduct, ghs } from "@/lib/store"
 
 /** poster: the still used when 3D is off (the hero poster already has the scarf in her hand) */
 const LOOKS: (Look & { alt: string; poster?: string })[] = [
-  { src: "/campaign/look-hero.webp", poster: "/campaign/look-blazer.webp", hand: [0.782, 0.218], handMask: { src: "/campaign/look-hero-hand.png", box: [0.7305, 0.1836, 0.1074, 0.0716] }, silk: "#D6BC8C", alt: "A woman in a black blazer, cream silk camisole and sand wide-leg trousers, holding a champagne silk scarf that streams in the wind" },
+  { src: "/campaign/look-hero.webp", poster: "/campaign/look-blazer.webp", hand: [0.782, 0.218], handMask: { src: "/campaign/look-hero-hand.png", box: [0.7305, 0.1836, 0.1074, 0.0716] }, video: { src: "/campaign/look-hero.mp4", track: "/campaign/look-hero-track.json", mask: "/campaign/look-hero-hand-video.png", fps: 24, size: [720, 1280], hand: [0.8365, 0.2137], box: [0.77284, 0.1779, 0.12731, 0.07161] }, silk: "#D6BC8C", alt: "A woman in a black blazer, cream silk camisole and sand wide-leg trousers, holding a champagne silk scarf that streams in the wind" },
   { src: "/campaign/look-emerald.webp", silk: "#D6BC8C", alt: "A woman mid-turn in an emerald silk wrap dress, the skirt swirling around her" },
   { src: "/campaign/look-menswear.webp", silk: "#D6BC8C", alt: "A man in a tailored charcoal two-piece suit and cream open-collar shirt, adjusting his cuff" },
   { src: "/campaign/product-bag.webp", silk: "#D6BC8C", alt: "A black top-handle bag with a round gold clasp and gold chain on a dark marble plinth" },

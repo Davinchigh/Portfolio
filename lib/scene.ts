@@ -19,6 +19,12 @@ export type Look = {
   hand?: [number, number]
   /** a cutout of her fist (PNG with alpha) and its box in the image: x, y from the top, width, height (0..1) */
   handMask?: { src: string; box: [number, number, number, number] }
+  /**
+   * A short looping clip of the same look (she breathes, blinks, smiles). Coordinates are in the video frame.
+   * `track` is a JSON list of per-frame [dx, dy] pixel offsets of her fist, so the scarf stays in her grip.
+   * The clip is a graded ping-pong loop, so it never jumps when it repeats. `mask` is her fist cut from the clip.
+   */
+  video?: { src: string; track: string; mask?: string; fps: number; size: [number, number]; hand: [number, number]; box: [number, number, number, number] }
 }
 
 const stageVertex = /* glsl */ `
@@ -33,6 +39,8 @@ const stageFragment = /* glsl */ `
 precision highp float;
 uniform sampler2D uA;
 uniform sampler2D uB;
+uniform float uDecA;   // 1 when the slot holds the video, which three hands to custom shaders still in sRGB
+uniform float uDecB;
 uniform vec4 uRectA;   // x0, y0, w, h in world units
 uniform vec4 uRectB;
 uniform vec3 uBg;
@@ -42,9 +50,11 @@ uniform float uActive;
 uniform float uTime;
 varying vec2 vWorld;
 
-vec3 look(sampler2D t, vec4 r, vec2 p) {
+vec3 srgbToLinear(vec3 c) { return mix(c / 12.92, pow((c + 0.055) / 1.055, vec3(2.4)), step(vec3(0.04045), c)); }
+vec3 look(sampler2D t, vec4 r, vec2 p, float dec) {
   vec2 uv = (p - r.xy) / r.zw;
   vec3 c = texture2D(t, clamp(uv, 0.001, 0.999)).rgb;
+  if (dec > 0.5) c = srgbToLinear(c);
   // melt the photo into the page on every side
   float m = smoothstep(0.0, 0.18, uv.x) * smoothstep(1.0, 0.82, uv.x)
           * smoothstep(-0.02, 0.07, uv.y) * smoothstep(1.0, 0.8, uv.y);
@@ -52,8 +62,8 @@ vec3 look(sampler2D t, vec4 r, vec2 p) {
 }
 
 void main() {
-  vec3 a = look(uA, uRectA, vWorld);
-  vec3 b = look(uB, uRectB, vWorld);
+  vec3 a = look(uA, uRectA, vWorld, uDecA);
+  vec3 b = look(uB, uRectB, vWorld, uDecB);
   float edge = vWorld.y - (uLine.x + uLine.y * sin(vWorld.x * uLine.z + uLine.w) + uTilt * vWorld.x);
   float reveal = uActive * smoothstep(-0.015, 0.015, edge);
   vec3 col = mix(a, b, reveal);
@@ -111,12 +121,19 @@ void main() {
 
 const handFragment = /* glsl */ `
 precision highp float;
-uniform sampler2D uTex;
+uniform sampler2D uTex;   // the current frame (photo or video)
+uniform sampler2D uMask;  // her fist cut out (alpha only is used)
+uniform vec4 uBox;        // the fist's box in the frame: x, y from the top, width, height (0..1)
 uniform float uOpacity;
+uniform float uDec;
 varying vec2 vUv;
+vec3 srgbToLinear(vec3 c) { return mix(c / 12.92, pow((c + 0.055) / 1.055, vec3(2.4)), step(vec3(0.04045), c)); }
 void main() {
-  vec4 c = texture2D(uTex, vUv);
-  gl_FragColor = vec4(c.rgb, c.a * uOpacity);
+  vec2 uv = vec2(uBox.x + vUv.x * uBox.z, 1.0 - (uBox.y + (1.0 - vUv.y) * uBox.w));
+  vec3 c = texture2D(uTex, uv).rgb;
+  if (uDec > 0.5) c = srgbToLinear(c);
+  float a = texture2D(uMask, vUv).a;
+  gl_FragColor = vec4(c, a * uOpacity);
   #include <colorspace_fragment>
 }`
 
@@ -181,6 +198,8 @@ export function createExperience(canvas: HTMLCanvasElement, looks: Look[], onRea
   const stageU = {
     uA: { value: null as THREE.Texture | null },
     uB: { value: null as THREE.Texture | null },
+    uDecA: { value: 0 },
+    uDecB: { value: 0 },
     uRectA: { value: new THREE.Vector4() },
     uRectB: { value: new THREE.Vector4() },
     uBg: { value: new THREE.Vector3(bg.r, bg.g, bg.b) },
@@ -269,7 +288,13 @@ export function createExperience(canvas: HTMLCanvasElement, looks: Look[], onRea
   scene.add(shadow)
 
   // her fist, drawn again on top of the cloth so the scarf disappears into her grip
-  const handU = { uTex: { value: null as THREE.Texture | null }, uOpacity: { value: 1 } }
+  const handU = {
+    uTex: { value: null as THREE.Texture | null },
+    uMask: { value: null as THREE.Texture | null },
+    uBox: { value: new THREE.Vector4() },
+    uOpacity: { value: 1 },
+    uDec: { value: 0 },
+  }
   const hand = new THREE.Mesh(
     new THREE.PlaneGeometry(1, 1),
     new THREE.ShaderMaterial({ vertexShader: basicVertex, fragmentShader: handFragment, uniforms: handU, transparent: true, depthTest: false, depthWrite: false }),
@@ -280,8 +305,7 @@ export function createExperience(canvas: HTMLCanvasElement, looks: Look[], onRea
   const mask = looks[0]?.handMask
   if (mask)
     loader.load(mask.src, (t) => {
-      t.colorSpace = THREE.SRGBColorSpace
-      handU.uTex.value = t
+      handU.uMask.value = t
     })
   let loaded = 0
   looks.forEach((l, i) => {
@@ -292,13 +316,59 @@ export function createExperience(canvas: HTMLCanvasElement, looks: Look[], onRea
       textures[i] = t
       aspects[i] = t.image.width / t.image.height
       loaded++
-      if (i === 0) {
+      if (i === 0 && !useVideo) {
         layout()
         resetHeld()
         onReady()
       }
     })
   })
+
+  // ---------- the living hero: a looping clip replaces the still once it can play ----------
+  let useVideo = false
+  let vid: HTMLVideoElement | null = null
+  let track: number[][] = []
+  const conn = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection
+  const vcfg = looks[0]?.video
+  if (vcfg && !conn?.saveData) {
+    fetch(vcfg.track)
+      .then((r) => r.json())
+      .then((t: number[][]) => (track = t))
+      .catch(() => {})
+    const v = document.createElement("video")
+    // H.264 where the browser has it, VP9 WebM otherwise
+    v.src = v.canPlayType('video/mp4; codecs="avc1.42E01E"') ? vcfg.src : vcfg.src.replace(/\.mp4$/, ".webm")
+    v.muted = true
+    v.loop = true
+    v.playsInline = true
+    v.preload = "auto"
+    v.setAttribute("muted", "")
+    v.setAttribute("playsinline", "")
+    v.addEventListener(
+      "loadeddata",
+      () => {
+        v.play()
+          .then(() => {
+            const vt = new THREE.VideoTexture(v)
+            vt.colorSpace = THREE.NoColorSpace // decoded in the shaders (see uDec)
+            vt.minFilter = THREE.LinearFilter
+            vt.generateMipmaps = false
+            textures[0]?.dispose()
+            textures[0] = vt
+            aspects[0] = v.videoWidth / v.videoHeight
+            vid = v
+            if (vcfg.mask) loader.load(vcfg.mask, (m) => (handU.uMask.value = m))
+            const firstLoad = !useVideo && !stageU.uA.value
+            useVideo = true
+            layout()
+            resetHeld()
+            if (firstLoad) onReady()
+          })
+          .catch(() => {}) // autoplay refused: keep the still
+      },
+      { once: true },
+    )
+  }
 
   // ---------- layout ----------
   let viewW = 1
@@ -348,12 +418,22 @@ export function createExperience(canvas: HTMLCanvasElement, looks: Look[], onRea
   function layout() {
     const r = rectFor(aspects[0], breathe)
     handRect.copy(r)
-    const hp = looks[0]?.hand ?? [0.78, 0.215]
+    let hp: [number, number] = looks[0]?.hand ?? [0.78, 0.215]
+    let b: [number, number, number, number] = looks[0]?.handMask?.box ?? [0, 0, 0, 0]
+    if (useVideo && vcfg && vid) {
+      // follow her fist through the clip
+      const o = track.length ? track[Math.floor(vid.currentTime * vcfg.fps) % track.length] : [0, 0]
+      const ox = o[0] / vcfg.size[0]
+      const oy = o[1] / vcfg.size[1]
+      hp = [vcfg.hand[0] + ox, vcfg.hand[1] + oy]
+      b = [vcfg.box[0] + ox, vcfg.box[1] + oy, vcfg.box[2], vcfg.box[3]]
+    }
     handWorld.set(r.x + hp[0] * r.z, r.y + (1 - hp[1]) * r.w, 0.02)
     // her fist, on the same plane as the photo and drawn last, so it lines up from any camera angle
-    const b = looks[0]?.handMask?.box ?? [0, 0, 0, 0]
     hand.scale.set(b[2] * r.z, b[3] * r.w, 1)
     hand.position.set(r.x + (b[0] + b[2] / 2) * r.z, r.y + (1 - b[1] - b[3] / 2) * r.w, 0.001)
+    handU.uBox.value.set(b[0], b[1], b[2], b[3])
+    handU.uTex.value = textures[0] ?? null
   }
 
   // ---------- cloth simulation ----------
@@ -512,6 +592,10 @@ export function createExperience(canvas: HTMLCanvasElement, looks: Look[], onRea
     // a slow breath in the frame
     breathe = 1 + Math.sin(t * 1.25) * 0.0035
     layout()
+    const isVid = (t?: THREE.Texture) => (t instanceof THREE.VideoTexture ? 1 : 0)
+    stageU.uDecA.value = isVid(textures[i])
+    stageU.uDecB.value = isVid(textures[next])
+    handU.uDec.value = isVid(textures[0])
     if (textures[i]) (stageU.uA.value = textures[i]), stageU.uRectA.value.copy(rectFor(aspects[i], i === 0 ? breathe : 1))
     if (textures[next]) (stageU.uB.value = textures[next]), stageU.uRectB.value.copy(rectFor(aspects[next], next === 0 ? breathe : 1))
     if (!stageU.uA.value && textures[0]) stageU.uA.value = textures[0]
@@ -582,7 +666,12 @@ export function createExperience(canvas: HTMLCanvasElement, looks: Look[], onRea
     silk.visible = shadow.visible = visible
     shadow.position.set(0.09, -0.12, 0)
     shadowU.uOpacity.value = 0.2 * (1 - release * 0.5)
-    hand.visible = i === 0 && release < 0.999 && !!handU.uTex.value
+    hand.visible = i === 0 && release < 0.999 && !!handU.uTex.value && !!handU.uMask.value
+    // the clip only plays while she is on screen
+    if (vid) {
+      if (p > 1.05 && !vid.paused) vid.pause()
+      else if (p <= 1.05 && vid.paused && running) vid.play().catch(() => {})
+    }
     handU.uOpacity.value = 1 - ss(0.3, 0.9, release)
 
     stageU.uLine.value.set(lineY, amp, freq, phase)
@@ -605,6 +694,8 @@ export function createExperience(canvas: HTMLCanvasElement, looks: Look[], onRea
       window.removeEventListener("pointermove", onPointer)
       window.removeEventListener("resize", resize)
       document.removeEventListener("visibilitychange", onVis)
+      vid?.pause()
+      if (vid) vid.removeAttribute("src")
       textures.forEach((t) => t?.dispose())
       ;[stage, silk, shadow, hand].forEach((m) => (m.material as THREE.Material).dispose())
       stage.geometry.dispose()
