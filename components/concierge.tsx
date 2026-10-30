@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 import { ArrowUp, X } from "lucide-react"
 import { Monogram } from "@/components/logo"
+import { VoiceCall } from "@/components/voice-call"
 import { LIVE } from "@/lib/live"
 import { askLink } from "@/lib/store"
 
@@ -167,6 +168,8 @@ export function Concierge() {
             <span className="sr-only">Close chat</span>
           </button>
         </div>
+
+        <VoiceCall />
 
         <div ref={list} aria-live="polite" className="flex-1 space-y-3 overflow-y-auto px-5 py-5" data-lenis-prevent>
           {msgs.map((m, i) => (
