@@ -65,6 +65,9 @@
 }
 
 @layer base {
+  :root {
+    --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  }
   * {
     @apply border-border;
   }
@@ -79,7 +82,15 @@
   h2,
   h3 {
     @apply font-medium;
+  }
+  h1 {
+    letter-spacing: -0.03em;
+  }
+  h2 {
     letter-spacing: -0.025em;
+  }
+  h3 {
+    letter-spacing: -0.015em;
   }
   ::selection {
     background: hsl(var(--amber));
@@ -120,10 +131,10 @@
   }
 
   .pill-button {
-    @apply inline-flex h-11 items-center gap-2 rounded-full bg-foreground px-5 text-sm font-medium text-background transition-transform hover:-translate-y-0.5;
+    @apply inline-flex h-11 items-center gap-2 rounded-full bg-foreground px-5 text-sm font-medium text-background transition-transform duration-150 hover:-translate-y-0.5 active:scale-[0.97] motion-reduce:transform-none;
   }
   .ghost-button {
-    @apply inline-flex h-11 items-center gap-2 rounded-full border px-5 text-sm font-medium transition-colors hover:bg-accent;
+    @apply inline-flex h-11 items-center gap-2 rounded-full border px-5 text-sm font-medium transition-[color,background-color,transform] duration-150 hover:bg-accent active:scale-[0.97] motion-reduce:transform-none;
   }
 
   /* Screenshot frames */
@@ -144,7 +155,7 @@
   }
 }
 .settle > * {
-  animation: settle 600ms cubic-bezier(0.2, 0.7, 0.1, 1) both;
+  animation: settle 600ms var(--ease-out) both;
 }
 .settle > *:nth-child(2) {
   animation-delay: 60ms;
@@ -175,7 +186,7 @@ html[data-visitor] .hero-pending {
 
 /* Certificate pop-up: a short fade and lift when it opens. */
 .cert-dialog[open] {
-  animation: cert-in 260ms cubic-bezier(0.2, 0.7, 0.1, 1);
+  animation: cert-in 260ms var(--ease-out);
 }
 .cert-dialog[open]::backdrop {
   animation: cert-fade 260ms ease-out;
@@ -206,13 +217,12 @@ html:not(.dark) .pill-button {
   box-shadow: 0 6px 18px -8px hsl(30 8% 9% / 0.45);
 }
 
-/* ---------- Certifications: a grid that draws in as you scroll, a spotlight that follows the pointer ---------- */
+/* ---------- Certifications: a grid that fades in as you scroll, a spotlight that follows the pointer ---------- */
 .cert-grid {
   position: relative;
   isolation: isolate;
 }
-.cert-grid::before {
-  content: "";
+.cert-grid-lines {
   position: absolute;
   inset: -28px -20px;
   z-index: -1;
@@ -230,7 +240,6 @@ html:not(.dark) .pill-button {
 }
 .cert-row {
   position: relative;
-  transition: background-color 0.3s ease, transform 0.3s cubic-bezier(0.2, 0.7, 0.1, 1);
 }
 .cert-row::before {
   content: "";
@@ -243,49 +252,24 @@ html:not(.dark) .pill-button {
   background: hsl(var(--route));
   transform: scaleY(0);
   transform-origin: top;
-  transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.1, 1);
+  transition: transform 200ms var(--ease-out);
 }
-.cert-row:hover::before,
 .cert-row:focus-within::before {
   transform: scaleY(1);
 }
-.cert-row::after {
-  content: "";
-  position: absolute;
-  inset: 6px -14px;
-  z-index: -1;
-  border-radius: 14px;
-  background: linear-gradient(90deg, hsl(var(--route) / 0.09), hsl(var(--route) / 0.02) 70%, transparent);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-.cert-row:hover::after,
-.cert-row:focus-within::after {
-  opacity: 1;
-}
 .cert-row .cert-issuer {
-  transition: transform 0.3s cubic-bezier(0.2, 0.7, 0.1, 1), color 0.2s;
+  transition: color 200ms ease;
 }
-.cert-row:hover .cert-issuer,
 .cert-row:focus-within .cert-issuer {
-  transform: translateX(6px);
   color: hsl(var(--route));
 }
-.cert-row .cert-chip {
-  transition: border-color 0.2s, color 0.2s, transform 0.2s;
-}
-.cert-row:hover .cert-chip {
-  border-color: hsl(var(--route) / 0.5);
-  color: hsl(var(--foreground));
-}
-.cert-row .cert-chip:hover {
-  transform: translateY(-2px);
-}
-.cert-row .cert-year {
-  transition: color 0.2s;
-}
-.cert-row:hover .cert-year {
-  color: hsl(var(--route));
+@media (hover: hover) and (pointer: fine) {
+  .cert-row:hover::before {
+    transform: scaleY(1);
+  }
+  .cert-row:hover .cert-issuer {
+    color: hsl(var(--route));
+  }
 }
 /* each row rises in as it scrolls into view (browsers with scroll-driven animations) */
 @supports (animation-timeline: view()) {
@@ -294,8 +278,8 @@ html:not(.dark) .pill-button {
     animation-timeline: view();
     animation-range: entry 0% entry 70%;
   }
-  .cert-grid::before {
-    animation: grid-draw linear both;
+  .cert-grid-lines {
+    animation: grid-fade linear both;
     animation-timeline: view();
     animation-range: entry 0% cover 40%;
   }
@@ -304,11 +288,11 @@ html:not(.dark) .pill-button {
   from { opacity: 0; transform: translateY(18px); }
   to { opacity: 1; transform: none; }
 }
-@keyframes grid-draw {
-  from { opacity: 0; background-size: 72px 72px; }
-  to { opacity: 0.9; background-size: 36px 36px; }
+@keyframes grid-fade {
+  from { opacity: 0; }
+  to { opacity: 0.9; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .cert-row, .cert-grid::before { animation: none !important; }
-  .cert-row .cert-issuer { transition: none; transform: none !important; }
+  .cert-row, .cert-grid-lines { animation: none !important; }
+  .cert-row::before { transition: none; }
 }

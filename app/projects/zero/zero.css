@@ -316,9 +316,11 @@ html:not(.dark) .zero-tag-information {
   height: 3px;
   background: linear-gradient(90deg, transparent, var(--tone), transparent);
 }
-.zcard:hover .zcard-face {
-  transform: translateY(-6px) rotate(-1deg);
-  box-shadow: 0 20px 50px color-mix(in srgb, var(--tone) 25%, transparent);
+@media (hover: hover) and (pointer: fine) {
+  .zcard:hover .zcard-face {
+    transform: translateY(-6px) rotate(-1deg);
+    box-shadow: 0 20px 50px color-mix(in srgb, var(--tone) 25%, transparent);
+  }
 }
 .zcard-oval {
   position: absolute;

@@ -156,7 +156,7 @@ function TimelineView() {
             {/* Highlight band across the hovered role's years */}
             <li
               aria-hidden="true"
-              className={`pointer-events-none absolute -top-8 bottom-0 rounded-lg border-x border-dashed border-route/50 bg-route/[0.06] transition-[left,width,opacity] duration-300 ease-out motion-reduce:transition-none ${
+              className={`pointer-events-none absolute -top-8 bottom-0 rounded-lg border-x border-dashed border-route/50 bg-route/[0.06] transition-opacity duration-200 ease-out motion-reduce:transition-none ${
                 hovered && band ? "opacity-100" : "opacity-0"
               } ${band ? "" : "hidden"}`}
               style={band ? { left: `${band.left}%`, width: `${band.width}%` } : undefined}
@@ -193,7 +193,7 @@ function TimelineView() {
                     onBlur={() => setHovered(null)}
                     aria-pressed={isActive}
                     aria-label={`${r.company}, ${r.role}, ${range(r)}`}
-                    className={`absolute inset-y-0 flex items-center gap-2 overflow-hidden rounded-lg border ${narrow ? "justify-center px-2" : "px-3"} text-left text-sm transition-[transform,box-shadow,background-color,border-color,color] duration-200 ease-out hover:-translate-y-0.5 hover:shadow-lg hover:shadow-route/10 focus-visible:-translate-y-0.5 motion-reduce:transform-none motion-reduce:transition-none ${
+                    className={`absolute inset-y-0 flex items-center gap-2 overflow-hidden rounded-lg border ${narrow ? "justify-center px-2" : "px-3"} text-left text-sm transition-[transform,box-shadow,background-color,border-color,color] duration-200 ease-out hover:-translate-y-0.5 active:scale-[0.98] hover:shadow-lg hover:shadow-route/10 focus-visible:-translate-y-0.5 motion-reduce:transform-none motion-reduce:transition-none ${
                       isActive
                         ? "border-route bg-route/15 text-foreground"
                         : isHovered

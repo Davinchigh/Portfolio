@@ -72,8 +72,13 @@ export function Globe() {
   const youDot = useRef<HTMLSpanElement>(null)
   const { mode, company } = useVisitor()
   const pointer = useRef<number | null>(null)
-  const drag = useRef(0)
+  const phi = useRef<number | null>(null)
+  const target = useRef<number | null>(null)
+  const velocity = useRef(0)
+  const spin = useRef(0.0025)
+  const lastMove = useRef({ x: 0, t: 0, v: 0 })
   const [here, setHere] = useState<Here>({ home: ACCRA, visitor: null })
+  const latest = useRef(here)
   const [loaded, setLoaded] = useState(false)
   const [now, setNow] = useState<Date | null>(null)
   const [visitorTz, setVisitorTz] = useState<string | null>(null)
@@ -102,27 +107,35 @@ export function Globe() {
     return () => ctrl.abort()
   }, [])
 
+  // Keep the latest location for the render loop, so new data never rebuilds the globe.
+  useEffect(() => {
+    latest.current = here
+    if (here.visitor) {
+      // Turn to show both dots.
+      const dLon = ((here.visitor.lon - here.home.lon + 540) % 360) - 180
+      target.current = facing(here.home.lon + dLon / 2)
+    }
+  }, [here])
+
   useEffect(() => {
     const el = canvas.current
     if (!el) return
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches
     let width = el.offsetWidth
-    // Start facing the midpoint between the two dots so both are visible.
-    const dLon = here.visitor ? ((here.visitor.lon - here.home.lon + 540) % 360) - 180 : 0
-    let phi = here.visitor ? facing(here.home.lon + dLon / 2) : facing(here.home.lon) - 0.35
+    const dpr = Math.min(window.devicePixelRatio || 1, width < 400 ? 1.5 : 2)
+    if (phi.current === null) phi.current = facing(ACCRA.lon) - 0.35
     const onResize = () => (width = el.offsetWidth)
     window.addEventListener("resize", onResize)
 
     // Only Ben's dot is drawn by cobe (one colour for all markers). The visitor's dot is an
     // orange element placed over the canvas each frame with the same projection.
-    const markers = [{ location: [here.home.lat, here.home.lon] as [number, number], size: 0.08 }]
-    const visitor = here.visitor
+    const markers = [{ location: [ACCRA.lat, ACCRA.lon] as [number, number], size: 0.08 }]
 
     const globe = createGlobe(el, {
-      devicePixelRatio: 2,
-      width: width * 2,
-      height: width * 2,
-      phi,
+      devicePixelRatio: dpr,
+      width: width * dpr,
+      height: width * dpr,
+      phi: phi.current,
       theta: 0.2,
       dark: dark ? 1 : 0,
       diffuse: 1.2,
@@ -134,13 +147,30 @@ export function Globe() {
       glowColor: dark ? [0.07, 0.13, 0.15] : [0.84, 0.9, 0.92],
       markers,
       onRender: (state) => {
-        if (pointer.current === null && !reduced) phi += 0.0025
-        state.phi = phi + drag.current
-        state.width = width * 2
-        state.height = width * 2
+        let angle = phi.current ?? 0
+        if (pointer.current === null) {
+          // Turn smoothly to face the visitor once we know where they are.
+          if (target.current !== null) {
+            const left = ((target.current - angle + Math.PI * 3) % (Math.PI * 2)) - Math.PI
+            angle += reduced ? left : left * 0.06
+            if (reduced || Math.abs(left) < 0.002) target.current = null
+          }
+          // Carry the drag's speed, let it die away, then ease back into the slow spin.
+          angle += velocity.current
+          velocity.current *= 0.95
+          if (!reduced) {
+            spin.current += (0.0025 - spin.current) * 0.02
+            angle += spin.current
+          }
+          phi.current = angle
+        }
+        state.phi = angle
+        state.width = width * dpr
+        state.height = width * dpr
         const dot = youDot.current
+        const visitor = latest.current.visitor
         if (dot && visitor) {
-          const p = project(visitor.lat, visitor.lon, state.phi, 0.2)
+          const p = project(visitor.lat, visitor.lon, angle, 0.2)
           dot.style.left = `${p.x * 100}%`
           dot.style.top = `${p.y * 100}%`
           dot.style.opacity = String(Math.max(0, Math.min(1, p.z * 5)))
@@ -149,11 +179,16 @@ export function Globe() {
     })
     requestAnimationFrame(() => (el.style.opacity = "1"))
 
+    // No need to keep drawing while the globe is off screen.
+    const observer = new IntersectionObserver(([entry]) => globe.toggle(entry.isIntersecting))
+    observer.observe(el)
+
     return () => {
+      observer.disconnect()
       globe.destroy()
       window.removeEventListener("resize", onResize)
     }
-  }, [here, dark])
+  }, [dark])
 
   const { home, visitor } = here
 
@@ -240,13 +275,28 @@ export function Globe() {
             className="h-full w-full cursor-grab opacity-0 transition-opacity duration-1000 active:cursor-grabbing motion-reduce:transition-none"
             style={{ contain: "layout paint size", touchAction: "pan-y" }}
             onPointerDown={(e) => {
-              pointer.current = e.clientX - drag.current * 200
+              pointer.current = e.clientX
+              target.current = null
+              velocity.current = 0
+              spin.current = 0
+              lastMove.current = { x: e.clientX, t: e.timeStamp, v: 0 }
               e.currentTarget.setPointerCapture(e.pointerId)
             }}
-            onPointerUp={() => (pointer.current = null)}
+            onPointerUp={(e) => {
+              if (pointer.current === null) return
+              pointer.current = null
+              // A pause before letting go means no throw. Cap the speed so a hard flick stays readable.
+              const recent = e.timeStamp - lastMove.current.t < 80
+              velocity.current = recent ? Math.max(-0.12, Math.min(0.12, lastMove.current.v)) : 0
+            }}
             onPointerCancel={() => (pointer.current = null)}
             onPointerMove={(e) => {
-              if (pointer.current !== null) drag.current = (e.clientX - pointer.current) / 200
+              if (pointer.current === null) return
+              const dx = (e.clientX - pointer.current) / 200
+              pointer.current = e.clientX
+              phi.current = (phi.current ?? 0) + dx
+              const dt = Math.max(1, e.timeStamp - lastMove.current.t)
+              lastMove.current = { x: e.clientX, t: e.timeStamp, v: (dx / dt) * (1000 / 60) }
             }}
           />
           {visitor && (

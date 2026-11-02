@@ -15,7 +15,7 @@ export function Designs() {
           <article key={d.slug}>
             <a href={d.href} target="_blank" rel="noopener noreferrer" className="group block">
               <div className="shot">
-                <img src={d.image} alt={d.imageAlt} loading="lazy" className="aspect-[16/10] w-full object-cover object-top transition-transform duration-500 group-hover:scale-[1.02] motion-reduce:transition-none" />
+                <img src={d.image} alt={d.imageAlt} loading="lazy" className="aspect-[16/10] w-full object-cover object-top transition-transform duration-200 group-hover:scale-[1.02] motion-reduce:transition-none" />
               </div>
               <div className="mt-4 flex items-start justify-between gap-4">
                 <div>
@@ -94,7 +94,7 @@ export function Stack() {
                   <span
                     tabIndex={0}
                     style={{ "--brand": brandColor(tool.icon) } as React.CSSProperties}
-                    className="group relative flex h-14 w-14 items-center justify-center rounded-xl border bg-card text-muted-foreground transition-[color,transform,border-color] hover:-translate-y-0.5 hover:border-[var(--brand)] hover:text-[var(--brand)] focus-visible:text-[var(--brand)] motion-reduce:transition-none"
+                    className="group relative flex h-14 w-14 items-center justify-center rounded-xl border bg-card text-muted-foreground transition-[color,transform,border-color] hover:-translate-y-0.5 active:scale-[0.97] hover:border-[var(--brand)] hover:text-[var(--brand)] focus-visible:text-[var(--brand)] motion-reduce:transition-none"
                   >
                     <ToolIcon icon={tool.icon} name={tool.name} reveal />
                     <span className="sr-only">{tool.name}</span>

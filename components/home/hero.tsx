@@ -40,7 +40,7 @@ function Fork() {
               <button
                 type="button"
                 onClick={() => setMode(p.mode)}
-                className="group flex w-full items-center justify-between gap-4 rounded-2xl border bg-card px-5 py-4 text-left transition-[transform,border-color,background-color] duration-200 hover:-translate-y-0.5 hover:border-route/60 hover:bg-background motion-reduce:transform-none"
+                className="group flex w-full items-center justify-between gap-4 rounded-2xl border bg-card px-5 py-4 text-left transition-[transform,border-color,background-color] duration-150 hover:-translate-y-0.5 active:scale-[0.98] hover:border-route/60 hover:bg-background motion-reduce:transform-none"
               >
                 <span>
                   <span className="font-display block text-xl font-semibold tracking-tight">{p.label}</span>
