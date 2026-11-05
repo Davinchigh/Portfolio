@@ -23,3 +23,27 @@ Left as is (needs the owner)
 - pg_net sits in the public schema (moving it needs a confirmed drop and recreate).
 - The n8n chat webhook is public by design; a flood of chats would use n8n AI credits.
 - Order references are sequential; lookups also need the matching phone number.
+
+# Independent audit, 5 Nov 2026 (Cloudflare security-audit skill, fresh agent)
+
+Also run: Semgrep (575 rules, 56 files), detect-secrets over files and full git history, pnpm audit, pip-audit, retire.js.
+Not runnable here: Strix (no LLM key, sandbox image blocked), Claude Security agent (needs workflows), ZAP and Gitleaks (downloads blocked).
+
+Confirmed by the audit, now fixed
+- Medium: anyone could hold all stock or fill the diary by giving fresh phone numbers to Esi.
+  Fix: unconfirmed chat and phone orders and bookings are released after 48 hours; shop-wide daily caps
+  (40 unconfirmed orders, 15 new bookings, 60 callbacks); at most 6 chat or phone bookings on any one day; 1 to 5 of each piece.
+- Low: giving someone's phone number renamed that customer. Fix: the stored name is kept; the name given is saved on each order and booking.
+
+Needs-validation items, now closed in code
+- Staff access trusted the email in the sign-in claim. is_staff() now requires a confirmed account whose id matches.
+- voice-token rate limit read the first X-Forwarded-For entry. It now prefers cf-connecting-ip, then x-real-ip, then the last entry.
+
+Hardening
+- Public and signed-in roles can no longer write, truncate or alter the staff list.
+- agent-api checks the tool name with Object.hasOwn.
+- Structured data in pages is escaped so product text can't close its script tag (Semgrep).
+
+Still open
+- The chat webhook is public; a per-visitor key (chat session id) is not yet passed through to the limits.
+- Order references are sequential; lookups need the matching phone number.

@@ -135,8 +135,8 @@ async function authorised(req: Request) {
 }
 
 async function run(tool: string, args: Record<string, unknown>) {
+  if (typeof tool !== "string" || !Object.hasOwn(TOOLS, tool)) return { error: "Unknown tool" }
   const spec = TOOLS[tool]
-  if (!spec) return { error: `Unknown tool ${tool}` }
   for (const k of spec.required) if (args[k] === undefined || args[k] === null || args[k] === "") return { error: `Missing ${k}` }
   const clean: Record<string, unknown> = {}
   for (const k of Object.keys(spec.params)) {
@@ -176,7 +176,7 @@ Deno.serve(async (req) => {
       const fn = c.function ?? c
       let a = fn.arguments ?? fn.parameters ?? {}
       if (typeof a === "string") { try { a = JSON.parse(a) } catch { a = {} } }
-      if (a.p_channel === undefined && TOOLS[fn.name]?.params.p_channel) a.p_channel = "phone"
+      if (a.p_channel === undefined && Object.hasOwn(TOOLS, fn.name) && TOOLS[fn.name].params.p_channel) a.p_channel = "phone"
       return { toolCallId: c.id, result: JSON.stringify(await run(fn.name, a)) }
     }))
     return json({ results })
@@ -190,6 +190,6 @@ Deno.serve(async (req) => {
   if (args === undefined) { const { tool: _t, ...rest } = body; args = rest }
   if (typeof args === "string") { try { args = JSON.parse(args) } catch { args = {} } }
   const ch = q.get("channel")
-  if (ch && CHANNELS.includes(ch) && TOOLS[tool]?.params.p_channel) args.p_channel = ch
+  if (ch && CHANNELS.includes(ch) && typeof tool === "string" && Object.hasOwn(TOOLS, tool) && TOOLS[tool].params.p_channel) args.p_channel = ch
   return json(await run(tool, args))
 })

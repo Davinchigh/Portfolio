@@ -12,8 +12,8 @@ import { ghs } from "@/lib/store"
 const sb = typeof window === "undefined" ? null : createClient(LIVE.url, LIVE.key, { auth: { persistSession: true, detectSessionInUrl: true } })
 
 type Task = { id: number; kind: string; title: string; phone: string | null; details: Record<string, unknown> | null; created_at: string }
-type Order = { id: number; ref: string; kind: string; status: string; channel: string; total_ghs: number; delivery: string; ready_by: string | null; notes: string | null; created_at: string; customers: { name: string; phone: string } | null; order_items: { product_code: string; colour: string; size: string; qty: number; from_stock: boolean }[] }
-type Booking = { id: number; ref: string; kind: string; starts_at: string; status: string; notes: string | null; customers: { name: string; phone: string } | null }
+type Order = { id: number; ref: string; contact_name: string | null; kind: string; status: string; channel: string; total_ghs: number; delivery: string; ready_by: string | null; notes: string | null; created_at: string; customers: { name: string; phone: string } | null; order_items: { product_code: string; colour: string; size: string; qty: number; from_stock: boolean }[] }
+type Booking = { id: number; ref: string; contact_name: string | null; kind: string; starts_at: string; status: string; notes: string | null; customers: { name: string; phone: string } | null }
 type Variant = { id: number; product_code: string; colour: string; size: string; stock: number; reserved: number; made_to_order: boolean; products: { name: string } | null }
 
 const STATUSES = ["new", "confirmed", "awaiting_payment", "paid", "in_production", "ready", "out_for_delivery", "delivered", "collected", "cancelled"]
@@ -171,7 +171,7 @@ function Board({ email }: { email: string }) {
                 <span className="text-sm text-ash">{when(o.created_at)} · {nice(o.channel)}</span>
                 <span className="ml-auto text-gold">{ghs(o.total_ghs)}</span>
               </div>
-              <p className="mt-2 text-sm text-champagne/85">{o.customers?.name} · +{o.customers?.phone} · {nice(o.delivery)}{o.ready_by ? ` · ready by ${o.ready_by}` : ""}</p>
+              <p className="mt-2 text-sm text-champagne/85">{o.contact_name ?? o.customers?.name} · +{o.customers?.phone} · {nice(o.delivery)}{o.ready_by ? ` · ready by ${o.ready_by}` : ""}</p>
               <ul className="mt-2 text-sm text-ash">
                 {o.order_items.map((i, n) => <li key={n}>{i.qty} × {i.product_code} {i.colour}, {i.size}{i.from_stock ? "" : " (to make)"}</li>)}
               </ul>
@@ -181,7 +181,7 @@ function Board({ email }: { email: string }) {
                 <select id={`st-${o.id}`} value={o.status} onChange={async (e) => { await sb!.from("orders").update({ status: e.target.value }).eq("id", o.id); load() }} className="min-h-10 rounded-full border border-champagne/25 bg-espresso px-4 text-sm capitalize text-champagne">
                   {STATUSES.map((s) => <option key={s} value={s}>{nice(s)}</option>)}
                 </select>
-                {o.customers && <a className="text-sm text-gold underline underline-offset-4" target="_blank" rel="noopener noreferrer" href={wa(o.customers.phone, `Hello ${o.customers.name.split(" ")[0]}, this is Lizab House of Fashion about your order ${o.ref}.`)}>Confirm on WhatsApp</a>}
+                {o.customers && <a className="text-sm text-gold underline underline-offset-4" target="_blank" rel="noopener noreferrer" href={wa(o.customers.phone, `Hello ${(o.contact_name ?? o.customers.name).split(" ")[0]}, this is Lizab House of Fashion about your order ${o.ref}.`)}>Confirm on WhatsApp</a>}
               </div>
             </li>
           ))}
@@ -195,13 +195,13 @@ function Board({ email }: { email: string }) {
             <li key={b.id} className="flex flex-wrap items-center gap-4 py-4">
               <p className="w-40 font-display text-lg text-champagne">{when(b.starts_at)}</p>
               <div className="min-w-0 flex-1">
-                <p className="capitalize text-champagne">{b.kind} · {b.customers?.name}</p>
+                <p className="capitalize text-champagne">{b.kind} · {b.contact_name ?? b.customers?.name}</p>
                 <p className="text-sm text-ash">{b.ref}{b.notes ? ` · ${b.notes}` : ""}</p>
               </div>
               <select aria-label={`Status of ${b.ref}`} value={b.status} onChange={async (e) => { await sb!.from("bookings").update({ status: e.target.value }).eq("id", b.id); load() }} className="min-h-10 rounded-full border border-champagne/25 bg-espresso px-4 text-sm capitalize text-champagne">
                 {["requested", "confirmed", "done", "no_show", "cancelled"].map((s) => <option key={s} value={s}>{nice(s)}</option>)}
               </select>
-              {b.customers && <a className="text-sm text-gold underline underline-offset-4" target="_blank" rel="noopener noreferrer" href={wa(b.customers.phone, `Hello ${b.customers.name.split(" ")[0]}, this is Lizab House of Fashion about your ${b.kind} (${b.ref}).`)}>WhatsApp</a>}
+              {b.customers && <a className="text-sm text-gold underline underline-offset-4" target="_blank" rel="noopener noreferrer" href={wa(b.customers.phone, `Hello ${(b.contact_name ?? b.customers.name).split(" ")[0]}, this is Lizab House of Fashion about your ${b.kind} (${b.ref}).`)}>WhatsApp</a>}
             </li>
           ))}
         </ul>
