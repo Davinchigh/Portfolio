@@ -33,6 +33,13 @@ Deno.serve(async (req) => {
   if (req.method !== "POST" || !ALLOWED.includes(origin)) return new Response("Forbidden", { status: 403, headers: cors })
   if (!LK_URL || !LK_KEY || !LK_SECRET) return Response.json({ error: "Voice is not set up yet." }, { status: 503, headers: cors })
 
+  // a small budget per address and per day, so the free voice minutes cannot be drained
+  const ip = (req.headers.get("x-forwarded-for") ?? "").split(",")[0].trim() || "unknown"
+  const ipHash = [...new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(`lizab:${ip}`)))].map((b) => b.toString(16).padStart(2, "0")).join("")
+  const SB = Deno.env.get("SUPABASE_URL")!, SK = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+  const gate = await fetch(`${SB}/rest/v1/rpc/take_voice_ticket`, { method: "POST", headers: { apikey: SK, Authorization: `Bearer ${SK}`, "Content-Type": "application/json" }, body: JSON.stringify({ p_ip_hash: ipHash }) })
+  if (!gate.ok || (await gate.json()) !== true) return Response.json({ error: "Too many calls right now. Please try again later." }, { status: 429, headers: cors })
+
   const now = Math.floor(Date.now() / 1000)
   const room = `esi-${crypto.randomUUID()}`
   const identity = `visitor-${crypto.randomUUID().slice(0, 8)}`

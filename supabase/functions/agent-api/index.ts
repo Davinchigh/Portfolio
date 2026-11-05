@@ -126,7 +126,8 @@ async function rest(path: string, init: RequestInit = {}) {
 }
 
 async function authorised(req: Request) {
-  const t = req.headers.get("x-agent-token") ?? new URL(req.url).searchParams.get("token")
+  // header only: tokens in URLs end up in logs
+  const t = req.headers.get("x-agent-token")
   if (!t || t.length < 20) return false
   const h = await sha256(t)
   const r = await rest(`agent_tokens?select=id&active=eq.true&token_sha256=eq.${h}`)
@@ -147,9 +148,11 @@ async function run(tool: string, args: Record<string, unknown>) {
   }
   const r = await rest(`rpc/${spec.rpc}`, { method: "POST", body: JSON.stringify(clean) })
   if (r.ok) return r.body
-  // Postgres raise exception messages are written for customers, pass them through
-  const msg = (r.body as { message?: string })?.message ?? "Something went wrong."
-  return { error: msg }
+  // only our own raise exception messages (P0001) are written for customers; hide anything else
+  const e = r.body as { code?: string; message?: string }
+  if (e?.code === "P0001" && e.message) return { error: e.message }
+  console.error("rpc failed", tool, JSON.stringify(r.body).slice(0, 500))
+  return { error: "Something went wrong on our side. Offer to pass the request to a person with request_callback." }
 }
 
 Deno.serve(async (req) => {
