@@ -158,3 +158,6 @@ export function whatsappLink(lines: OrderLine[]) {
 
 export const askLink = (about?: string) =>
   `https://wa.me/${shop.whatsapp}?text=${encodeURIComponent(about ? `Hello ${shop.name}, I have a question about ${about}.` : `Hello ${shop.name}!`)}`
+
+/** JSON for a <script type="application/ld+json"> tag. Escapes "<" so text such as "</script>" in a product name can't close the tag. */
+export const jsonLd = (data: unknown) => JSON.stringify(data).replace(/</g, "\\u003c")

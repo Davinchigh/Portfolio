@@ -5,7 +5,7 @@ import { Footer, Header, WhatsAppFab } from "@/components/chrome"
 import { Concierge } from "@/components/concierge"
 import { Curtain, INTRO_SCRIPT } from "@/components/curtain"
 import { Motion } from "@/components/motion"
-import { shop } from "@/lib/store"
+import { jsonLd, shop } from "@/lib/store"
 
 const description = "Men's and women's clothing, bags and shoes, handcrafted in Accra. Order on WhatsApp with delivery across Ghana and worldwide."
 
@@ -39,7 +39,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-full focus:bg-gold focus:px-4 focus:py-2 focus:text-onyx">
           Skip to content
         </a>
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(store) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(store) }} />
         <BagProvider>
           <Header />
           <main id="main" tabIndex={-1} className="outline-none">{children}</main>

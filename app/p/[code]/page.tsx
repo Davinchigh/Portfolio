@@ -3,7 +3,7 @@ import { notFound } from "next/navigation"
 import Link from "next/link"
 import { OrderPanel } from "@/components/order-panel"
 import { ProductCard } from "@/components/product-card"
-import { collections, findProduct, ghs, productUrl, products, shop } from "@/lib/store"
+import { collections, findProduct, ghs, jsonLd, productUrl, products, shop } from "@/lib/store"
 
 export const dynamicParams = false
 export function generateStaticParams() {
@@ -47,7 +47,7 @@ export default async function ProductPage({ params }: Props) {
   return (
     <>
       {/* Product data for Google, only for real items. */}
-      {!p.sample && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />}
+      {!p.sample && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(schema) }} />}
       <div className="wrap py-10">
         <nav aria-label="Breadcrumb" className="text-sm text-ash">
           <Link href="/" className="hover:text-champagne">Home</Link>
