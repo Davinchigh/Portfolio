@@ -51,7 +51,7 @@ export function Contact() {
 
       <div className="mt-12 flex flex-wrap items-center gap-x-6 gap-y-2">
         {socials.map((s) => (
-          <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer" className="link inline-flex items-center gap-1 py-2 text-sm">
+          <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer" className="link inline-flex min-w-11 items-center gap-1 py-2 text-sm">
             {s.label.toLowerCase()} <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" />
             <span className="sr-only">(opens in a new tab)</span>
           </a>

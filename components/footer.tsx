@@ -12,13 +12,13 @@ export default function Footer() {
         <ul className="flex flex-wrap gap-x-6 gap-y-1">
           {socials.map((s) => (
             <li key={s.label}>
-              <a href={s.href} target="_blank" rel="noopener noreferrer" className="inline-block py-2 text-sm text-muted-foreground hover:text-foreground">
+              <a href={s.href} target="_blank" rel="noopener noreferrer" className="inline-block min-w-11 py-2 text-center text-sm text-muted-foreground hover:text-foreground">
                 {s.label.toLowerCase()}
               </a>
             </li>
           ))}
           <li>
-            <a href={`mailto:${person.email}`} className="inline-block py-2 text-sm text-muted-foreground hover:text-foreground">
+            <a href={`mailto:${person.email}`} className="inline-block min-w-11 py-2 text-center text-sm text-muted-foreground hover:text-foreground">
               email
             </a>
           </li>
