@@ -51,7 +51,7 @@ html:not(.dark) .zero-hero-art {
 }
 .zero-eyebrow {
   font-family: var(--font-geist-mono), monospace;
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--z-gold-dim);
@@ -125,7 +125,7 @@ html:not(.dark) .zero-hero-art {
 }
 .zero-stats dt {
   font-family: var(--font-geist-mono), monospace;
-  font-size: 11px;
+  font-size: 12px;
   color: hsl(var(--subtle));
 }
 @media (max-width: 560px) {
@@ -179,7 +179,7 @@ html:not(.dark) .zero-hero-art {
 .zero-phase-tag {
   margin-left: auto;
   font-family: var(--font-geist-mono), monospace;
-  font-size: 11px;
+  font-size: 12px;
   color: hsl(var(--subtle));
 }
 .zero-rules {
@@ -232,7 +232,7 @@ html:not(.dark) .zero-hero-art {
   border: 1px solid currentColor;
   border-radius: 999px;
   font-family: var(--font-geist-mono), monospace;
-  font-size: 11px;
+  font-size: 12px;
 }
 .zero-tag-psychology {
   color: var(--z-ice);
@@ -436,7 +436,7 @@ html:not(.dark) .zero-tag-information {
 }
 .zero-seal p {
   font-family: var(--font-geist-mono), monospace;
-  font-size: 11px;
+  font-size: 12px;
   color: hsl(var(--subtle));
 }
 
@@ -450,3 +450,8 @@ html:not(.dark) .zero-tag-information {
     transform: none;
   }
 }
+
+/* reading paragraphs keep a comfortable line length */
+.zero p:not([class]) { max-width: 30em; }
+.zero-verdict-foot { max-width: 34em; }
+.zero-seal p, .zero-hero p { margin-inline: auto; }

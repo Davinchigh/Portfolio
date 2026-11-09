@@ -31,7 +31,7 @@ export default function Home() {
                 title={<ForMode recruiter="work i've shipped" explorer="things i've built" />}
                 intro="what the problem was, what i did, and how it turned out."
                 aside={
-                  <Link href="/projects" className="link text-sm">
+                  <Link href="/projects" className="link inline-flex min-h-11 items-center text-sm">
                     all projects
                   </Link>
                 }

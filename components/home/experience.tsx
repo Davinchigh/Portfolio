@@ -95,7 +95,7 @@ function ListView() {
               <div className="group -mx-2 flex w-[calc(100%+1rem)] items-start gap-4 rounded-xl px-2 py-2 transition-colors hover:bg-accent/60 hover:[&_.font-medium]:text-route">{header}</div>
             )}
             {hasDetails && isOpen && (
-              <div id={panelId} className="ml-[60px] max-w-2xl pt-3 text-sm leading-relaxed text-muted-foreground">
+              <div id={panelId} className="ml-[60px] max-w-[36em] pt-3 text-sm leading-relaxed text-muted-foreground">
                 {r.summary && <p>{r.summary}</p>}
                 {r.bullets && (
                   <ul className="mt-2 space-y-1.5">
@@ -260,7 +260,7 @@ export function Experience() {
             type="button"
             aria-pressed={view === v}
             onClick={() => setView(v)}
-            className={`min-h-9 min-w-[76px] rounded-full px-3 text-sm transition-colors ${
+            className={`min-h-11 min-w-[76px] rounded-full sm:min-h-9 px-3 text-sm transition-colors ${
               view === v ? "bg-foreground text-background" : "text-muted-foreground hover:text-foreground"
             }`}
           >

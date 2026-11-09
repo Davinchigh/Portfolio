@@ -33,7 +33,7 @@ function Row({ title, sub, dates, children }: { title: string; sub?: string; dat
     <li className="grid gap-1 border-t py-5 first:border-t-0 first:pt-0 sm:grid-cols-[1fr_auto] sm:gap-x-8">
       <div className="min-w-0">
         <h3 className="font-medium">{title}</h3>
-        {sub && <p className="mt-0.5 text-sm text-muted-foreground">{sub}</p>}
+        {sub && <p className="mt-0.5 max-w-[36em] text-sm text-muted-foreground">{sub}</p>}
         {children && <div className="mt-3 max-w-prose text-sm leading-relaxed text-muted-foreground">{children}</div>}
       </div>
       {dates && <p className="meta sm:pt-1 sm:text-right">{dates}</p>}
@@ -53,11 +53,11 @@ export default function ResumePage() {
           <a href={person.cv} download className="pill-button">
             <Download className="h-4 w-4" aria-hidden="true" /> download cv (pdf)
           </a>
-          <a href={`mailto:${person.email}`} className="link break-all py-2 text-sm text-muted-foreground">
+          <a href={`mailto:${person.email}`} className="link inline-flex min-h-11 items-center break-all text-sm text-muted-foreground">
             {person.email}
           </a>
           {socials.slice(0, 2).map((s) => (
-            <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer" className="link py-2 text-sm">
+            <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer" className="link inline-flex min-h-11 items-center text-sm">
               {s.label.toLowerCase()}
             </a>
           ))}
@@ -104,11 +104,11 @@ export default function ResumePage() {
             {stack.map((g) => (
               <li key={g.label}>
                 <h3 className="font-medium">{g.label}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{g.tools.map((t) => t.name).join(", ")}</p>
+                <p className="mt-2 max-w-prose text-sm leading-relaxed text-muted-foreground">{g.tools.map((t) => t.name).join(", ")}</p>
               </li>
             ))}
           </ul>
-          <p className="mt-6 text-sm leading-relaxed text-muted-foreground">
+          <p className="mt-6 max-w-[36em] text-sm leading-relaxed text-muted-foreground">
             Also: software, AI and UI/UX testing, instructional design, data analysis and visualisation, SQL and data warehousing,
             team leadership, public speaking and cybersecurity fundamentals.
           </p>

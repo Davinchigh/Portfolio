@@ -219,7 +219,7 @@ export function Globe() {
           <HandNote arrow="none" className="mt-8 -rotate-2 text-xl">
             give it a spin
           </HandNote>
-          <p className="meta mt-8 max-w-sm leading-relaxed">
+          <p className="meta mt-8 max-w-sm text-[13px] leading-relaxed">
             your rough location is worked out from your IP address by my host, shown only to you, and never saved.{" "}
             <Link href="/privacy" className="link">
               privacy

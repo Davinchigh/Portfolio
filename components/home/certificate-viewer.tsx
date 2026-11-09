@@ -13,7 +13,7 @@ export function CertificateViewer({ doc, issuer }: { doc: CertificateDoc; issuer
       <button
         type="button"
         onClick={() => dialog.current?.showModal()}
-        className="link inline-flex items-center gap-1.5 py-1 text-sm"
+        className="link inline-flex min-h-11 items-center gap-1.5 text-sm"
       >
         <Award className="h-4 w-4" aria-hidden="true" />
         view certificate<span className="sr-only">: {doc.label}</span>

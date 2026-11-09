@@ -44,7 +44,7 @@ export default function ZeroPage() {
   return (
     <main className="zero">
       <div className="wrap pt-24 sm:pt-28">
-        <Link href="/projects" className="inline-flex items-center gap-2 py-2 text-sm text-muted-foreground hover:text-foreground">
+        <Link href="/projects" className="inline-flex min-h-11 items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
           <ArrowLeft className="h-4 w-4" aria-hidden="true" /> all projects
         </Link>
       </div>

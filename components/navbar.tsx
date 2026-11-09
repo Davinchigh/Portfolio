@@ -78,7 +78,7 @@ export default function Navbar() {
       }`}
     >
       <nav className="wrap flex h-16 items-center justify-between" aria-label="Main">
-        <Link href="/" className="font-display text-xl font-bold tracking-tight" aria-label="bfb, Benedict Frimpong Boateng, home">
+        <Link href="/" className="inline-flex min-h-11 items-center font-display text-xl font-bold tracking-tight" aria-label="bfb, Benedict Frimpong Boateng, home">
           bfb
         </Link>
 

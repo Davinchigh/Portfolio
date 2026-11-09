@@ -23,7 +23,7 @@ export function CaseStudy({ item, index, headingLevel = "h3" }: { item: WorkItem
           ].map(([term, text]) => (
             <div key={term}>
               <dt className="eyebrow">{term}</dt>
-              <dd className="mt-1 leading-relaxed text-muted-foreground">{text}</dd>
+              <dd className="mt-1 text-[15px] leading-relaxed text-muted-foreground">{text}</dd>
             </div>
           ))}
         </dl>
@@ -35,12 +35,12 @@ export function CaseStudy({ item, index, headingLevel = "h3" }: { item: WorkItem
             {item.links.map((l) => (
               <li key={l.href}>
                 {l.href.startsWith("/") ? (
-                  <Link href={l.href} className="link inline-flex items-center gap-1 py-1 text-sm font-medium">
+                  <Link href={l.href} className="link inline-flex min-h-11 items-center gap-1 text-sm font-medium">
                     {l.label}
                     <ArrowRight className="h-4 w-4" aria-hidden="true" />
                   </Link>
                 ) : (
-                  <a href={l.href} target="_blank" rel="noopener noreferrer" className="link inline-flex items-center gap-1 py-1 text-sm font-medium">
+                  <a href={l.href} target="_blank" rel="noopener noreferrer" className="link inline-flex min-h-11 items-center gap-1 text-sm font-medium">
                     {l.label}
                     <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
                     <span className="sr-only">(opens in a new tab)</span>

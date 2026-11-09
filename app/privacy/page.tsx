@@ -15,7 +15,7 @@ export default function PrivacyPage() {
       <h1 className="mt-3 text-3xl sm:text-4xl">what this site does with your data</h1>
       <p className="meta mt-3">last updated {updated}</p>
 
-      <div className="mt-10 space-y-8 leading-relaxed text-muted-foreground">
+      <div className="mt-10 space-y-8 leading-relaxed text-muted-foreground [&_p]:max-w-[34em]">
         <section>
           <h2 className="text-lg font-medium text-foreground">the short version</h2>
           <p className="mt-2">

@@ -26,7 +26,7 @@ function BuildCard({ build, index }: { build: (typeof builds)[number]; index: nu
       <p className="meta">0{index + 1}</p>
       <h3 className="mt-2 text-xl">{build.title}</h3>
       <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{build.line}</p>
-      <p className="meta mt-3 leading-relaxed">{build.detail}</p>
+      <p className="meta mt-3 text-[13px] leading-relaxed">{build.detail}</p>
 
       <div className="mt-auto pt-6">
         {!open ? (

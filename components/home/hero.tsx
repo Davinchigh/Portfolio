@@ -60,7 +60,7 @@ function Fork() {
 function Switch({ to, children }: { to: "recruiter" | "explorer"; children: React.ReactNode }) {
   const { setMode } = useVisitor()
   return (
-    <button type="button" onClick={() => setMode(to)} className="link py-2 text-sm text-muted-foreground hover:text-foreground">
+    <button type="button" onClick={() => setMode(to)} className="link inline-flex min-h-11 items-center text-sm text-muted-foreground hover:text-foreground">
       {children}
     </button>
   )
