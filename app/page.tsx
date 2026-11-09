@@ -285,7 +285,7 @@ export default function Home() {
         <p aria-hidden="true" className="mt-20 select-none font-serif text-[clamp(4.5rem,17vw,15rem)] italic leading-[0.85] tracking-[-0.03em] text-ink">
           Glee Garden
         </p>
-        <p className="mt-8 border-t border-line pt-6 text-sm text-ink-mute">
+        <p className="mt-8 max-w-[34em] border-t border-line pt-6 text-sm leading-relaxed text-ink-mute">
           © 2026 Glee Garden. A concept brand, logo and website designed by Benedict Frimpong Boateng. Photos are AI-generated and the gardener is fictional.
         </p>
       </footer>

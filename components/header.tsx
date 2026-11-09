@@ -36,13 +36,13 @@ export function Header() {
           scrolled ? "max-w-[860px] bg-white/70 shadow-[0_10px_40px_-12px_rgba(17,22,19,0.25)]" : "max-w-[1180px] bg-white/45 shadow-[0_6px_24px_-14px_rgba(17,22,19,0.2)]"
         } backdrop-blur-xl backdrop-saturate-150 ${hidden && !open ? "-translate-y-[140%]" : ""}`}
       >
-        <a href="#top" aria-label="Glee Garden, back to top">
+        <a href="#top" aria-label="Glee Garden, back to top" className="inline-flex min-h-11 items-center rounded-full px-1">
           <Logo />
         </a>
         <ul className="hidden items-center md:flex">
           {links.map(([label, href]) => (
             <li key={href}>
-              <a href={href} className="rounded-full px-4 py-2.5 text-[15px] text-ink-soft transition-colors hover:bg-black/[0.05] hover:text-ink">
+              <a href={href} className="inline-flex min-h-11 items-center rounded-full px-4 text-[15px] text-ink-soft transition-colors hover:bg-black/[0.05] hover:text-ink">
                 {label}
               </a>
             </li>

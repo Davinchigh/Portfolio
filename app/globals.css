@@ -66,7 +66,11 @@
 @keyframes marquee { to { transform: translateX(-50%); } }
 
 @media (prefers-reduced-motion: reduce) {
-  [data-reveal], [data-mask], [data-mask] img, .line > span, .hero-frame, .hero-frame img { transition: none !important; opacity: 1 !important; transform: none !important; clip-path: inset(0 0 0 0 round 28px) !important; }
+  /* text must never be clipped: only the image frames keep their rounded corners */
+  [data-reveal], [data-mask], [data-mask] img, .line > span, .hero-frame, .hero-frame img { transition: none !important; opacity: 1 !important; transform: none !important; }
+  [data-reveal]:not([data-mask]):not(.hero-frame), .line > span { clip-path: none !important; }
+  [data-mask] { clip-path: inset(0 0 0 0 round 28px) !important; }
+  .hero-frame { clip-path: inset(0 0 0 0 round 36px) !important; }
   .marquee { animation: none; }
 }
 @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
