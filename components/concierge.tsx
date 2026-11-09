@@ -224,7 +224,7 @@ export function Concierge() {
             <span className="sr-only">Send</span>
           </button>
         </form>
-        <p className="px-5 pb-3 text-[11px] leading-snug text-ash">
+        <p className="px-5 pb-3 text-xs leading-relaxed text-ash">
           Esi is an AI and can make mistakes. Nothing is charged in chat: Lizab confirms every order on WhatsApp first.
         </p>
       </div>

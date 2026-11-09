@@ -60,7 +60,7 @@ export function Lookbook() {
         </div>
         <p className="hidden max-w-xs text-right text-sm text-ash md:block">Campaign images are AI-generated previews. Real pieces and photos are coming.</p>
       </div>
-      <ul ref={track} className="flex snap-x snap-mandatory gap-5 overflow-x-auto px-5 pb-4 sm:px-8 md:w-max md:snap-none md:overflow-visible md:pb-0">
+      <ul ref={track} className="flex snap-x snap-mandatory scroll-px-5 gap-5 overflow-x-auto px-5 pb-4 sm:scroll-px-8 sm:px-8 md:w-max md:snap-none md:overflow-visible md:pb-0">
         {FRAMES.map((f, i) => (
           <li key={f.src} className="w-[78vw] shrink-0 snap-start sm:w-[46vw] md:w-[30vw] lg:w-[26vw]">
             <Link href={f.href} data-cursor="View" className="group block">

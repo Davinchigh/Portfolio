@@ -35,8 +35,8 @@ export function ProductCard({ p, tone = "dark" }: { p: Product; tone?: "dark" | 
         <img src={p.images[0].src.replace(".webp", "-sm.webp")} alt={p.images[0].alt} loading="lazy" className="h-full w-full object-cover object-top transition-transform duration-700 group-hover:scale-[1.03]" />
         <span aria-hidden="true" className="glow pointer-events-none absolute inset-0" />
         <div className="absolute left-3 right-3 top-3 flex flex-wrap gap-2">
-          {status && <span className="rounded-full bg-onyx/85 px-2.5 py-1 text-[11px] font-medium text-champagne">{status}</span>}
-          {p.sample && <span className="rounded-full bg-champagne px-2.5 py-1 text-[11px] font-semibold text-onyx">Sample</span>}
+          {status && <span className="rounded-full bg-onyx/85 px-2.5 py-1 text-xs font-medium text-champagne">{status}</span>}
+          {p.sample && <span className="rounded-full bg-champagne px-2.5 py-1 text-xs font-semibold text-onyx">Sample</span>}
         </div>
       </div>
       <div className="mt-3 sm:flex sm:items-start sm:justify-between sm:gap-3">

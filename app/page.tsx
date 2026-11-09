@@ -26,7 +26,7 @@ export default function Home() {
             <p className="text-xs font-medium tracking-caps text-gold-deep">NEW IN</p>
             <h2 id="new-title" data-split className="mt-3 text-4xl md:text-5xl">Fresh from the workroom</h2>
           </div>
-          <Link href="/shop/new-in/" className="py-2 text-sm text-ink underline underline-offset-4 hover:text-gold-deep">
+          <Link href="/shop/new-in/" className="inline-flex min-h-11 items-center text-sm text-ink underline underline-offset-4 hover:text-gold-deep">
             See all new pieces
           </Link>
         </div>

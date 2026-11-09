@@ -100,7 +100,7 @@ export function OrderPanel({ p }: { p: Product }) {
           </>
         )}
       </p>
-      <a href={askLink(`${p.name} (${p.code})`)} target="_blank" rel="noopener noreferrer" className="mt-2 inline-block py-2 text-sm text-ash underline underline-offset-4 hover:text-champagne">
+      <a href={askLink(`${p.name} (${p.code})`)} target="_blank" rel="noopener noreferrer" className="mt-2 inline-flex min-h-11 items-center text-sm text-ash underline underline-offset-4 hover:text-champagne">
         Ask a question about this piece
       </a>
     </div>

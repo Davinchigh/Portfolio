@@ -60,7 +60,7 @@ export function Header() {
   return (
     <header className={`sticky top-0 z-40 transition-colors duration-500 ${scrolled && !open ? "bg-onyx/90 backdrop-blur-md" : "bg-onyx"}`}>
       {hasSamples && (
-        <p className="bg-espresso px-4 py-1.5 text-center text-xs text-champagne">
+        <p className="bg-espresso px-4 py-2 text-center text-xs leading-relaxed text-champagne">
           Preview: sample pieces, prices and AI-generated campaign images. Her real products and photos are coming.
         </p>
       )}
@@ -69,7 +69,7 @@ export function Header() {
           ref={button}
           type="button"
           data-cursor={open ? "Close" : "Menu"}
-          className="group flex h-12 items-center gap-3 justify-self-start pr-3 text-[12px] font-medium tracking-caps text-champagne"
+          className="group flex h-12 min-w-12 items-center gap-3 justify-self-start pr-3 text-[12px] font-medium tracking-caps text-champagne"
           aria-expanded={open}
           aria-controls="site-menu"
           onClick={() => setOpen((o) => !o)}
@@ -81,7 +81,7 @@ export function Header() {
           <span className="hidden sm:inline">{open ? "CLOSE" : "MENU"}</span>
           <span className="sr-only sm:hidden">{open ? "Close menu" : "Open menu"}</span>
         </button>
-        <Link href="/" className="justify-self-center">
+        <Link href="/" className="inline-flex min-h-12 items-center justify-self-center">
           <Lockup />
         </Link>
         <div className="flex items-center gap-1 justify-self-end">
@@ -154,38 +154,38 @@ export function Footer() {
         </div>
         <div>
           <h2 className="text-xs font-medium tracking-caps text-gold">ORDER</h2>
-          <ul className="mt-4 space-y-2 text-sm">
+          <ul className="mt-3 text-sm">
             <li>
-              <a href={askLink()} target="_blank" rel="noopener noreferrer" className="hover:text-gold">
+              <a href={askLink()} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center hover:text-gold">
                 WhatsApp {shop.phoneDisplay}
               </a>
             </li>
             <li>
-              <Link href="/how-to-order/" className="hover:text-gold">How to order</Link>
+              <Link href="/how-to-order/" className="inline-flex min-h-11 items-center hover:text-gold">How to order</Link>
             </li>
             <li>
-              <Link href="/delivery-returns/" className="hover:text-gold">Delivery and returns</Link>
+              <Link href="/delivery-returns/" className="inline-flex min-h-11 items-center hover:text-gold">Delivery and returns</Link>
             </li>
           </ul>
         </div>
         <div>
           <h2 className="text-xs font-medium tracking-caps text-gold">HOUSE</h2>
-          <ul className="mt-4 space-y-2 text-sm">
+          <ul className="mt-3 text-sm">
             <li>
-              <Link href="/about/" className="hover:text-gold">About Lizab</Link>
+              <Link href="/about/" className="inline-flex min-h-11 items-center hover:text-gold">About Lizab</Link>
             </li>
             <li>
-              <a href={`https://instagram.com/${shop.instagram}`} target="_blank" rel="noopener noreferrer" className="hover:text-gold">
+              <a href={`https://instagram.com/${shop.instagram}`} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center hover:text-gold">
                 Instagram @{shop.instagram}
               </a>
             </li>
             <li>
-              <Link href="/privacy/" className="hover:text-gold">Privacy</Link>
+              <Link href="/privacy/" className="inline-flex min-h-11 items-center hover:text-gold">Privacy</Link>
             </li>
           </ul>
         </div>
       </div>
-      <p className="wrap pb-10 text-xs text-ash">
+      <p className="wrap pb-10 text-xs leading-relaxed text-ash">
         © {new Date().getFullYear()} {shop.name}, {shop.city}. We never ask for payment before confirming your item is available.
       </p>
     </footer>

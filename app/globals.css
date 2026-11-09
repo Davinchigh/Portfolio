@@ -75,7 +75,7 @@
   }
   .prose-lizab p,
   .prose-lizab li {
-    @apply leading-relaxed text-champagne/85;
+    @apply max-w-[34em] leading-relaxed text-champagne/85;
   }
   .prose-lizab h2 {
     @apply mt-10 text-2xl text-champagne;

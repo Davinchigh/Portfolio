@@ -114,7 +114,7 @@ export function Experience() {
         <canvas ref={canvas} className={`h-full w-full transition-opacity duration-1000 ${gl ? "opacity-100" : "opacity-0"}`} />
       </div>
 
-      <section ref={reg(0)} aria-labelledby="hero-title" className="relative z-10 flex min-h-[calc(100svh-120px)] flex-col justify-end pb-24 md:min-h-[calc(100svh-100px)] md:pb-12">
+      <section ref={reg(0)} aria-labelledby="hero-title" className="relative z-10 flex min-h-[calc(100svh-120px)] flex-col justify-end pb-40 md:min-h-[calc(100svh-100px)] md:pb-12">
         {/* without WebGL the wordmark is plain type behind the photo */}
         <p aria-hidden="true" className={`pointer-events-none absolute inset-x-0 top-[22%] select-none text-center font-display text-[24vw] font-medium leading-none tracking-[-0.02em] text-gold/80 transition-opacity duration-1000 md:top-[30%] md:text-[19vw] ${gl ? "opacity-0" : "opacity-100"}`}>
           LIZAB
@@ -141,7 +141,7 @@ export function Experience() {
             </div>
           </div>
         </div>
-        <p className="absolute bottom-6 left-1/2 hidden -translate-x-1/2 items-center gap-2 text-[11px] tracking-caps text-ash md:flex">
+        <p className="absolute bottom-6 left-1/2 hidden -translate-x-1/2 items-center gap-2 text-xs tracking-caps text-ash md:flex">
           <ArrowDown className="h-3.5 w-3.5 animate-bounce motion-reduce:animate-none" aria-hidden="true" /> SCROLL
         </p>
       </section>

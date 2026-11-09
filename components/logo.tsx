@@ -33,7 +33,7 @@ export function Lockup({ className = "" }: { className?: string }) {
       <span aria-hidden="true" className="h-9 w-px bg-gold/60" />
       <span className="leading-none">
         <span className="block font-display text-xl font-semibold tracking-[0.12em]">LIZAB</span>
-        <span className="mt-1 block text-[10px] font-medium tracking-caps text-champagne/80">HOUSE OF FASHION</span>
+        <span className="mt-1 block text-[11px] font-medium tracking-caps text-champagne/80">HOUSE OF FASHION</span>
       </span>
     </span>
   )

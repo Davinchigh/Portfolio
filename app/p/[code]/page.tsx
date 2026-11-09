@@ -49,10 +49,10 @@ export default async function ProductPage({ params }: Props) {
       {/* Product data for Google, only for real items. */}
       {!p.sample && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(schema) }} />}
       <div className="wrap py-10">
-        <nav aria-label="Breadcrumb" className="text-sm text-ash">
-          <Link href="/" className="hover:text-champagne">Home</Link>
-          <span aria-hidden="true"> / </span>
-          <Link href={`/shop/${p.collection}/`} className="hover:text-champagne">{collection?.name}</Link>
+        <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-sm text-ash">
+          <Link href="/" className="inline-flex min-h-11 items-center hover:text-champagne">Home</Link>
+          <span aria-hidden="true">/</span>
+          <Link href={`/shop/${p.collection}/`} className="inline-flex min-h-11 items-center hover:text-champagne">{collection?.name}</Link>
         </nav>
         <div className="mt-8 grid gap-10 md:grid-cols-12">
           <div className="md:col-span-7">
@@ -85,7 +85,7 @@ export default async function ProductPage({ params }: Props) {
               <dt className="text-ash">Delivery</dt>
               <dd>
                 Accra by rider, rest of Ghana by courier, worldwide by DHL.{" "}
-                <Link href="/delivery-returns/" className="underline underline-offset-4 hover:text-gold">Details</Link>
+                <Link href="/delivery-returns/" className="py-0.5 underline underline-offset-4 hover:text-gold">Details</Link>
               </dd>
             </dl>
           </div>
