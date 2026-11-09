@@ -5,39 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>PromptMastery, an AI course (preview build)</title>
 <meta name="description" content="The Real-World AI &amp; Prompt Engineering Course, personalised for whoever opens it." />
-<script src="https://cdn.tailwindcss.com/3.4.16"></script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Inter:wght@300;400;500;600;700&family=Great+Vibes&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script>
-  tailwind.config = {
-    darkMode: 'class',
-    theme: {
-      extend: {
-        fontFamily: {
-          serif: ['"Playfair Display"', 'serif'],
-          sans: ['Inter', 'system-ui', 'sans-serif'],
-          mono: ['"JetBrains Mono"', 'monospace'],
-          script: ['"Great Vibes"', 'cursive']
-        },
-        colors: {
-          brand: { 50:'#eef2ff', 100:'#e0e7ff', 200:'#c7d2fe', 300:'#a5b4fc', 400:'#818cf8', 500:'#6366f1', 600:'#4f46e5', 700:'#4338ca', 800:'#3730a3', 900:'#312e81' },
-          gold:  { 50:'#fdf8ef', 100:'#faecd4', 200:'#f3d59f', 300:'#e8b96a', 400:'#d4a574', 500:'#c08a4a', 600:'#9b6a33', 700:'#73502a', 800:'#503923', 900:'#332518' },
-          cream: '#FAF7F2',
-          navy:  '#0F172A',
-        },
-        boxShadow: {
-          soft: '0 10px 30px -10px rgba(79,70,229,0.18)',
-          card: '0 4px 20px -6px rgba(15,23,42,0.10)',
-          glow: '0 0 0 4px rgba(129,140,248,0.25)'
-        }
-      }
-    }
-  }
-</script>
+<link rel="stylesheet" href="vendor/fonts-promptmastery.css">
+<link rel="stylesheet" href="vendor/tailwind-promptmastery.css">
+<script src="vendor/lucide.min.js"></script>
+<script src="vendor/html2canvas.min.js"></script>
+<script src="vendor/jspdf.umd.min.js"></script>
 <style>
   html, body { background: #FAF7F2; }
   .dark html, .dark body { background: #0F172A; }
@@ -707,7 +679,7 @@ function renderSession1(el) {
     <h2 class="font-serif text-2xl font-bold mt-10 mb-2">✅ Exercise 1.1 — Your First Prompt</h2>
     <p><b>Goal:</b> Write your very first 4-pillar prompt and see the AI in action.</p>
     <ol class="list-decimal pl-6 mt-2 space-y-1 text-sm">
-      <li>Go to <a class="text-brand-600 underline" href="https://chat.openai.com" target="_blank">ChatGPT</a>, <a class="text-brand-600 underline" href="https://claude.ai" target="_blank">Claude</a>, or <a class="text-brand-600 underline" href="https://gemini.google.com" target="_blank">Gemini</a>. Sign up free with email or Google.</li>
+      <li>Go to <a class="text-brand-600 underline" href="https://chat.openai.com" target="_blank" rel="noopener noreferrer">ChatGPT</a>, <a class="text-brand-600 underline" href="https://claude.ai" target="_blank" rel="noopener noreferrer">Claude</a>, or <a class="text-brand-600 underline" href="https://gemini.google.com" target="_blank" rel="noopener noreferrer">Gemini</a>. Sign up free with email or Google.</li>
       <li>Below, write a prompt about <b>something you actually want help with this week</b> (a message, a recipe, a study plan…).</li>
       <li>Use all 4 pillars: Role, Task, Context, Format.</li>
       <li>Click <b>"Try in ChatGPT"</b>. Notice how the answer changes if you add or remove a pillar.</li>
@@ -778,7 +750,7 @@ function renderSession2(el) {
     <h2 class="font-serif text-2xl font-bold mt-10 mb-2">✅ Exercise 2.1 — Sign up &amp; compare</h2>
     <p><b>Goal:</b> Try the same prompt on 3 different tools.</p>
     <ol class="list-decimal pl-6 mt-2 space-y-1 text-sm">
-      <li>Make free accounts on <a class="text-brand-600 underline" href="https://chat.openai.com" target="_blank">ChatGPT</a>, <a class="text-brand-600 underline" href="https://claude.ai" target="_blank">Claude</a>, and <a class="text-brand-600 underline" href="https://gemini.google.com" target="_blank">Gemini</a>.</li>
+      <li>Make free accounts on <a class="text-brand-600 underline" href="https://chat.openai.com" target="_blank" rel="noopener noreferrer">ChatGPT</a>, <a class="text-brand-600 underline" href="https://claude.ai" target="_blank" rel="noopener noreferrer">Claude</a>, and <a class="text-brand-600 underline" href="https://gemini.google.com" target="_blank" rel="noopener noreferrer">Gemini</a>.</li>
       <li>Paste the prompt below into all three.</li>
       <li>Notice: which one writes most warmly? Which is most concise? Which feels most "you"?</li>
     </ol>
@@ -1079,8 +1051,8 @@ function renderSession6(el) {
 
     <h2 class="font-serif text-2xl font-bold mt-8 mb-2">🔎 Research workflow</h2>
     <ol class="list-decimal pl-6 space-y-1 text-sm">
-      <li>Start with <a class="text-brand-600 underline" href="https://www.perplexity.ai" target="_blank">Perplexity</a> for cited overview.</li>
-      <li>Drop key PDFs/articles into <a class="text-brand-600 underline" href="https://notebooklm.google.com" target="_blank">NotebookLM</a> — now your AI <i>only</i> cites those sources.</li>
+      <li>Start with <a class="text-brand-600 underline" href="https://www.perplexity.ai" target="_blank" rel="noopener noreferrer">Perplexity</a> for cited overview.</li>
+      <li>Drop key PDFs/articles into <a class="text-brand-600 underline" href="https://notebooklm.google.com" target="_blank" rel="noopener noreferrer">NotebookLM</a> — now your AI <i>only</i> cites those sources.</li>
       <li>Ask follow-ups, generate study notes, audio overviews, FAQ.</li>
       <li>Verify any surprising claim by opening the original source.</li>
     </ol>
@@ -1092,7 +1064,7 @@ function renderSession6(el) {
 
     <h2 class="font-serif text-2xl font-bold mt-10 mb-2">✅ Exercise 6.2 — Try NotebookLM with a real PDF</h2>
     <ol class="list-decimal pl-6 space-y-1 text-sm">
-      <li>Open <a class="text-brand-600 underline" href="https://notebooklm.google.com" target="_blank">notebooklm.google.com</a> and log in with Google.</li>
+      <li>Open <a class="text-brand-600 underline" href="https://notebooklm.google.com" target="_blank" rel="noopener noreferrer">notebooklm.google.com</a> and log in with Google.</li>
       <li>Click "New" → upload any PDF (a textbook chapter, manual, article).</li>
       <li>In the chat, paste the prompt below.</li>
     </ol>
@@ -1153,9 +1125,9 @@ function renderSession7(el) {
     <div class="mt-2 flex flex-wrap gap-2">
       <button onclick="copyEl('img-output')" class="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-sm"><i data-lucide="copy" class="w-3.5 h-3.5 inline"></i> Copy</button>
       <button onclick="saveAssembled('img-output','Image Prompt')" class="px-3 py-1.5 rounded-lg bg-brand-600 text-white text-sm">Save</button>
-      <a target="_blank" href="https://www.midjourney.com" class="px-3 py-1.5 rounded-lg bg-pink-50 text-pink-700 text-sm">🎨 Try in Midjourney</a>
-      <a target="_blank" href="https://chat.openai.com" class="px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 text-sm">🖼️ Try DALL·E in ChatGPT</a>
-      <a target="_blank" href="https://leonardo.ai" class="px-3 py-1.5 rounded-lg bg-amber-50 text-amber-700 text-sm">🦁 Try Leonardo</a>
+      <a target="_blank" rel="noopener noreferrer" href="https://www.midjourney.com" class="px-3 py-1.5 rounded-lg bg-pink-50 text-pink-700 text-sm">🎨 Try in Midjourney</a>
+      <a target="_blank" rel="noopener noreferrer" href="https://chat.openai.com" class="px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 text-sm">🖼️ Try DALL·E in ChatGPT</a>
+      <a target="_blank" rel="noopener noreferrer" href="https://leonardo.ai" class="px-3 py-1.5 rounded-lg bg-amber-50 text-amber-700 text-sm">🦁 Try Leonardo</a>
     </div>
 
     <h2 class="font-serif text-2xl font-bold mt-10 mb-2">🖼️ 10 Image Prompt Templates</h2>
@@ -1212,11 +1184,11 @@ function renderSession8(el) {
 
     <h2 class="font-serif text-2xl font-bold mt-10 mb-2">✅ Exercise 8.1 — Sora sunset clip</h2>
     ${playground(`A slow cinematic dolly-in toward a single empty bench on a cliff at sunset, ocean waves below, soft warm light, gentle breeze moving the grass, peaceful and reflective mood, 5 seconds, 16:9.`, 'S8-Ex8.1')}
-    <p class="text-sm mt-2">Open <a class="text-brand-600 underline" href="https://sora.com" target="_blank">Sora</a> or <a class="text-brand-600 underline" href="https://runway.ml" target="_blank">Runway</a> and try it.</p>
+    <p class="text-sm mt-2">Open <a class="text-brand-600 underline" href="https://sora.com" target="_blank" rel="noopener noreferrer">Sora</a> or <a class="text-brand-600 underline" href="https://runway.ml" target="_blank" rel="noopener noreferrer">Runway</a> and try it.</p>
 
     <h2 class="font-serif text-2xl font-bold mt-10 mb-2">✅ Exercise 8.2 — Podcast intro voiceover</h2>
     ${playground(`[friendly, energetic] Hey everyone, welcome to "Curiosity Hour" — the podcast where we ask one big question every week. [pause] I'm your host, ${state.name}. [warm] Today: why do we dream?`, 'S8-Ex8.2')}
-    <p class="text-sm mt-2">Try this on <a class="text-brand-600 underline" href="https://elevenlabs.io" target="_blank">ElevenLabs</a> — pick any voice, paste the script.</p>
+    <p class="text-sm mt-2">Try this on <a class="text-brand-600 underline" href="https://elevenlabs.io" target="_blank" rel="noopener noreferrer">ElevenLabs</a> — pick any voice, paste the script.</p>
 
     ${quiz(8, [
       { q:'Best Sora practice for longer clips?', opts:['Force 30s in one shot','Stitch two shorter clips','Avoid descriptions','Use only nouns'], a:1 },
