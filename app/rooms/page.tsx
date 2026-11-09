@@ -83,7 +83,7 @@ export default function RoomsPage() {
               </li>
             ))}
           </ul>
-          <p className="mt-6 text-mist-muted">
+          <p className="mt-6 max-w-prose text-mist-muted">
             Academic Affairs, as listed by the University: pad@ug.edu.gh, +233 302 213820 or +233 302 213850.
             <a href="/sources/#src-aad" className="link-night ml-1 text-sm">
               [source]

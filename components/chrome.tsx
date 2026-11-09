@@ -64,7 +64,7 @@ export function Header() {
               ))}
             </ul>
           </nav>
-          <Link href="/rooms/" className="btn-ink hidden min-h-[40px] px-5 py-2 lg:inline-flex">
+          <Link href="/rooms/" className="btn-ink hidden min-h-[44px] px-5 py-2 lg:inline-flex">
             Getting a room
           </Link>
           <button
@@ -127,7 +127,7 @@ export function Footer() {
           <ul className="mt-5 grid grid-cols-2 gap-x-6 gap-y-1">
             {[...nav, { href: "/sources/", label: "Sources and credits" }, { href: "/privacy/", label: "Privacy" }].map((n) => (
               <li key={n.href}>
-                <Link href={n.href} className="inline-flex min-h-[40px] items-center text-mist/85 transition-colors duration-300 hover:text-lamp">
+                <Link href={n.href} className="inline-flex min-h-[44px] items-center text-mist/85 transition-colors duration-300 hover:text-lamp">
                   {n.label}
                 </Link>
               </li>
@@ -136,12 +136,13 @@ export function Footer() {
         </nav>
       </div>
       <div className="border-t border-white/10">
-        <p className="wrap py-6 text-sm">
+        <p className="wrap py-6 text-sm leading-relaxed"><span className="block max-w-[40em]">
           No University of Ghana or hall logos are used on this site. For anything official, go to{" "}
           <a href="https://www.ug.edu.gh" className="link-night" target="_blank" rel="noopener noreferrer">
             ug.edu.gh<span className="sr-only"> (opens in a new tab)</span>
           </a>
           .
+        </span>
         </p>
       </div>
     </footer>

@@ -53,6 +53,11 @@
   .rule {
     @apply inline-block h-px w-8 bg-current align-middle opacity-60;
   }
+  /* links get a little padding so the tap area clears 24px without moving the text */
+  .link,
+  .link-night {
+    padding-block: 0.2em;
+  }
   .link {
     @apply text-ink underline decoration-lamp decoration-1 underline-offset-[5px] transition-[text-decoration-color,color] duration-300 hover:text-lamp-deep hover:decoration-lamp-deep;
   }

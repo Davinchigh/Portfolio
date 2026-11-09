@@ -68,7 +68,7 @@ export function Callout({ tone = "lamp", title, children }: { tone?: "lamp" | "w
       <span className={`absolute inset-y-0 left-0 w-[3px] ${warn ? "bg-[#9B2C24]" : "bg-lamp"}`} aria-hidden="true" />
       <p className={`label ${warn ? "text-[#9B2C24]" : "text-lamp-deep"}`}>{warn ? "Important" : "Note"}</p>
       <p className="mt-2 font-display text-2xl">{title}</p>
-      <div className="mt-3 text-ink/85">{children}</div>
+      <div className="mt-3 max-w-prose text-ink/85">{children}</div>
     </aside>
   )
 }
