@@ -24,7 +24,7 @@ function ViewSwitch({ className = "" }: { className?: string }) {
             type="button"
             aria-pressed={on}
             onClick={() => setMode(v.mode)}
-            className={`min-h-8 rounded-full px-3 text-xs font-medium transition-colors ${
+            className={`min-h-9 rounded-full px-3.5 text-xs font-medium transition-colors ${
               on ? "bg-foreground text-background" : "text-muted-foreground hover:text-foreground"
             }`}
           >
@@ -90,7 +90,7 @@ export default function Navbar() {
                 key={l.href}
                 href={l.href}
                 aria-current={active ? "page" : undefined}
-                className={`rounded-full px-3 py-2 text-sm transition-colors ${
+                className={`inline-flex min-h-11 items-center rounded-full px-3 text-sm transition-colors ${
                   active ? "text-foreground" : "text-muted-foreground hover:text-foreground"
                 }`}
               >

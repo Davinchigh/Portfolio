@@ -1,4 +1,5 @@
 import type { ReactNode } from "react"
+import { Reveal } from "@/components/site/motion"
 import { Stop } from "@/components/site/route"
 
 /** A stop on the route: the stop's name, a heading, an optional one-line intro, then content. */
@@ -9,6 +10,7 @@ export function Section({
   intro,
   aside,
   children,
+  revealBody = true,
 }: {
   id: string
   eyebrow: ReactNode
@@ -16,10 +18,12 @@ export function Section({
   intro?: ReactNode
   aside?: ReactNode
   children: ReactNode
+  /** Set false when the content brings its own scroll animation. */
+  revealBody?: boolean
 }) {
   return (
     <section id={id} aria-labelledby={`${id}-title`} className="wrap scroll-mt-20 py-16 sm:py-20">
-      <div className="mb-10 flex flex-wrap items-end justify-between gap-6">
+      <Reveal className="mb-10 flex flex-wrap items-end justify-between gap-6">
         <div>
           <p className="eyebrow relative">
             <Stop />
@@ -31,8 +35,8 @@ export function Section({
           {intro && <p className="mt-3 max-w-xl text-muted-foreground">{intro}</p>}
         </div>
         {aside}
-      </div>
-      {children}
+      </Reveal>
+      {revealBody ? <Reveal delay={90}>{children}</Reveal> : children}
     </section>
   )
 }

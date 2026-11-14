@@ -3,6 +3,8 @@
 import { Moon, Sun } from "lucide-react"
 import { useTheme } from "next-themes"
 import { useEffect, useState } from "react"
+import { flushSync } from "react-dom"
+import { withViewTransition } from "@/components/site/motion"
 
 export function ThemeToggle() {
   const { resolvedTheme, setTheme } = useTheme()
@@ -16,7 +18,19 @@ export function ThemeToggle() {
   return (
     <button
       type="button"
-      onClick={() => setTheme(isDark ? "light" : "dark")}
+      onClick={(e) => {
+        const r = e.currentTarget.getBoundingClientRect()
+        const root = document.documentElement
+        root.style.setProperty("--vt-x", `${r.left + r.width / 2}px`)
+        root.style.setProperty("--vt-y", `${r.top + r.height / 2}px`)
+        const next = isDark ? "light" : "dark"
+        withViewTransition(() => {
+          flushSync(() => setTheme(next))
+          // next-themes applies the class in an effect; set it now so the transition captures the new theme.
+          root.classList.toggle("dark", next === "dark")
+          root.style.colorScheme = next
+        }, "theme-vt")
+      }}
       aria-label={label}
       title={label}
       className={`inline-flex h-11 w-11 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-accent hover:text-foreground ${

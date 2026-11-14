@@ -2,6 +2,7 @@
 
 import { ArrowDown, ArrowUpRight, Download } from "lucide-react"
 import { Clock } from "@/components/site/clock"
+import { HeroDeck } from "@/components/home/hero-deck"
 import { HandNote } from "@/components/site/hand-note"
 import { Stop } from "@/components/site/route"
 import { person, proof, road } from "@/lib/site"
@@ -92,11 +93,16 @@ export function Hero() {
                 {person.nickname}
               </HandNote>
             </div>
-            <p className="mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground sm:text-xl">
-              ai engineer and software developer in accra. this site is the road that got me here, from a statistics class in
-              legon to building with ai.
-            </p>
-            <Fork />
+            <div className="lg:grid lg:grid-cols-[minmax(0,36rem)_minmax(0,1fr)] lg:items-center lg:gap-12">
+              <div>
+                <p className="mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground sm:text-xl">
+                  ai engineer and software developer in accra. this site is the road that got me here, from a statistics
+                  class in legon to building with ai.
+                </p>
+                <Fork />
+              </div>
+              <HeroDeck className="hidden lg:block" />
+            </div>
           </div>
         )}
 

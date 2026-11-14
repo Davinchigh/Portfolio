@@ -312,3 +312,159 @@ html:not(.dark) .pill-button {
   .cert-row, .cert-grid::before { animation: none !important; }
   .cert-row .cert-issuer { transition: none; transform: none !important; }
 }
+
+/* ---------- Motion: scroll reveals, 3D tilt, the hero deck and view transitions ---------- */
+
+/* Sections fold up into place as they scroll in. Only ever hidden by script (see Reveal). */
+.reveal[data-reveal] {
+  transition: opacity 700ms cubic-bezier(0.2, 0.7, 0.1, 1), transform 800ms cubic-bezier(0.2, 0.7, 0.1, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+  transform-origin: 50% 0%;
+  will-change: opacity, transform;
+}
+.reveal[data-reveal="pending"] {
+  opacity: 0;
+  transform: perspective(1200px) translateY(28px) rotateX(7deg);
+}
+.reveal[data-reveal="in"] {
+  will-change: auto;
+}
+
+/* Cards and screenshots lean toward the pointer. */
+.tilt {
+  position: relative;
+  transform: perspective(900px) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
+  transform-style: preserve-3d;
+  transition: transform 500ms cubic-bezier(0.2, 0.7, 0.1, 1), box-shadow 300ms ease, border-color 200ms ease;
+}
+.tilt[data-tilting] {
+  transition: transform 90ms linear, box-shadow 300ms ease, border-color 200ms ease;
+  box-shadow: 0 24px 48px -28px hsl(var(--route) / 0.35), 0 10px 24px -18px rgb(0 0 0 / 0.5);
+}
+.tilt::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(420px circle at var(--glare-x, 50%) var(--glare-y, 50%), hsl(var(--route) / 0.13), transparent 60%);
+  opacity: 0;
+  transition: opacity 300ms ease;
+}
+.tilt[data-tilting]::after {
+  opacity: 1;
+}
+/* Keep a card still while someone is typing in it. */
+.tilt:focus-within {
+  transform: none;
+}
+
+/* Hero deck: three pieces of work floating in 3D, turning with the pointer. */
+.deck {
+  perspective: 1400px;
+}
+.deck-stage {
+  position: relative;
+  height: 100%;
+  transform-style: preserve-3d;
+  transform: rotateX(calc(10deg + var(--deck-x, 0deg))) rotateY(calc(-20deg + var(--deck-y, 0deg)));
+  transition: transform 600ms cubic-bezier(0.2, 0.7, 0.1, 1);
+}
+.deck-card {
+  position: absolute;
+  left: 0;
+  width: 70%;
+  overflow: hidden;
+  border-radius: 14px;
+  border: 1px solid hsl(var(--border));
+  background: hsl(var(--card));
+  box-shadow: 0 30px 60px -30px rgb(0 0 0 / 0.75), 0 0 0 1px hsl(var(--route) / 0.06);
+  transform: translate3d(var(--x), var(--y), var(--z));
+  animation: deck-float 7s ease-in-out infinite;
+  animation-delay: var(--float-delay, 0s);
+  transition: translate 500ms cubic-bezier(0.2, 0.7, 0.1, 1), border-color 300ms ease;
+}
+.deck:hover .deck-card {
+  translate: var(--fan-x, 0) var(--fan-y, 0);
+  border-color: hsl(var(--route) / 0.4);
+}
+.deck-bar {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  height: 22px;
+  padding: 0 10px;
+  border-bottom: 1px solid hsl(var(--border));
+}
+.deck-bar i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: hsl(var(--input));
+}
+.deck-bar i:first-child {
+  background: hsl(var(--route));
+}
+.deck-glow {
+  position: absolute;
+  inset: 12% 6% 4% 0;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, hsl(var(--route) / 0.16), transparent);
+  filter: blur(26px);
+  transform: translateZ(-120px);
+}
+@keyframes deck-float {
+  0%, 100% { transform: translate3d(var(--x), var(--y), var(--z)); }
+  50% { transform: translate3d(var(--x), calc(var(--y) - 10px), var(--z)); }
+}
+
+/* Experience details open and close smoothly. */
+.fold {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition: grid-template-rows 420ms cubic-bezier(0.2, 0.7, 0.1, 1), opacity 300ms ease;
+}
+.fold[data-open] {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+.fold > div {
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* View transitions: switching between the hiring and exploring views cross-fades with a small lift. */
+::view-transition-old(root) {
+  animation: vt-out 260ms cubic-bezier(0.4, 0, 1, 1) both;
+}
+::view-transition-new(root) {
+  animation: vt-in 420ms cubic-bezier(0.2, 0.7, 0.1, 1) both;
+}
+@keyframes vt-out {
+  to { opacity: 0; transform: translateY(-8px) scale(0.995); }
+}
+@keyframes vt-in {
+  from { opacity: 0; transform: translateY(14px) scale(0.995); }
+}
+/* Theme switch: the new theme opens out in a circle from the toggle. */
+html.theme-vt::view-transition-old(root) {
+  animation: none;
+  z-index: 0;
+}
+html.theme-vt::view-transition-new(root) {
+  z-index: 1;
+  animation: vt-circle 620ms cubic-bezier(0.3, 0.7, 0.1, 1) both;
+}
+@keyframes vt-circle {
+  from { clip-path: circle(0 at var(--vt-x, 50%) var(--vt-y, 0%)); }
+  to { clip-path: circle(150vmax at var(--vt-x, 50%) var(--vt-y, 0%)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal[data-reveal] { opacity: 1; transform: none; transition: none; }
+  .tilt, .deck-stage { transform: none; transition: none; }
+  .deck-card { animation: none; transition: none; }
+  .fold { transition: none; }
+  ::view-transition-old(root), ::view-transition-new(root) { animation: none !important; }
+}

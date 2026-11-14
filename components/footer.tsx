@@ -9,7 +9,7 @@ export default function Footer() {
         <p className="meta">
           {person.name}, {person.location}, <Clock />
         </p>
-        <ul className="flex flex-wrap gap-x-6 gap-y-1">
+        <ul className="flex flex-wrap gap-x-4 gap-y-1">
           {socials.map((s) => (
             <li key={s.label}>
               <a href={s.href} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 min-w-11 items-center justify-center text-sm text-muted-foreground hover:text-foreground">
@@ -24,9 +24,9 @@ export default function Footer() {
           </li>
         </ul>
       </div>
-      <p className="wrap pb-8 meta">
-        built in accra with next.js and claude.{" "}
-        <Link href="/privacy" className="hover:text-foreground">
+      <p className="wrap meta flex flex-wrap items-center gap-x-2 pb-6">
+        <span>built in accra with next.js and claude.</span>
+        <Link href="/privacy" className="link inline-flex min-h-11 items-center hover:text-foreground">
           privacy
         </Link>
       </p>

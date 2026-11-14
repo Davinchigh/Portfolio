@@ -130,7 +130,7 @@ export function Globe() {
       mapBrightness: dark ? 5 : 8,
       mapBaseBrightness: dark ? 0 : 0.05,
       baseColor: dark ? [0.11, 0.18, 0.21] : [0.93, 0.96, 0.97],
-      markerColor: dark ? [0.3, 0.78, 0.81] : [0.04, 0.42, 0.45],
+      markerColor: dark ? [0.98, 0.75, 0.14] : [0.69, 0.29, 0.03],
       glowColor: dark ? [0.07, 0.13, 0.15] : [0.84, 0.9, 0.92],
       markers,
       onRender: (state) => {

@@ -21,7 +21,8 @@ export function Contact() {
   }
 
   return (
-    <section id="contact" aria-labelledby="contact-title" className="wrap scroll-mt-20 border-t py-24 sm:py-32">
+    <section id="contact" aria-labelledby="contact-title" className="wrap scroll-mt-20">
+      <div className="border-t py-24 sm:py-32">
       <p className="eyebrow">{mode === "recruiter" ? "your move" : "say hello"}</p>
       <h2 id="contact-title" className="mt-4 max-w-4xl text-4xl leading-[1.02] sm:text-7xl">
         you&apos;ve seen my journey. i&apos;d like to be part of yours.
@@ -59,6 +60,7 @@ export function Contact() {
         <HandNote arrow="left" className="-rotate-2 text-xl">
           say hi, i don&apos;t bite
         </HandNote>
+      </div>
       </div>
     </section>
   )

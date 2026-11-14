@@ -30,13 +30,6 @@ function decimal(value: string, isEnd = false) {
 const sorted = [...roles].sort((a, b) => decimal(b.start) - decimal(a.start))
 
 function Initials({ company, current, logo }: { company: string; current?: boolean; logo?: string }) {
-  if (logo)
-    return (
-      <span className="relative flex h-11 w-11 shrink-0 overflow-hidden rounded-xl border bg-white transition-transform duration-200 group-hover:scale-110 group-hover:border-route/60 motion-reduce:transform-none">
-        <img src={logo} alt="" aria-hidden="true" className="h-full w-full object-contain" />
-        {current && <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-live ring-2 ring-background" />}
-      </span>
-    )
   const text = company
     .replace(/\(.*\)/, "")
     .split(/\s+/)
@@ -47,11 +40,11 @@ function Initials({ company, current, logo }: { company: string; current?: boole
     .toUpperCase()
   return (
     <span
-      className={`relative flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border transition-transform duration-200 group-hover:scale-110 group-hover:border-route/60 motion-reduce:transform-none font-mono text-xs font-semibold text-muted-foreground ${
-        logo ? "overflow-hidden bg-white" : "bg-card"
+      className={`relative flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border font-mono text-xs font-semibold text-muted-foreground transition-transform duration-200 group-hover:scale-110 group-hover:border-route/60 motion-reduce:transform-none ${
+        logo ? "bg-white" : "bg-card"
       }`}
     >
-      {logo ? <img src={logo} alt="" aria-hidden="true" className="h-full w-full rounded-xl object-contain" /> : text}
+      {logo ? <img src={logo} alt="" aria-hidden="true" className="h-full w-full rounded-[11px] object-contain" /> : text}
       {current && <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-live ring-2 ring-background" />}
     </span>
   )
@@ -75,7 +68,11 @@ function ListView() {
             </span>
             <span className="meta flex items-center gap-2 whitespace-nowrap pt-1">
               <span className="hidden sm:inline">{range(r)}</span>
-              {hasDetails && <ChevronDown className={`h-4 w-4 transition-transform ${isOpen ? "rotate-180" : ""}`} aria-hidden="true" />}
+              {hasDetails ? (
+                <ChevronDown className={`h-4 w-4 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} aria-hidden="true" />
+              ) : (
+                <span className="h-4 w-4" aria-hidden="true" />
+              )}
             </span>
           </>
         )
@@ -94,21 +91,25 @@ function ListView() {
             ) : (
               <div className="group -mx-2 flex w-[calc(100%+1rem)] items-start gap-4 rounded-xl px-2 py-2 transition-colors hover:bg-accent/60 hover:[&_.font-medium]:text-route">{header}</div>
             )}
-            {hasDetails && isOpen && (
-              <div id={panelId} className="ml-[60px] max-w-[36em] pt-3 text-sm leading-relaxed text-muted-foreground">
-                {r.summary && <p>{r.summary}</p>}
-                {r.bullets && (
-                  <ul className="mt-2 space-y-1.5">
-                    {r.bullets.map((b) => (
-                      <li key={b} className="flex gap-2">
-                        <span className="text-route" aria-hidden="true">
-                          *
-                        </span>
-                        <span>{b}</span>
-                      </li>
-                    ))}
-                  </ul>
-                )}
+            {hasDetails && (
+              <div id={panelId} className="fold" data-open={isOpen ? "" : undefined} inert={!isOpen}>
+                <div>
+                  <div className="ml-[60px] max-w-[36em] pb-2 pt-3 text-sm leading-relaxed text-muted-foreground">
+                    {r.summary && <p>{r.summary}</p>}
+                    {r.bullets && (
+                      <ul className="mt-2 space-y-1.5">
+                        {r.bullets.map((b) => (
+                          <li key={b} className="flex gap-2">
+                            <span className="text-route" aria-hidden="true">
+                              *
+                            </span>
+                            <span>{b}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                </div>
               </div>
             )}
           </li>

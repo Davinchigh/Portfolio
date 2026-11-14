@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { ArrowRight, ArrowUpRight } from "lucide-react"
+import { Tilt } from "@/components/site/motion"
 import type { Work as WorkItem } from "@/lib/site"
 
 /** One numbered case study: label, title, hook, then problem, role and outcome beside the screenshot. */
@@ -53,14 +54,14 @@ export function CaseStudy({ item, index, headingLevel = "h3" }: { item: WorkItem
       </div>
 
       <div className="md:col-span-7">
-        <div className={`shot ${item.slug === "zero" ? "bg-[#060608]" : ""}`}>
+        <Tilt max={4} className={`shot ${item.slug === "zero" ? "bg-[#060608]" : ""}`}>
           <img
             src={item.image}
             alt={item.imageAlt}
             loading="lazy"
             className={`aspect-[16/10] w-full ${item.contain ? "bg-white object-contain p-3" : item.slug === "zero" ? "object-contain" : "object-cover object-top"}`}
           />
-        </div>
+        </Tilt>
       </div>
     </article>
   )

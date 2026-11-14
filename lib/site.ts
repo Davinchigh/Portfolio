@@ -262,7 +262,7 @@ export const designs = [
 export const ventures = [
   {
     title: "AI tutoring apps",
-    summary: "three personal learning apps i built for a friend with claude code. try them yourself below.",
+    summary: "three personal learning apps i built for a friend with claude code. try them yourself in the builds section.",
     status: "built",
     tags: ["claude api", "claude code"],
     href: "/#builds",
