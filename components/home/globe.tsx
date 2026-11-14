@@ -149,7 +149,12 @@ export function Globe() {
     })
     requestAnimationFrame(() => (el.style.opacity = "1"))
 
+    // Only draw while the globe is on screen. Left running, it would repaint every frame for the whole visit.
+    const visible = new IntersectionObserver(([entry]) => globe.toggle(entry.isIntersecting), { rootMargin: "200px" })
+    visible.observe(el)
+
     return () => {
+      visible.disconnect()
       globe.destroy()
       window.removeEventListener("resize", onResize)
     }

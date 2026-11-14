@@ -11,7 +11,7 @@ import { certifications, designs, stack, ventures } from "@/lib/site"
 export function Designs() {
   return (
     <Section id="designs" eyebrow="design work" title="screens i've designed" intro="ui and ux work, from figma files to finished sites. open one to explore it.">
-      <div className="grid gap-10 md:grid-cols-2">
+      <div className="stagger grid gap-10 md:grid-cols-2">
         {designs.map((d) => (
           <article key={d.slug}>
             <a href={d.href} target="_blank" rel="noopener noreferrer" className="group block">
@@ -40,7 +40,7 @@ export function Designs() {
 export function Ventures() {
   return (
     <Section id="started" eyebrow="side projects" title="things i build on the side" intro="built on my own time, mostly with claude code. amber means still in progress.">
-      <ul className="grid gap-5 md:grid-cols-3">
+      <ul className="stagger grid gap-5 md:grid-cols-3">
         {ventures.map((v) => {
           const active = v.status === "in progress"
           return (
@@ -85,7 +85,7 @@ export function Stack() {
       }
     >
       <BrandGradients />
-      <div className="grid gap-10 md:grid-cols-3">
+      <div className="stagger grid gap-10 md:grid-cols-3">
         {stack.map((group) => (
           <div key={group.label}>
             <h3 className="eyebrow">{group.label}</h3>

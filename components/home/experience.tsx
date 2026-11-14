@@ -228,7 +228,7 @@ function TimelineView() {
       {chosen && (
         <div
           key={chosen.id}
-          className={`mt-6 rounded-xl border p-5 transition-colors ${hovered && hovered !== active ? "border-dashed bg-card/60" : "bg-card"}`}
+          className={`swap-in mt-6 rounded-xl border p-5 transition-colors ${hovered && hovered !== active ? "border-dashed bg-card/60" : "bg-card"}`}
           aria-live="polite"
         >
           <div className="flex items-start gap-4">
@@ -254,15 +254,16 @@ export function Experience() {
       <HandNote arrow="none" className="hidden -rotate-6 text-xl sm:inline-flex">
         try both
       </HandNote>
-      <div role="group" aria-label="Experience view" className="flex rounded-full border bg-card p-1">
+      <div role="group" aria-label="Experience view" className="relative grid grid-cols-2 rounded-full border bg-card p-1">
+        <span aria-hidden="true" className={`seg-pill inset-y-1 left-1 w-[calc(50%-4px)] ${view === "timeline" ? "translate-x-full" : ""}`} />
         {(["list", "timeline"] as const).map((v) => (
           <button
             key={v}
             type="button"
             aria-pressed={view === v}
             onClick={() => setView(v)}
-            className={`min-h-11 min-w-[76px] rounded-full sm:min-h-9 px-3 text-sm transition-colors ${
-              view === v ? "bg-foreground text-background" : "text-muted-foreground hover:text-foreground"
+            className={`relative z-10 min-h-11 min-w-[76px] rounded-full px-3 text-sm transition-colors duration-300 sm:min-h-9 ${
+              view === v ? "text-background" : "text-muted-foreground hover:text-foreground"
             }`}
           >
             {v}
@@ -279,7 +280,9 @@ export function Experience() {
       title={<ForMode recruiter="where i've worked" explorer="every stop taught me something" />}
       aside={toggle}
     >
-      {view === "list" ? <ListView /> : <TimelineView />}
+      <div key={view} className="swap-in">
+        {view === "list" ? <ListView /> : <TimelineView />}
+      </div>
     </Section>
   )
 }

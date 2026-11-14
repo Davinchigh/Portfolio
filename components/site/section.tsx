@@ -36,7 +36,7 @@ export function Section({
         </div>
         {aside}
       </Reveal>
-      {revealBody ? <Reveal delay={90}>{children}</Reveal> : children}
+      {revealBody ? <Reveal delay={90} flat>{children}</Reveal> : children}
     </section>
   )
 }

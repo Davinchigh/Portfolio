@@ -15,7 +15,11 @@ function ViewSwitch({ className = "" }: { className?: string }) {
     { mode: "explorer" as const, label: "exploring" },
   ]
   return (
-    <div role="group" aria-label="View the site as" className={`flex rounded-full border bg-card p-0.5 ${className}`}>
+    <div role="group" aria-label="View the site as" className={`relative grid grid-cols-2 rounded-full border bg-card p-0.5 ${className}`}>
+      <span
+        aria-hidden="true"
+        className={`seg-pill inset-y-0.5 left-0.5 w-[calc(50%-2px)] ${mode === "explorer" ? "translate-x-full" : ""} ${mode === "unknown" ? "scale-75 opacity-0" : ""}`}
+      />
       {views.map((v) => {
         const on = mode === v.mode
         return (
@@ -24,8 +28,8 @@ function ViewSwitch({ className = "" }: { className?: string }) {
             type="button"
             aria-pressed={on}
             onClick={() => setMode(v.mode)}
-            className={`min-h-9 rounded-full px-3.5 text-xs font-medium transition-colors ${
-              on ? "bg-foreground text-background" : "text-muted-foreground hover:text-foreground"
+            className={`relative z-10 min-h-9 rounded-full px-3.5 text-xs font-medium transition-colors duration-300 ${
+              on ? "text-background" : "text-muted-foreground hover:text-foreground"
             }`}
           >
             {v.label}
@@ -73,7 +77,7 @@ export default function Navbar() {
 
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-50 bg-background/85 backdrop-blur-md transition-[border-color] ${
+      className={`fixed inset-x-0 top-0 z-50 bg-background/85 backdrop-blur-md transition-[border-color,box-shadow] duration-300 ${
         scrolled || open ? "border-b" : "border-b border-transparent"
       }`}
     >
@@ -90,7 +94,7 @@ export default function Navbar() {
                 key={l.href}
                 href={l.href}
                 aria-current={active ? "page" : undefined}
-                className={`inline-flex min-h-11 items-center rounded-full px-3 text-sm transition-colors ${
+                className={`nav-link inline-flex min-h-11 items-center rounded-full px-3 text-sm transition-colors duration-200 ${
                   active ? "text-foreground" : "text-muted-foreground hover:text-foreground"
                 }`}
               >
@@ -119,25 +123,27 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {open && (
-        <div id="mobile-menu" className="border-t md:hidden">
-          {pathname === "/" && (
-            <div className="wrap flex items-center justify-between pt-4">
-              <span className="text-sm text-muted-foreground">view the site as</span>
-              <ViewSwitch />
-            </div>
-          )}
-          <ul className="wrap py-2">
-            {links.map((l) => (
-              <li key={l.href}>
-                <Link href={l.href} onClick={() => setOpen(false)} className="block py-3 text-lg">
-                  {l.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
+      <div id="mobile-menu" className="fold md:hidden" data-open={open ? "" : undefined} inert={!open}>
+        <div>
+          <div className="border-t">
+            {pathname === "/" && (
+              <div className="wrap flex items-center justify-between pt-4">
+                <span className="text-sm text-muted-foreground">view the site as</span>
+                <ViewSwitch />
+              </div>
+            )}
+            <ul className="wrap py-2">
+              {links.map((l) => (
+                <li key={l.href}>
+                  <Link href={l.href} onClick={() => setOpen(false)} className="block py-3 text-lg transition-colors hover:text-route">
+                    {l.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
-      )}
+      </div>
     </header>
   )
 }

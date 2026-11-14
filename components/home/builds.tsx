@@ -45,7 +45,7 @@ function BuildCard({ build, index }: { build: (typeof builds)[number]; index: nu
               e.preventDefault()
               window.open(href, "_blank", "noopener")
             }}
-            className="space-y-3"
+            className="swap-in space-y-3"
           >
             <label htmlFor={id} className="block text-sm">
               what should it call you? <span className="text-muted-foreground">(optional)</span>
@@ -94,7 +94,7 @@ export function Builds() {
         </HandNote>
       }
     >
-      <ul className="grid gap-5 md:grid-cols-3">
+      <ul className="stagger grid gap-5 md:grid-cols-3">
         {builds.map((b, i) => (
           <BuildCard key={b.slug} build={b} index={i} />
         ))}

@@ -13,11 +13,14 @@ export function Reveal({
   children,
   as: Tag = "div",
   delay = 0,
+  flat = false,
   className = "",
 }: {
   children: ReactNode
   as?: ElementType
   delay?: number
+  /** Rise and fade only, without the 3D fold. Use for tall blocks, where a fold would swing wide. */
+  flat?: boolean
   className?: string
 }) {
   const ref = useRef<HTMLElement>(null)
@@ -45,7 +48,7 @@ export function Reveal({
   }, [])
 
   return (
-    <Tag ref={ref} className={`reveal ${className}`} style={delay ? ({ "--reveal-delay": `${delay}ms` } as CSSProperties) : undefined}>
+    <Tag ref={ref} className={`reveal ${flat ? "reveal-flat" : ""} ${className}`} style={delay ? ({ "--reveal-delay": `${delay}ms` } as CSSProperties) : undefined}>
       {children}
     </Tag>
   )
