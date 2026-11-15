@@ -11,7 +11,7 @@ import { certifications, designs, stack, ventures } from "@/lib/site"
 export function Designs() {
   return (
     <Section id="designs" eyebrow="design work" title="screens i've designed" intro="ui and ux work, from figma files to finished sites. open one to explore it.">
-      <div className="stagger grid gap-10 md:grid-cols-2">
+      <div className="stagger grid gap-x-8 gap-y-10 md:grid-cols-3">
         {designs.map((d) => (
           <article key={d.slug}>
             <a href={d.href} target="_blank" rel="noopener noreferrer" className="group block">
@@ -23,7 +23,7 @@ export function Designs() {
                   <h3 className="text-xl group-hover:underline group-hover:underline-offset-4">{d.title}</h3>
                   <p className="meta mt-1">{d.note}</p>
                 </div>
-                <span className="inline-flex items-center gap-1 pt-1 text-sm text-muted-foreground group-hover:text-foreground">
+                <span className="inline-flex shrink-0 items-center gap-1 whitespace-nowrap pt-1 text-sm text-muted-foreground group-hover:text-foreground">
                   {"linkLabel" in d && d.linkLabel ? d.linkLabel : "figma"} <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
                   <span className="sr-only">(opens in a new tab)</span>
                 </span>
