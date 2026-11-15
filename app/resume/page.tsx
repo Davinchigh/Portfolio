@@ -14,7 +14,6 @@ const education = [
   { title: "Brandenburg University of Applied Sciences", detail: "End-to-End Business Processes with SAP S/4HANA Cloud (IEE2E)", dates: "june 2026" },
   { title: "Claude Academy by Anthropic", detail: "Certifications in Claude Code, MCP and AI fluency", dates: "sept 2026 to present" },
   { title: "ALX", detail: "AI Starter Kit", dates: "apr to may 2025" },
-  { title: "Ghana National College", detail: "WASSCE, General Arts", dates: "2018 to 2021" },
 ]
 
 function Block({ id, title, children }: { id: string; title: string; children: ReactNode }) {

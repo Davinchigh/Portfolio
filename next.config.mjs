@@ -4,10 +4,9 @@ const isDev = process.env.NODE_ENV !== "production"
  * Security headers.
  * - Every route: no MIME sniffing, no framing by other sites, trimmed referrers, HTTPS only, and no access to
  *   device features the site never uses.
- * - The Next.js pages also get a content security policy: scripts, styles, images and requests may only come
- *   from this site. ('unsafe-inline' stays because Next.js and the theme script are inlined.)
- * - /builds/* are self-contained demo apps that load React, Babel and fonts from CDNs, so the strict policy
- *   is not applied to them.
+ * - Everything the site loads, including the demo apps under /builds, is served from this domain, so one
+ *   content security policy covers every route. ('unsafe-inline' stays because Next.js, the theme script
+ *   and the demo apps use inline scripts.)
  */
 const baseHeaders = [
   { key: "X-Content-Type-Options", value: "nosniff" },
@@ -43,8 +42,7 @@ const nextConfig = {
   },
   async headers() {
     return [
-      { source: "/:path*", headers: baseHeaders },
-      { source: "/((?!builds/).*)", headers: [{ key: "Content-Security-Policy", value: csp }] },
+      { source: "/:path*", headers: [...baseHeaders, { key: "Content-Security-Policy", value: csp }] },
     ]
   },
   async redirects() {

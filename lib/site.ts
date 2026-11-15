@@ -85,6 +85,15 @@ export const roles: Role[] = [
     bullets: ["Supported daily operations and digital tasks."],
   },
   {
+    id: "upwork",
+    company: "Upwork",
+    role: "Freelance Web Developer",
+    start: "2023",
+    end: "2024",
+    kind: "work",
+    summary: "Pitched for client website projects and built sites to each client's brief.",
+  },
+  {
     id: "kng",
     logo: "/logos/kng.png",
     company: "KNG (Knowledge Network Group)",
@@ -127,17 +136,17 @@ export type Work = {
 
 export const work: Work[] = [
   {
-    slug: "zero",
-    org: "original game, in progress",
-    title: "ZERO, The Architect's Edition",
-    hook: "a card game where information is a weapon and every favour becomes a debt.",
-    problem: "fast shedding card games reward luck. i wanted one where reading people and planning ahead decide who wins.",
-    role: "designed the rules, the full deck, influence tokens and the brand, then built the game's site with claude code.",
-    outcome: "12 laws, 6 special cards and 4 wild types, shared with a group of players and now heading to print.",
-    tags: ["game design", "systems design", "branding"],
-    image: "/images/zero/zero-mark.webp",
-    imageAlt: "The ZERO mark: a gold omega on a card inside a ringed dial on a black background",
-    links: [{ label: "see the full game", href: "/projects/zero" }],
+    slug: "shoptally",
+    org: "personal project, full stack",
+    title: "ShopTally",
+    hook: "stock, sales and mobile money reconciliation for small shops.",
+    problem: "a shop can take dozens of momo payments a day, and owners check them against their sales by hand, so short payments and forgotten sales slip through.",
+    role: "built a react and typescript app on a fastapi rest api with mysql: sales that can never oversell, a forgiving momo statement reader and a matcher that pairs every payment with a sale.",
+    outcome: "flags missing, short, duplicate and unexplained payments in plain language. 39 api tests run against mysql in github actions, and the whole stack starts with one docker compose command.",
+    tags: ["react", "typescript", "fastapi", "mysql", "docker", "ci"],
+    image: "/images/shoptally.webp",
+    imageAlt: "ShopTally reconciliation screen comparing recorded MoMo sales with the statement, listing a wrong amount, a missing payment and an unrecorded payment",
+    links: [{ label: "code", href: "https://github.com/Davinchigh/shoptally" }],
   },
   {
     slug: "class-planner",
@@ -189,17 +198,17 @@ export const work: Work[] = [
     links: [{ label: "code", href: "https://github.com/Davinchigh/java-inventory-system" }],
   },
   {
-    slug: "alx-ai",
-    org: "alx ai starter kit",
-    title: "AI Starter Kit work",
-    hook: "where prompt engineering clicked for me.",
-    problem: "learning to get dependable results from AI tools, not lucky ones.",
-    role: "prompt design, AI-assisted workflows and process automation exercises.",
-    outcome: "finished the programme with a grade of 100, then taught prompt engineering to my team at CodeRaccoon.",
-    tags: ["ai", "prompt engineering", "automation"],
-    image: "/images/alx-ai.webp",
-    imageAlt: "Illustration of a person with arms raised beneath a glowing globe over a city skyline",
-    links: [],
+    slug: "zero",
+    org: "original game, in progress",
+    title: "ZERO, The Architect's Edition",
+    hook: "a card game where information is a weapon and every favour becomes a debt.",
+    problem: "fast shedding card games reward luck. i wanted one where reading people and planning ahead decide who wins.",
+    role: "designed the rules, the full deck, influence tokens and the brand, then built the game's site with claude code.",
+    outcome: "12 laws, 6 special cards and 4 wild types, shared with a group of players and now heading to print.",
+    tags: ["game design", "systems design", "branding"],
+    image: "/images/zero/zero-mark.webp",
+    imageAlt: "The ZERO mark: a gold omega on a card inside a ringed dial on a black background",
+    links: [{ label: "see the full game", href: "/projects/zero" }],
   },
 ]
 
@@ -241,7 +250,7 @@ export const designs = [
     title: "Elizabeth Sey Hall",
     note: "university of ghana",
     summary: "a site for the hall bringing tours, how to apply, maintenance requests and contact into one place.",
-    image: "/images/elizabeth-sey-hall.png",
+    image: "/images/elizabeth-sey-hall.webp",
     imageAlt: "Elizabeth Sey Hall website home page with the headline 'Your home away from home'",
     href: "https://www.figma.com/design/ZwUFDBPZLJhf5XUMHLfz8g/Group-56?m=auto&t=UIMTuwtGlRWXeWXV-6",
   },
@@ -406,12 +415,14 @@ export const certifications: { issuer: string; year: string; items: string[]; do
 // ---------- Stats (all countable from the lists above or the CV) ----------
 
 const certificateCount = certifications.reduce((n, c) => n + c.items.length, 0)
-const shippedCount = work.length + designs.length + ventures.filter((v) => v.status === "built").length
+// Only finished, working things count as shipped: work still in progress (like ZERO) is left out.
+const shippedCount =
+  work.filter((w) => !w.org.includes("in progress")).length + designs.length + ventures.filter((v) => v.status === "built").length
 
 export const stats = [
   { value: new Date().getFullYear() - 2022, suffix: "+", label: "years building things" },
   { value: shippedCount, suffix: "", label: "projects shipped" },
-  { value: certificateCount, suffix: "", label: "certifications earned" },
+  { value: certificateCount, suffix: "", label: "certificates earned" },
   { value: roles.length, suffix: "", label: "roles, internships and volunteer posts" },
 ]
 
@@ -424,6 +435,11 @@ export const stats = [
  */
 export const companies: Record<string, string> = {
   "zof-ai": "Zof AI",
+  finnest: "Finnest Technologies",
+  "sao-pay": "Sao Pay",
+  "elidel-prestige": "Elidel Prestige",
+  "micro-labs": "Micro Labs",
+  remotown: "Remotown",
   fruum: "Fruum",
   "generation-ghana": "Generation Ghana",
 }
