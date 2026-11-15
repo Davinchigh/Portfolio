@@ -264,6 +264,16 @@ export const designs = [
     href: "https://glee-garden.vercel.app",
     linkLabel: "live site",
   },
+  {
+    slug: "jean-nelson-aka-hall",
+    title: "Jean Nelson Aka Hall",
+    note: "unofficial hall guide",
+    summary: "a nine page guide to my old hall for freshers, parents and old royals: how rooms work, hall life, the story behind the name and where to find it, with every fact sourced.",
+    image: "/images/jean-nelson-aka-hall.webp",
+    imageAlt: "Jean Nelson Aka Hall guide home page: a serif headline on a light background beside a dark card with the hall motto 'Lux in Tenebris'",
+    href: "https://jean-nelson-aka-hall.vercel.app",
+    linkLabel: "live site",
+  },
 ]
 
 // ---------- Things I started ----------
