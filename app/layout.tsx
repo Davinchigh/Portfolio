@@ -7,7 +7,6 @@ import "./globals.css"
 import Navbar from "@/components/navbar"
 import Footer from "@/components/footer"
 import { ThemeProvider } from "@/components/theme-provider"
-import { Toaster } from "@/components/ui/toaster"
 import { VisitorProvider } from "@/lib/visitor"
 
 const title = "Benedict Frimpong Boateng | AI engineer and software developer"
@@ -32,7 +31,7 @@ const visitorScript = `try{var f=new URLSearchParams(location.search).get("for")
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable}`} suppressHydrationWarning>
+    <html lang="en" data-scroll-behavior="smooth" className={`${GeistSans.variable} ${GeistMono.variable}`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: visitorScript }} />
       </head>
@@ -49,7 +48,6 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <div id="main">{children}</div>
           <Footer />
           </VisitorProvider>
-          <Toaster />
         </ThemeProvider>
       </body>
     </html>

@@ -37,7 +37,6 @@ export function HeroDeck({ className = "" }: { className?: string }) {
   return (
     <div ref={ref} aria-hidden="true" className={`deck h-[400px] w-full max-w-[360px] ${className}`}>
       <div className="deck-stage">
-        <span className="deck-glow" />
         {cards.map((c) => (
           <div
             key={c.src}

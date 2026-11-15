@@ -8,7 +8,7 @@ const {
 } = React;
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// STORAGE — localStorage-backed persistence
+// STORAGE, localStorage-backed persistence
 // ═══════════════════════════════════════════════════════════════════════════════
 const STORE_KEY = "bfb_masterclass_preview_v1";
 const CACHE_KEY = "bfb_masterclass_preview_cache_v1";
@@ -403,7 +403,7 @@ const PLATFORMS = {
 const UNITS = [{
   id: 1,
   emoji: "👋",
-  title: "Welcome — AI From Zero",
+  title: "Welcome: AI From Zero",
   color: "#FF6B6B",
   dark: "#2A0A0A",
   tagline: "No jargon. No fear. Just you, me, and AI getting acquainted.",
@@ -414,7 +414,7 @@ const UNITS = [{
     topic: "Explain what AI is to a complete beginner. Cover: what AI actually is (simple analogy), how it learned, why the way you prompt it matters, and the 7 types of AI (text, image, video, audio, code, agents, automation). Warm, personal, humanised tone. Include a reflection question at the end."
   }, {
     id: "1b",
-    title: "The AI Landscape — Your Map",
+    title: "The AI Landscape: Your Map",
     type: "platforms"
   }, {
     id: "1c",
@@ -425,7 +425,7 @@ const UNITS = [{
 }, {
   id: 2,
   emoji: "🗣️",
-  title: "Text Prompting — The Foundation",
+  title: "Text Prompting: The Foundation",
   color: "#FF9F43",
   dark: "#2A1800",
   tagline: "Master this and you master 80% of everything AI can do.",
@@ -454,7 +454,7 @@ const UNITS = [{
   title: "Image Generation Prompting",
   color: "#8B5CF6",
   dark: "#1A0A2A",
-  tagline: "Turn words into stunning visuals — zero design skills required.",
+  tagline: "Turn words into stunning visuals, zero design skills required.",
   lessons: [{
     id: "3a",
     title: "How Image AI Works",
@@ -556,20 +556,20 @@ const UNITS = [{
     title: "Automation Platforms",
     type: "platforms_section",
     category: "automation",
-    tips: ["Try Zapier (free): Connect Gmail to Google Sheets — auto-log every email you receive", "Try Notion AI (free): Write rough meeting notes, ask AI to turn them into action items", "Try Make.com (free): Build a visual workflow connecting 2 apps you use daily", "Try Airtable AI (free): Create a database, use AI to auto-fill fields based on your data"]
+    tips: ["Try Zapier (free): Connect Gmail to Google Sheets, auto-log every email you receive", "Try Notion AI (free): Write rough meeting notes, ask AI to turn them into action items", "Try Make.com (free): Build a visual workflow connecting 2 apps you use daily", "Try Airtable AI (free): Create a database, use AI to auto-fill fields based on your data"]
   }]
 }, {
   id: 8,
   emoji: "🤖",
-  title: "AI Agents — The Next Frontier",
+  title: "AI Agents: The Next Frontier",
   color: "#A78BFA",
   dark: "#1A0A30",
-  tagline: "AI that doesn't just answer — it acts.",
+  tagline: "AI that doesn't just answer, it acts.",
   lessons: [{
     id: "8a",
     title: "What Are AI Agents?",
     type: "ai_content",
-    topic: "Explain AI agents to the learner: chatbot vs agent difference with a real worked example (7-step task). Types of agents: single, multi-agent systems, personal agents. How to prompt an agent effectively: Goal, Context, Tools, Success Criteria, Guardrails — with a complete worked example. End with a reflection exercise designing her own agent task."
+    topic: "Explain AI agents to the learner: chatbot vs agent difference with a real worked example (7-step task). Types of agents: single, multi-agent systems, personal agents. How to prompt an agent effectively: Goal, Context, Tools, Success Criteria, Guardrails, with a complete worked example. End with a reflection exercise designing her own agent task."
   }, {
     id: "8b",
     title: "RAG & Custom Knowledge Bases",
@@ -625,7 +625,7 @@ const UNITS = [{
     id: "10a",
     title: "Hallucinations, Bias & Limitations",
     type: "ai_content",
-    topic: "Teach the learner honestly about AI's flaws: hallucinations (what they are, real examples, why they happen), bias in AI (gender, racial, cultural — especially relevant for African contexts), the full list of AI limitations. The verification rule for professional use. End with a reflection exercise about a risky scenario in her work."
+    topic: "Teach the learner honestly about AI's flaws: hallucinations (what they are, real examples, why they happen), bias in AI (gender, racial, cultural, especially relevant for African contexts), the full list of AI limitations. The verification rule for professional use. End with a reflection exercise about a risky scenario in her work."
   }, {
     id: "10b",
     title: "Privacy & What NOT to Share",
@@ -633,7 +633,7 @@ const UNITS = [{
     topic: "Give the learner a practical privacy guide for AI use. What never to share (passwords, IDs, client info, company secrets). Why (data storage, training use). The public notice board test. At-work guidelines. How to anonymise sensitive information with before/after examples. Deepfakes awareness. End with a reflection on her current AI use habits."
   }, {
     id: "10c",
-    title: "AI Ethics — The Big Picture",
+    title: "AI Ethics: The Big Picture",
     type: "ai_content",
     topic: "Walk the learner through the major AI ethical questions: transparency in AI use, bias in decisions affecting people, AI's impact on jobs (especially in Africa), consent and attribution, environmental cost, power concentration in Western tech companies. Keep it grounded and practical. End by empowering her: she has values, context, and empathy AI will never have. That's the edge."
   }]
@@ -669,21 +669,21 @@ const UNITS = [{
   tagline: "Demonstrate everything you've learned. Earn your certificate.",
   lessons: [{
     id: "12a",
-    title: "Final Project — Part 1: AI Toolkit",
+    title: "Final Project: Part 1: AI Toolkit",
     type: "final",
     minLen: 300,
     instructions: "Create your Personal AI Toolkit:\n\nA) PROMPT LIBRARY: Write 5 reusable prompt templates for tasks you actually face. Each must use all 6 elements with [BRACKETS] for customisation. Cover at least 3 categories.\n\nB) AI STACK: Pick 8 AI tools you'll actually use. For each: name, URL, what you'll use it for, why this one, your first project.\n\nC) TOP 3 TECHNIQUES: From all the techniques you learned, which 3 are most powerful for you? Explain why and give a real use case each.\n\nD) FIRST AUTOMATION: Describe one real automation you'll build in 30 days. Trigger → AI Step → Action.",
-    placeholder: "A) MY PROMPT LIBRARY:\n\nTemplate 1 — [Task]:\nRole: You are a...\nTask: ...\nContext: ...\nFormat: ...\nTone: ...\nConstraints: ...\n\n(add all 5 templates)\n\n---\nB) MY AI STACK:\n1. [Tool name] | [Use] | [Why] | [First project]\n(add all 8)\n\n---\nC) MY TOP 3 TECHNIQUES:\n1. [Name] — Why: ... Real use case: ...\n\n---\nD) MY FIRST AUTOMATION:\nTrigger: ...\nAI Step: ...\nAction: ..."
+    placeholder: "A) MY PROMPT LIBRARY:\n\nTemplate 1: [Task]:\nRole: You are a...\nTask: ...\nContext: ...\nFormat: ...\nTone: ...\nConstraints: ...\n\n(add all 5 templates)\n\n---\nB) MY AI STACK:\n1. [Tool name] | [Use] | [Why] | [First project]\n(add all 8)\n\n---\nC) MY TOP 3 TECHNIQUES:\n1. [Name]: Why: ... Real use case: ...\n\n---\nD) MY FIRST AUTOMATION:\nTrigger: ...\nAI Step: ...\nAction: ..."
   }, {
     id: "12b",
-    title: "Final Project — Part 2: Applied Challenge",
+    title: "Final Project: Part 2: Applied Challenge",
     type: "final",
     minLen: 200,
     instructions: "Multi-modal AI campaign challenge. Use at least 4 AI tools.\n\nTHE CHALLENGE: Create a mini campaign for something you care about (business idea, cause, personal brand, event).\n\n1. STRATEGY: Write a full prompt for a 30-day awareness strategy. Paste the prompt + summarise output.\n\n2. VISUAL IDENTITY: Write 2 image prompts (logo concept + key visual). Describe what you got.\n\n3. CONTENT: Use the repurposing template to create 3 pieces of content from one core message.\n\n4. AUTOMATION: Describe how you'd automate this campaign. Trigger → AI step → Action.\n\n5. VIDEO CONCEPT: Write the prompt for a 15-second promotional video.\n\nDocument everything: prompts, outputs, what worked, what didn't.",
     placeholder: "MY CAMPAIGN: [Name & 1-sentence description]\n\n1. STRATEGY PROMPT:\n...\nSummary of AI output:\n...\n\n2. IMAGE PROMPTS:\nLogo: ...\nKey visual: ...\nWhat I got: ...\n\n3. CONTENT (3 pieces):\n...\n\n4. AUTOMATION PLAN:\nTrigger: ...\nAI Step: ...\nAction: ...\n\n5. VIDEO PROMPT:\n...\n\nWHAT WORKED / WHAT DIDN'T:\n..."
   }, {
     id: "12c",
-    title: "Final Project — Part 3: Your Reflection",
+    title: "Final Project: Part 3: Your Reflection",
     type: "final",
     minLen: 150,
     instructions: "Write a personal letter from where you are now to where you're going. At least 250 words. Be honest and personal.\n\nAnswer these in your own voice:\n1. Before this course, what did you think AI was? What were you afraid of?\n2. What was the most surprising thing you learned?\n3. Which technique will you use most in the next 90 days, and why?\n4. What do you still find challenging? (Naming gaps is how you fill them.)\n5. What ONE thing will you do differently in your work starting this week?\n6. Where do you see yourself professionally in 12 months if you apply this consistently?\n7. What would you teach first to a friend who's nervous about AI?\n8. What would you tell yourself the day before you started this course?",
@@ -717,7 +717,7 @@ const TECHNIQUE_NAMES = [{
 }];
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// FALLBACK CONTENT — used when no API key, so course works fully offline
+// FALLBACK CONTENT, used when no API key, so course works fully offline
 // ═══════════════════════════════════════════════════════════════════════════════
 function fallbackLesson(topic) {
   return `**This lesson is coming soon in the preview.**\n\n> ${topic}\n\n## 💭 Reflection Exercise\nWhat is one task in your daily work you'd love AI to help with?`;
@@ -744,13 +744,13 @@ In the meantime, here is the topic this lesson will cover:
 Your progress is saved automatically in this browser. ✦
 
 ## 💭 Reflection Exercise
-What is one task in your daily work that you'd love AI to help you with? Write it down — we'll come back to this throughout the course.`;
+What is one task in your daily work that you'd love AI to help you with? Write it down, we'll come back to this throughout the course.`;
 }
 function fallbackTechnique(name) {
   return `**${name}**\n\nThis technique is part of the full course.`;
 }
 function fallbackTechniqueOld(name) {
-  return `**${name}** — full lesson available once you add your Anthropic API key.
+  return `**${name}**, full lesson available once you add your Anthropic API key.
 
 This technique is one of the 8 core methods you'll use every day. Add your key with the **🔑 API Key** button to unlock the full lesson, including a weak-vs-strong comparison and a personalised African-context example.
 
@@ -766,7 +766,7 @@ Task: ${t}
 
 Context: [DESCRIBE YOUR SITUATION]
 Goal: [WHAT YOU WANT TO ACHIEVE]
-Constraints: [ANY LIMITATIONS — time, budget, audience]
+Constraints: [ANY LIMITATIONS, time, budget, audience]
 
 Please provide a comprehensive, actionable response tailored to my specific context. Include:
 1. A clear recommendation
@@ -776,7 +776,7 @@ Please provide a comprehensive, actionable response tailored to my specific cont
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// CLAUDE API CALL — with browser support + caching + fallback
+// CLAUDE API CALL, with browser support + caching + fallback
 // ═══════════════════════════════════════════════════════════════════════════════
 async function askClaude(systemPrompt, userMsg, maxTokens = 800, cacheKey = null) {
   await new Promise(r => setTimeout(r, 300));
@@ -998,7 +998,7 @@ function LiveChat({
         content: txt
       }]);
     } catch (e) {
-      const msg = e.message === "NO_KEY" ? "The preview coach is resting. Try again in a moment." : "Connection hiccup — please try again. (" + e.message + ")";
+      const msg = e.message === "NO_KEY" ? "The preview coach is resting. Try again in a moment." : "Connection hiccup, please try again. (" + e.message + ")";
       setMsgs([...all, {
         role: "assistant",
         content: msg
@@ -1063,7 +1063,7 @@ function LiveChat({
       textAlign: "center",
       padding: "12px 0"
     }
-  }, "\uD83D\uDC4B Practice here \u2014 type any prompt and your AI tutor will respond and coach you."), msgs.map((m, i) => /*#__PURE__*/React.createElement("div", {
+  }, "\uD83D\uDC4B Practice here, type any prompt and your AI tutor will respond and coach you."), msgs.map((m, i) => /*#__PURE__*/React.createElement("div", {
     key: i,
     style: {
       display: "flex",
@@ -1229,7 +1229,7 @@ function AIContentLesson({
   }, reflectionQ), /*#__PURE__*/React.createElement("textarea", {
     value: ans,
     onChange: e => setAns(e.target.value),
-    placeholder: "Write your reflection here \u2014 there are no wrong answers...",
+    placeholder: "Write your reflection here, there are no wrong answers...",
     rows: 5,
     style: {
       width: "100%",
@@ -1299,7 +1299,7 @@ function PlatformsOverview({
       marginBottom: 18,
       lineHeight: 1.7
     }
-  }, "All AI tools fall into 7 categories. Explore each \u2014 click any card to visit the platform directly."), /*#__PURE__*/React.createElement("div", {
+  }, "All AI tools fall into 7 categories. Explore each, click any card to visit the platform directly."), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 6,
@@ -1520,7 +1520,7 @@ function TechniquesLesson({
     setLoading(true);
     const t = TECHNIQUE_NAMES[idx];
     try {
-      const txt = await askClaude("You are writing a lesson for the learner learning prompt engineering. Be warm, practical, concrete. Use Ghanaian/African examples where relevant.", `Teach the "${t.name}" prompting technique. Include: 1) What it is (2-3 sentences), 2) When to use it (2-3 sentences), 3) A weak prompt example (labelled BAD:), 4) A strong prompt using this technique (labelled GOOD: — make it detailed and realistic for an African professional), 5) A pro tip (1-2 sentences). Format clearly with bold labels.`, 600, `technique_${idx}_v1`);
+      const txt = await askClaude("You are writing a lesson for the learner learning prompt engineering. Be warm, practical, concrete. Use Ghanaian/African examples where relevant.", `Teach the "${t.name}" prompting technique. Include: 1) What it is (2-3 sentences), 2) When to use it (2-3 sentences), 3) A weak prompt example (labelled BAD:), 4) A strong prompt using this technique (labelled GOOD:, make it detailed and realistic for an African professional), 5) A pro tip (1-2 sentences). Format clearly with bold labels.`, 600, `technique_${idx}_v1`);
       setContent(prev => ({
         ...prev,
         [idx]: txt
@@ -1557,7 +1557,7 @@ function TechniquesLesson({
       marginBottom: 18,
       lineHeight: 1.7
     }
-  }, "8 essential techniques. Click any card to deep-dive \u2014 see what it is, compare weak vs strong examples, then practise it."), /*#__PURE__*/React.createElement("div", {
+  }, "8 essential techniques. Click any card to deep-dive, see what it is, compare weak vs strong examples, then practise it."), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "grid",
       gridTemplateColumns: "repeat(auto-fill,minmax(180px,1fr))",
@@ -1729,7 +1729,7 @@ const TEMPLATE_PROMPTS = {
     prompt: `You are a professional communications expert.\n\nWrite a [TONE: formal/friendly/firm] email from [YOUR NAME] to [RECIPIENT & ROLE] about [SUBJECT].\n\nKey points to cover:\n- [POINT 1]\n- [POINT 2]\n- [POINT 3]\n\nDesired outcome: [WHAT YOU WANT TO HAPPEN]\nLength: [SHORT / MEDIUM / LONG]\nDo NOT include: [ANYTHING TO AVOID]`
   }, {
     title: "Meeting Preparation",
-    prompt: `You are a senior consultant preparing me for an important meeting.\n\nMeeting with: [WHO — role, company, what they care about]\nMy goal: [WHAT I WANT TO ACHIEVE]\nMy concerns: [WHAT WORRIES ME]\nBackground: [CONTEXT]\n\nGive me:\n1. 5 smart questions I should ask\n2. 3 likely objections + how to handle each\n3. The one key message I must land\n4. How to open the first 30 seconds`
+    prompt: `You are a senior consultant preparing me for an important meeting.\n\nMeeting with: [WHO, role, company, what they care about]\nMy goal: [WHAT I WANT TO ACHIEVE]\nMy concerns: [WHAT WORRIES ME]\nBackground: [CONTEXT]\n\nGive me:\n1. 5 smart questions I should ask\n2. 3 likely objections + how to handle each\n3. The one key message I must land\n4. How to open the first 30 seconds`
   }, {
     title: "Performance Review Prep",
     prompt: `Act as my career coach helping me prepare for my annual performance review.\n\nMy role: [JOB TITLE]\nKey achievements this year: [LIST THEM]\nChallenges I faced: [HONEST LIST]\nWhat I want: [PAY RISE / PROMOTION / MORE RESPONSIBILITY]\nMy manager's style: [DESCRIBE THEM]\n\nHelp me:\n1. Frame achievements powerfully (with metrics)\n2. Address challenges constructively\n3. Make my case for [WHAT I WANT]\n4. Anticipate what my manager will push back on`
@@ -1749,10 +1749,10 @@ const TEMPLATE_PROMPTS = {
   }],
   creative: [{
     title: "Social Media Calendar",
-    prompt: `You are a social media strategist for [INDUSTRY].\n\nBrand: [NAME]\nAudience: [DESCRIBE YOUR AUDIENCE IN DETAIL]\nBrand voice: [ADJECTIVES — e.g. warm, professional, bold]\nPlatform: [INSTAGRAM / LINKEDIN / TWITTER]\nFrequency: [HOW OFTEN]\n\nCreate a 2-week content calendar:\n- Topic/angle per day\n- Caption (ready to post)\n- Content type (photo/reel/carousel)\n- Best time to post\n- Hashtags\n\nDon't repeat similar themes in the same week.`
+    prompt: `You are a social media strategist for [INDUSTRY].\n\nBrand: [NAME]\nAudience: [DESCRIBE YOUR AUDIENCE IN DETAIL]\nBrand voice: [ADJECTIVES, e.g. warm, professional, bold]\nPlatform: [INSTAGRAM / LINKEDIN / TWITTER]\nFrequency: [HOW OFTEN]\n\nCreate a 2-week content calendar:\n- Topic/angle per day\n- Caption (ready to post)\n- Content type (photo/reel/carousel)\n- Best time to post\n- Hashtags\n\nDon't repeat similar themes in the same week.`
   }, {
     title: "Brand Story (3 Versions)",
-    prompt: `You are a master storyteller and brand strategist.\n\nMy brand: [DESCRIPTION]\nMy journey: [HOW YOU GOT HERE — the real story]\nProblem I solve: [BE SPECIFIC]\nIdeal customer: [DESCRIBE IN DETAIL]\nWhat makes me different: [YOUR HONEST ANSWER]\n\nWrite 3 versions:\n1. 60-second spoken intro (for networking events)\n2. LinkedIn About section (300 words)\n3. Instagram bio (under 150 chars + 3 highlights)`
+    prompt: `You are a master storyteller and brand strategist.\n\nMy brand: [DESCRIPTION]\nMy journey: [HOW YOU GOT HERE, the real story]\nProblem I solve: [BE SPECIFIC]\nIdeal customer: [DESCRIBE IN DETAIL]\nWhat makes me different: [YOUR HONEST ANSWER]\n\nWrite 3 versions:\n1. 60-second spoken intro (for networking events)\n2. LinkedIn About section (300 words)\n3. Instagram bio (under 150 chars + 3 highlights)`
   }, {
     title: "Content Repurposing Engine",
     prompt: `I have written this content: [PASTE ARTICLE / BLOG / REPORT]\n\nRepurpose it into ALL of the following:\n1. LinkedIn article (800 words, professional tone)\n2. Instagram carousel (10 slides: heading + 2 sentences each)\n3. Twitter/X thread (10 tweets, each under 280 characters)\n4. Email newsletter (400 words + subject line)\n5. WhatsApp message for client list (under 200 chars)\n6. YouTube video script intro (60 seconds)\n7. 3 pull quotes for graphics\n\nMaintain my voice and key messages throughout.`
@@ -1790,7 +1790,7 @@ function TemplatesLesson({
       marginBottom: 18,
       lineHeight: 1.7
     }
-  }, "Ready-to-use prompt templates \u2014 click to expand, then copy and fill in the [BRACKETS] with your own details."), /*#__PURE__*/React.createElement("div", {
+  }, "Ready-to-use prompt templates, click to expand, then copy and fill in the [BRACKETS] with your own details."), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 8,
@@ -1851,7 +1851,7 @@ function TemplatesLesson({
       marginTop: 14,
       animation: "fadeUp 0.25s ease"
     }
-  }, /*#__PURE__*/React.createElement(SL, null, "Prompt Template \u2014 fill in the [BRACKETS]"), /*#__PURE__*/React.createElement(Code, null, t.prompt), /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement(SL, null, "Prompt Template, fill in the [BRACKETS]"), /*#__PURE__*/React.createElement(Code, null, t.prompt), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 10,
@@ -1880,7 +1880,7 @@ function TemplatesLesson({
     small: true
   }, "Try on Claude \u2192"))))))), /*#__PURE__*/React.createElement(LiveChat, {
     color: color,
-    ctx: "Prompt Templates \u2014 ask for help customising any template"
+    ctx: "Prompt Templates, ask for help customising any template"
   }));
 }
 
@@ -1905,7 +1905,7 @@ function IndustryLesson({
     if (loaded.current) return;
     loaded.current = true;
     setLoading(true);
-    askClaude("You generate professional prompt templates. Return ONLY valid JSON — no markdown, no explanation, just the JSON array.", `Create ${lesson.tasks.length} professional prompt templates for ${lesson.industry} professionals. For each task in this list: ${lesson.tasks.join(", ")}.\n\nReturn JSON array: [{"task":"task name","prompt":"full prompt template with [BRACKETS] for customisation — detailed, professional, 100-200 words each"}]`, 1200, cacheKey).then(txt => {
+    askClaude("You generate professional prompt templates. Return ONLY valid JSON, no markdown, no explanation, just the JSON array.", `Create ${lesson.tasks.length} professional prompt templates for ${lesson.industry} professionals. For each task in this list: ${lesson.tasks.join(", ")}.\n\nReturn JSON array: [{"task":"task name","prompt":"full prompt template with [BRACKETS] for customisation, detailed, professional, 100-200 words each"}]`, 1200, cacheKey).then(txt => {
       try {
         const clean = txt.replace(/```json|```/g, "").trim();
         const data = JSON.parse(clean);
@@ -2116,7 +2116,7 @@ function FinalLesson({
     small: true
   }, "\u2713 Submitted")), /*#__PURE__*/React.createElement(LiveChat, {
     color: color,
-    ctx: "Final project \u2014 ask for feedback on any part of your work"
+    ctx: "Final project, ask for feedback on any part of your work"
   }));
 }
 
@@ -2319,7 +2319,7 @@ function Certificate({
       lineHeight: 1.85,
       fontStyle: "italic"
     }
-  }, "\"", NAME, " \u2014 you came into this course as a beginner and leave as someone who genuinely understands AI across every domain: text, image, video, audio, code, automation, agents, ethics, and career. That is remarkable. More importantly, you know HOW to think about AI \u2014 critically, responsibly, and strategically. The world needs more people like you using this technology thoughtfully. Go build something extraordinary. The tools are in your hands. \uD83C\uDF1F\""))), /*#__PURE__*/React.createElement("div", {
+  }, "\"", NAME, ", you came into this course as a beginner and leave as someone who genuinely understands AI across every domain: text, image, video, audio, code, automation, agents, ethics, and career. That is remarkable. More importantly, you know HOW to think about AI, critically, responsibly, and strategically. The world needs more people like you using this technology thoughtfully. Go build something extraordinary. The tools are in your hands. \uD83C\uDF1F\""))), /*#__PURE__*/React.createElement("div", {
     style: {
       textAlign: "center",
       marginTop: 24,
@@ -2432,7 +2432,7 @@ function Welcome({
     style: {
       color: "#fff"
     }
-  }, progress.totalL), " lessons. Your progress is saved \u2014 pick up exactly where you left off."), /*#__PURE__*/React.createElement("button", {
+  }, progress.totalL), " lessons. Your progress is saved, pick up exactly where you left off."), /*#__PURE__*/React.createElement("button", {
     onClick: () => onStart(true),
     style: {
       background: "linear-gradient(135deg,#A29BFE,#7C6FE0)",
@@ -2598,7 +2598,7 @@ function ApiKeyModal({
     style: {
       color: "#A29BFE"
     }
-  }, "console.anthropic.com"), ". Without a key, the course still works \u2014 you just see placeholder content for AI-generated lessons."), /*#__PURE__*/React.createElement("div", {
+  }, "console.anthropic.com"), ". Without a key, the course still works, you just see placeholder content for AI-generated lessons."), /*#__PURE__*/React.createElement("div", {
     style: {
       position: "relative",
       marginBottom: 12
@@ -2667,7 +2667,7 @@ function ApiKeyModal({
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// SETTINGS MODAL — export / import / reset
+// SETTINGS MODAL, export / import / reset
 // ═══════════════════════════════════════════════════════════════════════════════
 function SettingsModal({
   onClose,

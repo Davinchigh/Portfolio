@@ -77,7 +77,7 @@ export default function Navbar() {
 
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-50 bg-background/85 backdrop-blur-md transition-[border-color,box-shadow] duration-300 ${
+      className={`fixed inset-x-0 top-0 z-50 bg-background/85 backdrop-blur-md [@media(prefers-reduced-transparency:reduce)]:bg-background [@media(prefers-reduced-transparency:reduce)]:backdrop-blur-none transition-[border-color,box-shadow] duration-300 ${
         scrolled || open ? "border-b" : "border-b border-transparent"
       }`}
     >
