@@ -3,6 +3,7 @@
 import { useId, useState } from "react"
 import { ArrowUpRight } from "lucide-react"
 import { HandNote } from "@/components/site/hand-note"
+import { Tilt } from "@/components/site/motion"
 import { Section } from "@/components/site/section"
 import { builds } from "@/lib/site"
 
@@ -22,7 +23,7 @@ function BuildCard({ build, index }: { build: (typeof builds)[number]; index: nu
   const href = who ? `${build.href}#name=${encodeURIComponent(who)}` : build.href
 
   return (
-    <li className="flex flex-col rounded-2xl border bg-card p-6">
+    <Tilt as="li" className="flex flex-col rounded-2xl border bg-card p-6">
       <p className="meta">0{index + 1}</p>
       <h3 className="mt-2 text-xl">{build.title}</h3>
       <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{build.line}</p>
@@ -44,7 +45,7 @@ function BuildCard({ build, index }: { build: (typeof builds)[number]; index: nu
               e.preventDefault()
               window.open(href, "_blank", "noopener")
             }}
-            className="space-y-3"
+            className="swap-in space-y-3"
           >
             <label htmlFor={id} className="block text-sm">
               what should it call you? <span className="text-muted-foreground">(optional)</span>
@@ -76,7 +77,7 @@ function BuildCard({ build, index }: { build: (typeof builds)[number]; index: nu
           </form>
         )}
       </div>
-    </li>
+    </Tilt>
   )
 }
 
@@ -93,7 +94,7 @@ export function Builds() {
         </HandNote>
       }
     >
-      <ul className="grid gap-5 md:grid-cols-3">
+      <ul className="stagger grid gap-5 md:grid-cols-3">
         {builds.map((b, i) => (
           <BuildCard key={b.slug} build={b} index={i} />
         ))}

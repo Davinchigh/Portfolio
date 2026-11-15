@@ -1,6 +1,8 @@
 "use client"
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react"
+import { flushSync } from "react-dom"
+import { withViewTransition } from "@/components/site/motion"
 import { companies } from "@/lib/site"
 
 /**
@@ -61,7 +63,7 @@ export function VisitorProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   const setMode = useCallback((next: Exclude<Mode, "unknown">) => {
-    setModeState(next)
+    withViewTransition(() => flushSync(() => setModeState(next)))
     try {
       window.localStorage.setItem(KEY, next)
     } catch {

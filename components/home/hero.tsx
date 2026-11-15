@@ -2,6 +2,7 @@
 
 import { ArrowDown, ArrowUpRight, Download } from "lucide-react"
 import { Clock } from "@/components/site/clock"
+import { HeroDeck } from "@/components/home/hero-deck"
 import { HandNote } from "@/components/site/hand-note"
 import { Stop } from "@/components/site/route"
 import { person, proof, road } from "@/lib/site"
@@ -40,7 +41,7 @@ function Fork() {
               <button
                 type="button"
                 onClick={() => setMode(p.mode)}
-                className="group flex w-full items-center justify-between gap-4 rounded-2xl border bg-card px-5 py-4 text-left transition-[transform,border-color,background-color] duration-200 hover:-translate-y-0.5 hover:border-route/60 hover:bg-background motion-reduce:transform-none"
+                className="group flex w-full items-center justify-between gap-4 rounded-2xl border bg-card px-5 py-4 text-left transition-[transform,border-color,background-color] duration-150 hover:-translate-y-0.5 active:scale-[0.98] hover:border-route/60 hover:bg-background motion-reduce:transform-none"
               >
                 <span>
                   <span className="font-display block text-xl font-semibold tracking-tight">{p.label}</span>
@@ -92,11 +93,16 @@ export function Hero() {
                 {person.nickname}
               </HandNote>
             </div>
-            <p className="mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground sm:text-xl">
-              ai engineer and software developer in accra. this site is the road that got me here, from a statistics class in
-              legon to building with ai.
-            </p>
-            <Fork />
+            <div className="lg:grid lg:grid-cols-[minmax(0,36rem)_minmax(0,1fr)] lg:items-center lg:gap-12">
+              <div>
+                <p className="mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground sm:text-xl">
+                  ai engineer and software developer in accra. this site is the road that got me here, from a statistics
+                  class in legon to building with ai.
+                </p>
+                <Fork />
+              </div>
+              <HeroDeck className="hidden lg:block" />
+            </div>
           </div>
         )}
 

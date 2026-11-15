@@ -4,8 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The Climb, a four-week plan (preview build)</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="vendor/fonts-climb.css">
 <style>
   :root{
     --bg:#FAFAF7; --card:#FFFFFF; --ink:#1D211C; --ink-soft:#6B7069;
@@ -184,15 +183,15 @@
   <div class="section-head"><h2>Weight log</h2><span>private · saved to this device</span></div>
   <div class="card">
     <div class="log-form"><input type="number" step="0.1" id="weightInput" placeholder="Today's weight (kg)"><button id="logBtn">Log</button></div>
-    <div class="chart-wrap" id="chartWrap"><div class="empty-chart">No entries yet — log today's weight to start the line.</div></div>
+    <div class="chart-wrap" id="chartWrap"><div class="empty-chart">No entries yet, log today's weight to start the line.</div></div>
   </div>
 
   <div class="section-head"><h2>Why this works</h2></div>
   <div class="card why">
-    <p><b>The hill walk is your cardio base</b> — already daily, already consistent. Everything else builds on top of it.</p>
-    <p><b>Strength days create "afterburn" (EPOC)</b> — after a real resistance or circuit session, your body keeps burning extra calories for hours to recover, including while you sleep. That's the honest version of "burning fat overnight" — earned in the 20 minutes before, not magic on its own.</p>
-    <p><b>Four weeks, gently progressive</b> — each week asks slightly more than the last. Rest days are built in on purpose, not as an afterthought.</p>
-    <p><b>Every exercise has an optional form video and a guided timer.</b> Use them if they help, skip them if you already know the move — the ⓘ shows a quick cue, the ▶ opens a form video.</p>
+    <p><b>The hill walk is your cardio base</b>: already daily, already consistent. Everything else builds on top of it.</p>
+    <p><b>Strength days create "afterburn" (EPOC)</b>: after a real resistance or circuit session, your body keeps burning extra calories for hours to recover, including while you sleep. That's the honest version of "burning fat overnight", earned in the 20 minutes before, not magic on its own.</p>
+    <p><b>Four weeks, gently progressive</b>: each week asks slightly more than the last. Rest days are built in on purpose, not as an afterthought.</p>
+    <p><b>Every exercise has an optional form video and a guided timer.</b> Use them if they help, skip them if you already know the move, the ⓘ shows a quick cue, the ▶ opens a form video.</p>
   </div>
 
   <footer>logged privately on this device · no data leaves your phone</footer>
@@ -239,7 +238,7 @@ const VISITOR_NAME = (() => {
 
   const MESSAGES = [
     {t:"Every rep today is a deposit into the life you're building.", tone:"cheer"},
-    {t:"You don't have to feel ready. Just start — tired you is still capable.", tone:"gentle"},
+    {t:"You don't have to feel ready. Just start, tired you is still capable.", tone:"gentle"},
     {t:"Strong isn't a size. It's being able to show up for the people you love, for years to come.", tone:"cheer"},
     {t:"Put on the song that makes your shoulders drop and your chin lift. Then begin.", tone:"cheer"},
     {t:"Twenty minutes now buys more good years with the people who matter.", tone:"straight"},
@@ -254,7 +253,7 @@ const VISITOR_NAME = (() => {
     {t:"You started something days ago, walking up that hill. Don't stop now.", tone:"cheer"},
     {t:"This is for the version of you that dances at every celebration ahead, unbothered.", tone:"cheer"},
     {t:"Show up for five minutes. Momentum will handle the rest.", tone:"gentle"},
-    {t:"Every gathering, every wedding, every late night with people you love — this is what fuels you to be there fully.", tone:"cheer"},
+    {t:"Every gathering, every wedding, every late night with people you love, this is what fuels you to be there fully.", tone:"cheer"},
     {t:"You're building something today that no one else can see yet. Keep going.", tone:"cheer"},
     {t:"The best soundtrack for today is whatever gets your feet moving. Press play.", tone:"cheer"},
     {t:"Nobody regrets a workout once it's done. Not once.", tone:"straight"},
@@ -265,30 +264,30 @@ const VISITOR_NAME = (() => {
     {t:"However tired 5pm made you, this is 20 minutes, not a marathon.", tone:"gentle"},
     {t:"The people you're building this future with are worth the discipline today.", tone:"cheer"},
     {t:"You don't need motivation. You need today's checkbox. Go get it.", tone:"straight"},
-    {t:"Someday this will be the season you look back on and say — that's when it started.", tone:"cheer"},
-    {t:"Strength you build today shows up later — at every table, every dance floor, every long walk ahead.", tone:"cheer"},
+    {t:"Someday this will be the season you look back on and say, that's when it started.", tone:"cheer"},
+    {t:"Strength you build today shows up later, at every table, every dance floor, every long walk ahead.", tone:"cheer"},
     {t:"Rest days count too. If today's one of them, rest like you mean it.", tone:"gentle"}
   ];
   const TONE_MAP = {"Cheer me on":"cheer", "Gently remind me":"gentle", "Just tell me straight":"straight", "A mix":"any"};
 
   const TIP_LIBRARY = [
-    ["burpee", "Full body, cardio", "Keep it low-impact if it suits you better — step back instead of jumping, control the way down."],
+    ["burpee", "Full body, cardio", "Keep it low-impact if it suits you better, step back instead of jumping, control the way down."],
     ["mountain climber", "Core, shoulders, cardio", "Keep hips low and steady, drive knees in with control, not speed."],
-    ["jump lunge", "Glutes, quads, power", "Land soft, knee tracking over ankle — slow this one down if your knees complain."],
+    ["jump lunge", "Glutes, quads, power", "Land soft, knee tracking over ankle, slow this one down if your knees complain."],
     ["lunge", "Glutes, quads, balance", "Step with control, front knee stacked over your ankle, chest tall."],
     ["hip thrust", "Glutes, hamstrings", "Drive through your heels, squeeze your glutes hard at the top."],
     ["glute bridge", "Glutes, hamstrings, core", "Squeeze your glutes at the top, don't overarch your lower back to get there."],
     ["squat", "Quads, glutes, hamstrings", "Sit back like there's a chair behind you, knees tracking over your toes, chest up."],
-    ["push-up", "Chest, shoulders, triceps, core", "Straight line from head to knees or heels, lower with control — quality over depth."],
-    ["superman", "Lower back, glutes, shoulders", "Lift chest and legs together, hold briefly, stay controlled — don't yank."],
+    ["push-up", "Chest, shoulders, triceps, core", "Straight line from head to knees or heels, lower with control, quality over depth."],
+    ["superman", "Lower back, glutes, shoulders", "Lift chest and legs together, hold briefly, stay controlled, don't yank."],
     ["side plank", "Obliques, core, shoulders", "Stack your hips, lift through the waist, don't let your hips sag toward the floor."],
     ["plank", "Core, shoulders", "Ribs pulled down, don't let your hips sag or pike up."],
-    ["bicycle crunch", "Abs, obliques", "Slow beats fast here — rotate from the ribs, elbow toward the opposite knee."],
+    ["bicycle crunch", "Abs, obliques", "Slow beats fast here, rotate from the ribs, elbow toward the opposite knee."],
     ["leg raise", "Lower abs, hip flexors", "Only lower as far as you can keep your lower back flat on the floor."],
     ["jumping jack", "Full body, cardio", "Land soft on the balls of your feet, keep a steady rhythm."],
     ["high knee", "Hip flexors, cardio", "Drive your knees up, land light, keep your chest tall."],
-    ["warm-up", "Full body", "Light movement to raise your heart rate — marching, arm circles, easy squats."],
-    ["warm up", "Full body", "Light movement to raise your heart rate — marching, arm circles, easy squats."],
+    ["warm-up", "Full body", "Light movement to raise your heart rate, marching, arm circles, easy squats."],
+    ["warm up", "Full body", "Light movement to raise your heart rate, marching, arm circles, easy squats."],
     ["cool-down", "Full body", "Hold each stretch 20–30 seconds, breathe slowly, don't bounce."],
     ["cool down", "Full body", "Hold each stretch 20–30 seconds, breathe slowly, don't bounce."],
     ["walk", "Cardio, legs", "A pace where talking is a little harder than easy is the sweet spot."],
@@ -297,7 +296,7 @@ const VISITOR_NAME = (() => {
   function getTip(name){
     const n = name.toLowerCase();
     for(const [k,target,cue] of TIP_LIBRARY){ if(n.includes(k)) return {target,cue}; }
-    return {target:"Full body", cue:"Move with control — quality over speed."};
+    return {target:"Full body", cue:"Move with control, quality over speed."};
   }
   function ytLink(name){
     const clean = name.replace(/\(.*?\)/g,"").replace(/\/side|\/leg/gi,"").trim();
@@ -335,14 +334,14 @@ const VISITOR_NAME = (() => {
         }
       } else if(parsed.mode === "timed"){
         for(let s=0;s<parsed.sets;s++){
-          const sideTag = parsed.perSide ? (s%2===0 ? " — right side" : " — left side") : "";
+          const sideTag = parsed.perSide ? (s%2===0 ? ", right side" : ", left side") : "";
           steps.push({type:"work", seconds:parsed.work, label:ex.n+sideTag, sub:"Set "+(s+1)+" of "+parsed.sets, exName:ex.n, tip});
           if(s < parsed.sets-1) steps.push({type:"rest", seconds:parsed.rest, label:"Rest", sub:"Next: "+ex.n});
         }
       } else if(parsed.mode === "reps" && parsed.reps){
         for(let s=0;s<parsed.sets;s++){
           const legTag = parsed.perLeg ? " per leg" : "";
-          steps.push({type:"manual", label:ex.n, sub:"Set "+(s+1)+" of "+parsed.sets+" — "+parsed.reps+legTag+" reps", exName:ex.n, tip});
+          steps.push({type:"manual", label:ex.n, sub:"Set "+(s+1)+" of "+parsed.sets+", "+parsed.reps+legTag+" reps", exName:ex.n, tip});
           if(s < parsed.sets-1) steps.push({type:"rest", seconds:parsed.rest, label:"Rest", sub:"Next: "+ex.n});
         }
       } else if(parsed.mode === "duration"){
@@ -360,7 +359,7 @@ const VISITOR_NAME = (() => {
         {n:"Bodyweight squats", d:"3 × 15"},{n:"Knee push-ups", d:"3 × 10"},{n:"Glute bridges", d:"3 × 15"},
         {n:"Supermans", d:"3 × 12"},{n:"Plank hold", d:"3 × 30s"},{n:"Cool-down stretch", d:"3 min"}]},
       { day:"Tuesday", title:"Active Recovery", meta:"hill walk + mobility", type:"rest",
-        note:"Just the hill walk home, plus 10 minutes of easy stretching for hips, hamstrings and shoulders. No extra training — this is where yesterday's work turns into results." },
+        note:"Just the hill walk home, plus 10 minutes of easy stretching for hips, hamstrings and shoulders. No extra training, this is where yesterday's work turns into results." },
       { day:"Wednesday", title:"Fat-Burn Circuit", meta:"20 min · low-impact friendly", type:"workout", exercises:[
         {n:"Jumping jacks (or step-touch)", d:"4 × 40s"},{n:"Bodyweight squats", d:"4 × 40s"},
         {n:"Mountain climbers (or marching)", d:"4 × 40s"},{n:"High knees (or marching)", d:"4 × 40s"},{n:"Cool-down stretch", d:"3 min"}]},
@@ -400,7 +399,7 @@ const VISITOR_NAME = (() => {
         {n:"Pulse squats", d:"3 × 15"},{n:"Push-ups", d:"4 × 10"},{n:"Glute bridge march", d:"3 × 15"},
         {n:"Superman pulses", d:"3 × 15"},{n:"Plank hold", d:"3 × 45s"},{n:"Side plank", d:"2 × 20s/side"}]},
       { day:"Tuesday", title:"Active Recovery", meta:"hill walk + mobility flow", type:"rest",
-        note:"Hill walk, plus a 15-minute mobility flow — slow, controlled movement through hips, spine and shoulders." },
+        note:"Hill walk, plus a 15-minute mobility flow, slow, controlled movement through hips, spine and shoulders." },
       { day:"Wednesday", title:"Fat-Burn Circuit", meta:"24 min · 5 rounds", type:"workout", exercises:[
         {n:"Jumping jacks", d:"5 × 45s"},{n:"Squats", d:"5 × 45s"},{n:"Mountain climbers", d:"5 × 45s"},
         {n:"Reverse lunge pulses", d:"5 × 45s"},{n:"Cool-down stretch", d:"3 min"}]},
@@ -433,7 +432,7 @@ const VISITOR_NAME = (() => {
         {n:"Warm-up", d:"5 min"},{n:"Squats → push-ups → lunges → plank → jacks → mountain climbers", d:"5 rounds"},
         {n:"Cardio of choice (dance, walk or stairs)", d:"15 min"},{n:"Extended cool-down", d:"8 min"}]},
       { day:"Sunday", title:"Summit Reflection", meta:"reset day", type:"rest",
-        note:"Full rest. Look back at the whole month — what changed, what you're proud of, what to carry into the next one. Log your weight and, if you like, start a fresh month below." }
+        note:"Full rest. Look back at the whole month, what changed, what you're proud of, what to carry into the next one. Log your weight and, if you like, start a fresh month below." }
     ]
   ];
 
@@ -509,7 +508,7 @@ const VISITOR_NAME = (() => {
         ["How you like to be pushed", p.coachStyle],
         ["Your soundtrack", p.soundtrack]
       ].filter(r=>r[1] && String(r[1]).trim());
-      card.innerHTML = '<h3>Your page</h3><p class="lead">This is here for you — edit it any time.</p><div class="about-summary">'
+      card.innerHTML = '<h3>Your page</h3><p class="lead">This is here for you, edit it any time.</p><div class="about-summary">'
         + rows.map(r=>'<div class="q">'+r[0]+'</div><div class="a">'+escapeHTML(r[1])+'</div>').join("")
         + '</div><span class="edit-link" id="editAbout">edit this</span>';
       document.getElementById("editAbout").addEventListener("click", ()=>{ state.profile.editing = true; renderAbout(); });
@@ -517,14 +516,14 @@ const VISITOR_NAME = (() => {
       status.textContent = p.filled ? "editing" : "not started";
       card.innerHTML =
         '<h3>A little about you</h3>'
-        + '<p class="lead">Six questions, coach to client — not a fitness form. Answer what you feel like; skip the rest.</p>'
-        + '<div class="field"><label>Underneath "lose weight," what\'s the real goal — more energy, confidence, a health scare, a moment you\'re working toward?</label>'
+        + '<p class="lead">Six questions, coach to client, not a fitness form. Answer what you feel like; skip the rest.</p>'
+        + '<div class="field"><label>Underneath "lose weight," what\'s the real goal, more energy, confidence, a health scare, a moment you\'re working toward?</label>'
         + '<textarea id="f_goal" placeholder="Whatever comes to mind">'+escapeHTML(p.goal)+'</textarea></div>'
         + '<div class="field"><label>Think of a time you felt strong in your body before. What did that actually feel like, not look like?</label>'
         + '<textarea id="f_feltStrong" placeholder="A feeling, not a photo">'+escapeHTML(p.feltStrong)+'</textarea></div>'
         + '<div class="field"><label>What\'s usually made something like this fizzle out before?</label>'
         + '<textarea id="f_obstacle" placeholder="Honest answer helps me plan around it">'+escapeHTML(p.obstacle)+'</textarea></div>'
-        + '<div class="field"><label>Anything I should train around, not through — old injuries, aches, harder days?</label>'
+        + '<div class="field"><label>Anything I should train around, not through, old injuries, aches, harder days?</label>'
         + '<textarea id="f_bodyCare" placeholder="Totally optional, but tell me if there\'s something">'+escapeHTML(p.bodyCare)+'</textarea></div>'
         + '<div class="field"><label>How do you like to be pushed?</label><select id="f_coachStyle">'
         + '<option value="">Choose one</option>'
@@ -568,7 +567,7 @@ const VISITOR_NAME = (() => {
     }
     const slot = document.getElementById("monthBannerSlot");
     if(rawDiff >= 4){
-      slot.innerHTML = '<div class="month-banner">You\'ve reached the summit — the four weeks are complete. You can keep repeating Summit week, or start a fresh month (your logs and weight history stay exactly as they are).<br><button id="restartMonth">Start a new month</button></div>';
+      slot.innerHTML = '<div class="month-banner">You\'ve reached the summit, the four weeks are complete. You can keep repeating Summit week, or start a fresh month (your logs and weight history stay exactly as they are).<br><button id="restartMonth">Start a new month</button></div>';
       document.getElementById("restartMonth").addEventListener("click", async ()=>{
         state.profile.startDate = todayISO(); selectedWeekIndex = 0; await save(); renderAll(true);
       });
@@ -614,7 +613,7 @@ const VISITOR_NAME = (() => {
             + '<span class="ex-name '+struck+'">'+ex.n+'</span><span class="ex-dose">'+ex.d+'</span>'
             + '<button type="button" class="icon-btn tip-toggle" data-exi="'+exi+'" title="Tip">i</button>'
             + '<a class="icon-btn yt-link" href="'+ytLink(ex.n)+'" target="_blank" rel="noopener" title="Watch form on YouTube">&#9654;</a></div>'
-            + '<div class="ex-tip" data-tip-for="'+exi+'" style="display:none;"><b>'+tip.target+'</b> — '+tip.cue+'</div>';
+            + '<div class="ex-tip" data-tip-for="'+exi+'" style="display:none;"><b>'+tip.target+'</b>: '+tip.cue+'</div>';
         }).join("");
         bodyHTML = '<div class="cp-body-inner"><button type="button" class="guided-btn" data-action="guided">&#9654; Start guided workout</button>'
           + exHTML
@@ -684,7 +683,7 @@ const VISITOR_NAME = (() => {
   function renderChart(){
     const wrap = document.getElementById("chartWrap");
     const w = state.weights.slice().sort((a,b)=>a.date.localeCompare(b.date));
-    if(w.length === 0){ wrap.innerHTML = '<div class="empty-chart">No entries yet — log today\'s weight to start the line.</div>'; return; }
+    if(w.length === 0){ wrap.innerHTML = '<div class="empty-chart">No entries yet, log today\'s weight to start the line.</div>'; return; }
     if(w.length === 1){ wrap.innerHTML = '<div class="empty-chart">One entry logged ('+w[0].kg+'kg on '+w[0].date+'). Log again in a few days to see your line.</div>'; return; }
     const vals = w.map(p=>p.kg); const min = Math.min(...vals), max = Math.max(...vals);
     const pad = (max-min) < 1 ? 1 : (max-min)*0.15; const yMin = min-pad, yMax = max+pad;
@@ -779,9 +778,9 @@ const VISITOR_NAME = (() => {
         + '<div class="step-progress">Step '+(guidedIndex+1)+' of '+guidedSteps.length+'</div>'
         + '<div class="step-sub">'+step.sub+'</div>'
         + '<div class="step-label">'+step.label+'</div>'
-        + '<div class="step-tip"><b>'+step.tip.target+'</b> — '+step.tip.cue+'</div>'
+        + '<div class="step-tip"><b>'+step.tip.target+'</b>: '+step.tip.cue+'</div>'
         + '<a class="step-yt" href="'+ytLink(step.exName||step.label)+'" target="_blank" rel="noopener">&#9654; Watch proper form</a>'
-        + '<button class="manual-btn" id="manualDone">Done — next</button>'
+        + '<button class="manual-btn" id="manualDone">Done, next</button>'
         + '<div class="step-controls"><button id="skipStep">Skip</button><button class="danger-ghost" id="exitStep">Exit</button></div>';
       document.getElementById("ovClose").addEventListener("click", closeGuided);
       document.getElementById("exitStep").addEventListener("click", closeGuided);
@@ -798,7 +797,7 @@ const VISITOR_NAME = (() => {
       + '<div class="step-sub">'+step.sub+'</div>'
       + '<div class="step-label">'+step.label+'</div>'
       + '<div class="step-timer '+(isRest?"rest":"")+'" id="stepTimer">'+fmtTime(guidedRemaining)+'</div>'
-      + (step.tip ? '<div class="step-tip"><b>'+step.tip.target+'</b> — '+step.tip.cue+'</div>' : '')
+      + (step.tip ? '<div class="step-tip"><b>'+step.tip.target+'</b>: '+step.tip.cue+'</div>' : '')
       + (step.exName ? '<a class="step-yt" href="'+ytLink(step.exName)+'" target="_blank" rel="noopener">&#9654; Watch proper form</a>' : '')
       + '<div class="step-controls"><button id="pauseStep">Pause</button><button id="skipStep">Skip</button><button class="danger-ghost" id="exitStep">Exit</button></div>';
 

@@ -11,6 +11,8 @@ function Count({ to, suffix }: { to: number; suffix: string }) {
   useEffect(() => {
     const el = ref.current
     if (!el || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
+    // Already on screen at load: keep the real number rather than flashing back to 0.
+    if (el.getBoundingClientRect().top < window.innerHeight) return
     setValue(0)
     let frame = 0
     const observer = new IntersectionObserver(
@@ -19,7 +21,7 @@ function Count({ to, suffix }: { to: number; suffix: string }) {
         observer.disconnect()
         const start = performance.now()
         const tick = (now: number) => {
-          const t = Math.min(1, (now - start) / 900)
+          const t = Math.min(1, (now - start) / 600)
           setValue(Math.round(to * (1 - Math.pow(1 - t, 3))))
           if (t < 1) frame = requestAnimationFrame(tick)
         }

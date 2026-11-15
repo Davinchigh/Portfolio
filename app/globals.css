@@ -65,6 +65,9 @@
 }
 
 @layer base {
+  :root {
+    --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  }
   * {
     @apply border-border;
   }
@@ -79,7 +82,15 @@
   h2,
   h3 {
     @apply font-medium;
+  }
+  h1 {
+    letter-spacing: -0.03em;
+  }
+  h2 {
     letter-spacing: -0.025em;
+  }
+  h3 {
+    letter-spacing: -0.015em;
   }
   ::selection {
     background: hsl(var(--amber));
@@ -120,10 +131,10 @@
   }
 
   .pill-button {
-    @apply inline-flex h-11 items-center gap-2 rounded-full bg-foreground px-5 text-sm font-medium text-background transition-transform hover:-translate-y-0.5;
+    @apply inline-flex h-11 items-center gap-2 rounded-full bg-foreground px-5 text-sm font-medium text-background transition-transform duration-150 hover:-translate-y-0.5 active:scale-[0.97] motion-reduce:transform-none;
   }
   .ghost-button {
-    @apply inline-flex h-11 items-center gap-2 rounded-full border px-5 text-sm font-medium transition-colors hover:bg-accent;
+    @apply inline-flex h-11 items-center gap-2 rounded-full border px-5 text-sm font-medium transition-[color,background-color,transform] duration-150 hover:bg-accent active:scale-[0.97] motion-reduce:transform-none;
   }
 
   /* Screenshot frames */
@@ -144,7 +155,7 @@
   }
 }
 .settle > * {
-  animation: settle 600ms cubic-bezier(0.2, 0.7, 0.1, 1) both;
+  animation: settle 600ms var(--ease-out) both;
 }
 .settle > *:nth-child(2) {
   animation-delay: 60ms;
@@ -175,7 +186,7 @@ html[data-visitor] .hero-pending {
 
 /* Certificate pop-up: a short fade and lift when it opens. */
 .cert-dialog[open] {
-  animation: cert-in 260ms cubic-bezier(0.2, 0.7, 0.1, 1);
+  animation: cert-in 260ms var(--ease-out);
 }
 .cert-dialog[open]::backdrop {
   animation: cert-fade 260ms ease-out;
@@ -206,13 +217,12 @@ html:not(.dark) .pill-button {
   box-shadow: 0 6px 18px -8px hsl(30 8% 9% / 0.45);
 }
 
-/* ---------- Certifications: a grid that draws in as you scroll, a spotlight that follows the pointer ---------- */
+/* ---------- Certifications: a grid that fades in as you scroll, a spotlight that follows the pointer ---------- */
 .cert-grid {
   position: relative;
   isolation: isolate;
 }
-.cert-grid::before {
-  content: "";
+.cert-grid-lines {
   position: absolute;
   inset: -28px -20px;
   z-index: -1;
@@ -230,7 +240,6 @@ html:not(.dark) .pill-button {
 }
 .cert-row {
   position: relative;
-  transition: background-color 0.3s ease, transform 0.3s cubic-bezier(0.2, 0.7, 0.1, 1);
 }
 .cert-row::before {
   content: "";
@@ -243,49 +252,24 @@ html:not(.dark) .pill-button {
   background: hsl(var(--route));
   transform: scaleY(0);
   transform-origin: top;
-  transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.1, 1);
+  transition: transform 200ms var(--ease-out);
 }
-.cert-row:hover::before,
 .cert-row:focus-within::before {
   transform: scaleY(1);
 }
-.cert-row::after {
-  content: "";
-  position: absolute;
-  inset: 6px -14px;
-  z-index: -1;
-  border-radius: 14px;
-  background: linear-gradient(90deg, hsl(var(--route) / 0.09), hsl(var(--route) / 0.02) 70%, transparent);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-.cert-row:hover::after,
-.cert-row:focus-within::after {
-  opacity: 1;
-}
 .cert-row .cert-issuer {
-  transition: transform 0.3s cubic-bezier(0.2, 0.7, 0.1, 1), color 0.2s;
+  transition: color 200ms ease;
 }
-.cert-row:hover .cert-issuer,
 .cert-row:focus-within .cert-issuer {
-  transform: translateX(6px);
   color: hsl(var(--route));
 }
-.cert-row .cert-chip {
-  transition: border-color 0.2s, color 0.2s, transform 0.2s;
-}
-.cert-row:hover .cert-chip {
-  border-color: hsl(var(--route) / 0.5);
-  color: hsl(var(--foreground));
-}
-.cert-row .cert-chip:hover {
-  transform: translateY(-2px);
-}
-.cert-row .cert-year {
-  transition: color 0.2s;
-}
-.cert-row:hover .cert-year {
-  color: hsl(var(--route));
+@media (hover: hover) and (pointer: fine) {
+  .cert-row:hover::before {
+    transform: scaleY(1);
+  }
+  .cert-row:hover .cert-issuer {
+    color: hsl(var(--route));
+  }
 }
 /* each row rises in as it scrolls into view (browsers with scroll-driven animations) */
 @supports (animation-timeline: view()) {
@@ -294,8 +278,8 @@ html:not(.dark) .pill-button {
     animation-timeline: view();
     animation-range: entry 0% entry 70%;
   }
-  .cert-grid::before {
-    animation: grid-draw linear both;
+  .cert-grid-lines {
+    animation: grid-fade linear both;
     animation-timeline: view();
     animation-range: entry 0% cover 40%;
   }
@@ -304,11 +288,240 @@ html:not(.dark) .pill-button {
   from { opacity: 0; transform: translateY(18px); }
   to { opacity: 1; transform: none; }
 }
-@keyframes grid-draw {
-  from { opacity: 0; background-size: 72px 72px; }
-  to { opacity: 0.9; background-size: 36px 36px; }
+@keyframes grid-fade {
+  from { opacity: 0; }
+  to { opacity: 0.9; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .cert-row, .cert-grid::before { animation: none !important; }
-  .cert-row .cert-issuer { transition: none; transform: none !important; }
+  .cert-row, .cert-grid-lines { animation: none !important; }
+  .cert-row::before { transition: none; }
+}
+
+/* ---------- Motion: scroll reveals, 3D tilt, the hero deck and view transitions ---------- */
+
+/* Sections fold up into place as they scroll in. Only ever hidden by script (see Reveal). */
+.reveal[data-reveal] {
+  transition: opacity 700ms cubic-bezier(0.2, 0.7, 0.1, 1), transform 800ms cubic-bezier(0.2, 0.7, 0.1, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+  transform-origin: 50% 0%;
+  will-change: opacity, transform;
+}
+.reveal[data-reveal="pending"] {
+  opacity: 0;
+  transform: perspective(1200px) translateY(28px) rotateX(7deg);
+}
+.reveal-flat[data-reveal="pending"] {
+  transform: translateY(24px);
+}
+.reveal[data-reveal="in"] {
+  will-change: auto;
+}
+/* 3D movement must never widen the page. */
+#main {
+  overflow-x: clip;
+}
+
+/* Cards and screenshots lean toward the pointer. */
+.tilt {
+  position: relative;
+  transform: perspective(900px) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
+  transform-style: preserve-3d;
+  transition: transform 500ms cubic-bezier(0.2, 0.7, 0.1, 1), box-shadow 300ms ease, border-color 200ms ease;
+}
+.tilt[data-tilting] {
+  transition: transform 90ms linear, box-shadow 300ms ease, border-color 200ms ease;
+  box-shadow: 0 18px 32px -22px rgb(0 0 0 / 0.55);
+}
+.tilt::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(420px circle at var(--glare-x, 50%) var(--glare-y, 50%), hsl(var(--foreground) / 0.05), transparent 60%);
+  opacity: 0;
+  transition: opacity 300ms ease;
+}
+.tilt[data-tilting]::after {
+  opacity: 1;
+}
+/* Keep a card still while someone is typing in it. */
+.tilt:focus-within {
+  transform: none;
+}
+
+/* Hero deck: three pieces of work floating in 3D, turning with the pointer. */
+.deck {
+  perspective: 1400px;
+}
+.deck-stage {
+  position: relative;
+  height: 100%;
+  transform-style: preserve-3d;
+  transform: rotateX(calc(10deg + var(--deck-x, 0deg))) rotateY(calc(-20deg + var(--deck-y, 0deg)));
+  transition: transform 600ms cubic-bezier(0.2, 0.7, 0.1, 1);
+}
+.deck-card {
+  position: absolute;
+  left: 0;
+  width: 70%;
+  overflow: hidden;
+  border-radius: 14px;
+  border: 1px solid hsl(var(--border));
+  background: hsl(var(--card));
+  box-shadow: 0 30px 60px -30px rgb(0 0 0 / 0.75);
+  transform: translate3d(var(--x), var(--y), var(--z));
+  animation: deck-float 7s ease-in-out infinite;
+  animation-delay: var(--float-delay, 0s);
+  transition: translate 500ms cubic-bezier(0.2, 0.7, 0.1, 1), border-color 300ms ease;
+}
+.deck:hover .deck-card {
+  translate: var(--fan-x, 0) var(--fan-y, 0);
+  border-color: hsl(var(--route) / 0.4);
+}
+.deck-bar {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  height: 22px;
+  padding: 0 10px;
+  border-bottom: 1px solid hsl(var(--border));
+}
+.deck-bar i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: hsl(var(--input));
+}
+.deck-bar i:first-child {
+  background: hsl(var(--route));
+}
+@keyframes deck-float {
+  0%, 100% { transform: translate3d(var(--x), var(--y), var(--z)); }
+  50% { transform: translate3d(var(--x), calc(var(--y) - 10px), var(--z)); }
+}
+
+/* Experience details open and close smoothly. */
+.fold {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition: grid-template-rows 420ms cubic-bezier(0.2, 0.7, 0.1, 1), opacity 300ms ease;
+}
+.fold[data-open] {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+.fold > div {
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* View transitions: switching between the hiring and exploring views cross-fades with a small lift. */
+::view-transition-old(root) {
+  animation: vt-out 260ms cubic-bezier(0.4, 0, 1, 1) both;
+}
+::view-transition-new(root) {
+  animation: vt-in 420ms cubic-bezier(0.2, 0.7, 0.1, 1) both;
+}
+@keyframes vt-out {
+  to { opacity: 0; transform: translateY(-8px) scale(0.995); }
+}
+@keyframes vt-in {
+  from { opacity: 0; transform: translateY(14px) scale(0.995); }
+}
+/* Theme switch: the new theme opens out in a circle from the toggle. */
+html.theme-vt::view-transition-old(root) {
+  animation: none;
+  z-index: 0;
+}
+html.theme-vt::view-transition-new(root) {
+  z-index: 1;
+  animation: vt-circle 620ms cubic-bezier(0.3, 0.7, 0.1, 1) both;
+}
+@keyframes vt-circle {
+  from { clip-path: circle(0 at var(--vt-x, 50%) var(--vt-y, 0%)); }
+  to { clip-path: circle(150vmax at var(--vt-x, 50%) var(--vt-y, 0%)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal[data-reveal] { opacity: 1; transform: none; transition: none; }
+  .tilt, .deck-stage { transform: none; transition: none; }
+  .deck-card { animation: none; transition: none; }
+  .fold { transition: none; }
+  ::view-transition-old(root), ::view-transition-new(root) { animation: none !important; }
+}
+
+/* ---------- Smooth transitions: pages, toggles, staggered grids, small interactions ---------- */
+
+/* Each page eases in on navigation. */
+.page-in {
+  animation: page-in 520ms cubic-bezier(0.2, 0.7, 0.1, 1) backwards;
+}
+@keyframes page-in {
+  from { opacity: 0; transform: translateY(12px); }
+}
+
+/* The dark pill in a two-way toggle slides between options. */
+.seg-pill {
+  position: absolute;
+  border-radius: 9999px;
+  background: hsl(var(--foreground));
+  transition: transform 380ms cubic-bezier(0.3, 0.8, 0.2, 1), opacity 250ms ease;
+}
+
+/* Content that replaces other content (list or timeline, a form opening) fades up. */
+.swap-in {
+  animation: swap-in 380ms cubic-bezier(0.2, 0.7, 0.1, 1) backwards;
+}
+@keyframes swap-in {
+  from { opacity: 0; transform: translateY(10px); }
+}
+
+/* Grid items arrive one after another when their section is revealed. */
+.reveal[data-reveal="in"] .stagger > * {
+  animation: rise-in 700ms cubic-bezier(0.2, 0.7, 0.1, 1) backwards;
+}
+.reveal[data-reveal="in"] .stagger > *:nth-child(2) { animation-delay: 90ms; }
+.reveal[data-reveal="in"] .stagger > *:nth-child(3) { animation-delay: 180ms; }
+.reveal[data-reveal="in"] .stagger > *:nth-child(4) { animation-delay: 270ms; }
+.reveal[data-reveal="in"] .stagger > *:nth-child(n + 5) { animation-delay: 360ms; }
+@keyframes rise-in {
+  from { opacity: 0; transform: translateY(22px); }
+}
+
+/* Nav links get a soft background on hover; buttons give a little when pressed. */
+.nav-link {
+  transition: color 200ms ease, background-color 250ms ease;
+}
+.nav-link:hover {
+  background-color: hsl(var(--accent) / 0.7);
+}
+.pill-button,
+.ghost-button {
+  transition: transform 200ms cubic-bezier(0.2, 0.7, 0.1, 1), background-color 200ms ease, border-color 200ms ease, box-shadow 200ms ease;
+}
+.pill-button:active,
+.ghost-button:active {
+  transform: scale(0.97);
+}
+.ghost-button:hover {
+  border-color: hsl(var(--route) / 0.5);
+}
+/* Underlines draw in their colour instead of switching. */
+.link {
+  transition: text-decoration-color 250ms ease, color 200ms ease;
+}
+/* Screenshots fade their border toward the accent on hover. */
+.shot {
+  transition: border-color 300ms ease, box-shadow 300ms ease, transform 500ms cubic-bezier(0.2, 0.7, 0.1, 1);
+}
+.shot:hover {
+  border-color: hsl(var(--route) / 0.45);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-in, .swap-in, .reveal[data-reveal="in"] .stagger > * { animation: none; }
+  .seg-pill { transition: none; }
+  .pill-button:active, .ghost-button:active { transform: none; }
 }

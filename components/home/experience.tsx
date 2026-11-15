@@ -30,13 +30,6 @@ function decimal(value: string, isEnd = false) {
 const sorted = [...roles].sort((a, b) => decimal(b.start) - decimal(a.start))
 
 function Initials({ company, current, logo }: { company: string; current?: boolean; logo?: string }) {
-  if (logo)
-    return (
-      <span className="relative flex h-11 w-11 shrink-0 overflow-hidden rounded-xl border bg-white transition-transform duration-200 group-hover:scale-110 group-hover:border-route/60 motion-reduce:transform-none">
-        <img src={logo} alt="" aria-hidden="true" className="h-full w-full object-contain" />
-        {current && <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-live ring-2 ring-background" />}
-      </span>
-    )
   const text = company
     .replace(/\(.*\)/, "")
     .split(/\s+/)
@@ -47,11 +40,11 @@ function Initials({ company, current, logo }: { company: string; current?: boole
     .toUpperCase()
   return (
     <span
-      className={`relative flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border transition-transform duration-200 group-hover:scale-110 group-hover:border-route/60 motion-reduce:transform-none font-mono text-xs font-semibold text-muted-foreground ${
-        logo ? "overflow-hidden bg-white" : "bg-card"
+      className={`relative flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border font-mono text-xs font-semibold text-muted-foreground transition-transform duration-200 group-hover:scale-110 group-hover:border-route/60 motion-reduce:transform-none ${
+        logo ? "bg-white" : "bg-card"
       }`}
     >
-      {logo ? <img src={logo} alt="" aria-hidden="true" className="h-full w-full rounded-xl object-contain" /> : text}
+      {logo ? <img src={logo} alt="" aria-hidden="true" className="h-full w-full rounded-[11px] object-contain" /> : text}
       {current && <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-live ring-2 ring-background" />}
     </span>
   )
@@ -75,7 +68,11 @@ function ListView() {
             </span>
             <span className="meta flex items-center gap-2 whitespace-nowrap pt-1">
               <span className="hidden sm:inline">{range(r)}</span>
-              {hasDetails && <ChevronDown className={`h-4 w-4 transition-transform ${isOpen ? "rotate-180" : ""}`} aria-hidden="true" />}
+              {hasDetails ? (
+                <ChevronDown className={`h-4 w-4 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} aria-hidden="true" />
+              ) : (
+                <span className="h-4 w-4" aria-hidden="true" />
+              )}
             </span>
           </>
         )
@@ -94,21 +91,25 @@ function ListView() {
             ) : (
               <div className="group -mx-2 flex w-[calc(100%+1rem)] items-start gap-4 rounded-xl px-2 py-2 transition-colors hover:bg-accent/60 hover:[&_.font-medium]:text-route">{header}</div>
             )}
-            {hasDetails && isOpen && (
-              <div id={panelId} className="ml-[60px] max-w-[36em] pt-3 text-sm leading-relaxed text-muted-foreground">
-                {r.summary && <p>{r.summary}</p>}
-                {r.bullets && (
-                  <ul className="mt-2 space-y-1.5">
-                    {r.bullets.map((b) => (
-                      <li key={b} className="flex gap-2">
-                        <span className="text-route" aria-hidden="true">
-                          *
-                        </span>
-                        <span>{b}</span>
-                      </li>
-                    ))}
-                  </ul>
-                )}
+            {hasDetails && (
+              <div id={panelId} className="fold" data-open={isOpen ? "" : undefined} inert={!isOpen}>
+                <div>
+                  <div className="ml-[60px] max-w-[36em] pb-2 pt-3 text-sm leading-relaxed text-muted-foreground">
+                    {r.summary && <p>{r.summary}</p>}
+                    {r.bullets && (
+                      <ul className="mt-2 space-y-1.5">
+                        {r.bullets.map((b) => (
+                          <li key={b} className="flex gap-2">
+                            <span className="text-route" aria-hidden="true">
+                              *
+                            </span>
+                            <span>{b}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                </div>
               </div>
             )}
           </li>
@@ -156,7 +157,7 @@ function TimelineView() {
             {/* Highlight band across the hovered role's years */}
             <li
               aria-hidden="true"
-              className={`pointer-events-none absolute -top-8 bottom-0 rounded-lg border-x border-dashed border-route/50 bg-route/[0.06] transition-[left,width,opacity] duration-300 ease-out motion-reduce:transition-none ${
+              className={`pointer-events-none absolute -top-8 bottom-0 rounded-lg border-x border-dashed border-route/50 bg-route/[0.06] transition-opacity duration-200 ease-out motion-reduce:transition-none ${
                 hovered && band ? "opacity-100" : "opacity-0"
               } ${band ? "" : "hidden"}`}
               style={band ? { left: `${band.left}%`, width: `${band.width}%` } : undefined}
@@ -193,7 +194,7 @@ function TimelineView() {
                     onBlur={() => setHovered(null)}
                     aria-pressed={isActive}
                     aria-label={`${r.company}, ${r.role}, ${range(r)}`}
-                    className={`absolute inset-y-0 flex items-center gap-2 overflow-hidden rounded-lg border ${narrow ? "justify-center px-2" : "px-3"} text-left text-sm transition-[transform,box-shadow,background-color,border-color,color] duration-200 ease-out hover:-translate-y-0.5 hover:shadow-lg hover:shadow-route/10 focus-visible:-translate-y-0.5 motion-reduce:transform-none motion-reduce:transition-none ${
+                    className={`absolute inset-y-0 flex items-center gap-2 overflow-hidden rounded-lg border ${narrow ? "justify-center px-2" : "px-3"} text-left text-sm transition-[transform,box-shadow,background-color,border-color,color] duration-200 ease-out hover:-translate-y-0.5 active:scale-[0.98] hover:shadow-lg hover:shadow-route/10 focus-visible:-translate-y-0.5 motion-reduce:transform-none motion-reduce:transition-none ${
                       isActive
                         ? "border-route bg-route/15 text-foreground"
                         : isHovered
@@ -227,7 +228,7 @@ function TimelineView() {
       {chosen && (
         <div
           key={chosen.id}
-          className={`mt-6 rounded-xl border p-5 transition-colors ${hovered && hovered !== active ? "border-dashed bg-card/60" : "bg-card"}`}
+          className={`swap-in mt-6 rounded-xl border p-5 transition-colors ${hovered && hovered !== active ? "border-dashed bg-card/60" : "bg-card"}`}
           aria-live="polite"
         >
           <div className="flex items-start gap-4">
@@ -253,15 +254,16 @@ export function Experience() {
       <HandNote arrow="none" className="hidden -rotate-6 text-xl sm:inline-flex">
         try both
       </HandNote>
-      <div role="group" aria-label="Experience view" className="flex rounded-full border bg-card p-1">
+      <div role="group" aria-label="Experience view" className="relative grid grid-cols-2 rounded-full border bg-card p-1">
+        <span aria-hidden="true" className={`seg-pill inset-y-1 left-1 w-[calc(50%-4px)] ${view === "timeline" ? "translate-x-full" : ""}`} />
         {(["list", "timeline"] as const).map((v) => (
           <button
             key={v}
             type="button"
             aria-pressed={view === v}
             onClick={() => setView(v)}
-            className={`min-h-11 min-w-[76px] rounded-full sm:min-h-9 px-3 text-sm transition-colors ${
-              view === v ? "bg-foreground text-background" : "text-muted-foreground hover:text-foreground"
+            className={`relative z-10 min-h-11 min-w-[76px] rounded-full px-3 text-sm transition-colors duration-300 sm:min-h-9 ${
+              view === v ? "text-background" : "text-muted-foreground hover:text-foreground"
             }`}
           >
             {v}
@@ -278,7 +280,9 @@ export function Experience() {
       title={<ForMode recruiter="where i've worked" explorer="every stop taught me something" />}
       aside={toggle}
     >
-      {view === "list" ? <ListView /> : <TimelineView />}
+      <div key={view} className="swap-in">
+        {view === "list" ? <ListView /> : <TimelineView />}
+      </div>
     </Section>
   )
 }
