@@ -8,11 +8,14 @@ import { Hero } from "@/components/home/hero"
 import { Lessons } from "@/components/home/lessons"
 import { Certifications, Designs, Stack, Ventures } from "@/components/home/more-sections"
 import { Stats } from "@/components/home/stats"
-import { CaseStudy } from "@/components/home/work"
+import { CaseStudy, WorkCard } from "@/components/home/work"
 import { Rail } from "@/components/site/route"
 import { Section } from "@/components/site/section"
 import { work } from "@/lib/site"
 import { ForMode } from "@/lib/visitor"
+
+/** How many projects get the full write-up on the home page. The rest appear as cards. */
+const FEATURED = 4
 
 export default function Home() {
   return (
@@ -36,9 +39,17 @@ export default function Home() {
                   </Link>
                 }
               >
-                {work.map((item, i) => (
+                {work.slice(0, FEATURED).map((item, i) => (
                   <CaseStudy key={item.slug} item={item} index={i} />
                 ))}
+                <div className="border-t pt-10">
+                  <p className="eyebrow">more work</p>
+                  <ul className="stagger mt-6 grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-4">
+                    {work.slice(FEATURED).map((item) => (
+                      <WorkCard key={item.slug} item={item} />
+                    ))}
+                  </ul>
+                </div>
               </Section>
             ),
             builds: <Builds />,

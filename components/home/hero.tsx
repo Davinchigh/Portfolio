@@ -108,15 +108,20 @@ export function Hero() {
 
         {mode === "recruiter" && (
           <div key="recruiter" className="settle">
-            <h1 id="hero-title" className="mt-5 max-w-4xl text-5xl sm:text-7xl">
-              {company ? <>hi, {company} team.</> : "hi, glad you stopped by."}
-            </h1>
-            <p className="mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground sm:text-xl">
-              i&apos;m benedict, an ai engineer and software developer in accra. i build with claude, test things properly and
-              ship fast. proof first, then the road behind it.
-            </p>
-            <div className="mt-5">
-              <Status />
+            <div className="lg:grid lg:grid-cols-[minmax(0,36rem)_minmax(0,1fr)] lg:items-center lg:gap-12">
+              <div>
+                <h1 id="hero-title" className="mt-5 text-5xl sm:text-7xl">
+                  {company ? <>hi, {company} team.</> : "hi, glad you stopped by."}
+                </h1>
+                <p className="mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground sm:text-xl">
+                  i&apos;m benedict, an ai engineer and software developer in accra. i build with claude, test things properly
+                  and ship fast. proof first, then the road behind it.
+                </p>
+                <div className="mt-5">
+                  <Status />
+                </div>
+              </div>
+              <HeroDeck className="hidden lg:block" />
             </div>
             <ul className="mt-10 grid gap-6 border-t pt-8 sm:grid-cols-3">
               {proof.map((p) => (

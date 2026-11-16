@@ -3,6 +3,7 @@ import { CertificateViewer } from "@/components/home/certificate-viewer"
 import { CertGrid } from "@/components/home/cert-grid"
 import { ArrowUpRight } from "lucide-react"
 import { HandNote } from "@/components/site/hand-note"
+import { FadeImage } from "@/components/site/fade-image"
 import { Tilt } from "@/components/site/motion"
 import { Section } from "@/components/site/section"
 import { BrandGradients, ToolIcon, brandColor } from "@/components/site/tool-icon"
@@ -16,7 +17,7 @@ export function Designs() {
           <article key={d.slug}>
             <a href={d.href} target="_blank" rel="noopener noreferrer" className="group block">
               <Tilt max={4} className="shot">
-                <img src={d.image} alt={d.imageAlt} loading="lazy" className="aspect-[16/10] w-full object-cover object-top transition-transform duration-200 group-hover:scale-[1.02] motion-reduce:transition-none" />
+                <FadeImage src={d.image} alt={d.imageAlt} loading="lazy" className="aspect-[16/10] w-full object-cover object-top transition-transform duration-200 group-hover:scale-[1.02] motion-reduce:transition-none" />
               </Tilt>
               <div className="mt-4 flex items-start justify-between gap-4">
                 <div>
