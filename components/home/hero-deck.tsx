@@ -4,9 +4,9 @@ import { useEffect, useRef, type CSSProperties } from "react"
 
 /** Three pieces of work, layered in 3D. Purely decorative: the real case studies are further down the page. */
 const cards = [
-  { src: "/images/glee-garden.webp", x: "30%", y: "0px", z: "-90px", fanX: "18px", fanY: "-14px", delay: "-4.5s", fit: "object-cover object-top" },
-  { src: "/images/class-planner.jpg", x: "18%", y: "92px", z: "0px", fanX: "0px", fanY: "0px", delay: "-2s", fit: "object-cover object-top" },
-  { src: "/images/zero/zero-mark.webp", x: "7%", y: "196px", z: "90px", fanX: "-18px", fanY: "16px", delay: "0s", fit: "object-contain bg-[#060608]" },
+  { src: "/images/shoptally.webp", x: "30%", y: "0px", z: "-90px", fanX: "18px", fanY: "-14px", delay: "-4.5s", enter: "120ms" },
+  { src: "/images/recall.webp", x: "18%", y: "92px", z: "0px", fanX: "0px", fanY: "0px", delay: "-2s", enter: "260ms" },
+  { src: "/images/flowline.webp", x: "7%", y: "196px", z: "90px", fanX: "-18px", fanY: "16px", delay: "0s", enter: "400ms" },
 ]
 
 export function HeroDeck({ className = "" }: { className?: string }) {
@@ -41,14 +41,14 @@ export function HeroDeck({ className = "" }: { className?: string }) {
           <div
             key={c.src}
             className="deck-card"
-            style={{ "--x": c.x, "--y": c.y, "--z": c.z, "--fan-x": c.fanX, "--fan-y": c.fanY, "--float-delay": c.delay } as CSSProperties}
+            style={{ "--x": c.x, "--y": c.y, "--z": c.z, "--fan-x": c.fanX, "--fan-y": c.fanY, "--float-delay": c.delay, "--enter-delay": c.enter } as CSSProperties}
           >
             <div className="deck-bar">
               <i />
               <i />
               <i />
             </div>
-            <img src={c.src} alt="" className={`aspect-[16/10] w-full ${c.fit}`} />
+            <img src={c.src} alt="" className="aspect-[16/10] w-full object-cover object-top" />
           </div>
         ))}
       </div>

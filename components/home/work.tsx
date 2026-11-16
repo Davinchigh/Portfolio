@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { ArrowRight, ArrowUpRight } from "lucide-react"
+import { FadeImage } from "@/components/site/fade-image"
 import { Tilt } from "@/components/site/motion"
 import type { Work as WorkItem } from "@/lib/site"
 
@@ -7,7 +8,7 @@ import type { Work as WorkItem } from "@/lib/site"
 export function CaseStudy({ item, index, headingLevel = "h3" }: { item: WorkItem; index: number; headingLevel?: "h2" | "h3" }) {
   const Heading = headingLevel
   return (
-    <article className="grid gap-6 border-t py-10 md:grid-cols-12 md:gap-10">
+    <article id={item.slug} className="grid scroll-mt-24 gap-6 border-t py-10 md:grid-cols-12 md:gap-10">
       <div className="md:col-span-5">
         <p className="meta flex gap-3">
           <span className="text-route">{String(index + 1).padStart(2, "0")}</span>
@@ -55,7 +56,7 @@ export function CaseStudy({ item, index, headingLevel = "h3" }: { item: WorkItem
 
       <div className="md:col-span-7">
         <Tilt max={4} className={`shot ${item.slug === "zero" ? "bg-[#060608]" : ""}`}>
-          <img
+          <FadeImage
             src={item.image}
             alt={item.imageAlt}
             loading="lazy"
@@ -64,5 +65,32 @@ export function CaseStudy({ item, index, headingLevel = "h3" }: { item: WorkItem
         </Tilt>
       </div>
     </article>
+  )
+}
+
+const shotClass = (item: WorkItem) =>
+  item.contain ? "bg-white object-contain p-3" : item.slug === "zero" ? "object-contain" : "object-cover object-top"
+
+/** A smaller card for the rest of the work: picture, title and one line, linking to the full write-up. */
+export function WorkCard({ item }: { item: WorkItem }) {
+  return (
+    <li>
+      <Link href={`/projects#${item.slug}`} className="group block">
+        <Tilt max={4} className={`shot ${item.slug === "zero" ? "bg-[#060608]" : ""}`}>
+          <FadeImage
+            src={item.image}
+            alt={item.imageAlt}
+            loading="lazy"
+            className={`aspect-[16/10] w-full transition-transform duration-200 group-hover:scale-[1.02] motion-reduce:transition-none ${shotClass(item)}`}
+          />
+        </Tilt>
+        <p className="meta mt-4">{item.org}</p>
+        <h3 className="mt-1 text-lg group-hover:underline group-hover:underline-offset-4">
+          {item.title}
+          <ArrowRight className="ml-1.5 inline h-4 w-4 align-[-2px] text-muted-foreground transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
+        </h3>
+        <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{item.hook}</p>
+      </Link>
+    </li>
   )
 }
