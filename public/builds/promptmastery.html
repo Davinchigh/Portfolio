@@ -16,12 +16,13 @@
   body { font-family: 'Inter', sans-serif; color: #1f2937; }
   .dark body { color: #e5e7eb; }
   h1,h2,h3,h4,.font-serif { font-family: 'Playfair Display', serif; letter-spacing: -0.01em; }
-  .hero-gradient {
-    background:
-      radial-gradient(1200px 400px at 80% -10%, rgba(212,165,116,0.25), transparent 60%),
-      radial-gradient(900px 500px at -10% 10%, rgba(129,140,248,0.35), transparent 60%),
-      linear-gradient(135deg, #4F46E5 0%, #6D28D9 55%, #4F46E5 100%);
-  }
+  .hero-gradient { background: #12211B; }
+
+  /* One accent, flat surfaces: no colour gradients. */
+  .bg-gradient-to-br, .bg-gradient-to-r, .bg-gradient-to-b { background-image: none !important; }
+  .from-brand-600 { background-color: #1B5E44; }
+  .from-brand-50, .from-brand-100 { background-color: #f0f5f1; }
+  .dark .dark\:from-slate-800 { background-color: #1e293b; }
   .prompt-box {
     background: #1f2937; color: #f9fafb; border-radius: 12px; padding: 14px 16px;
     font-family: 'JetBrains Mono', monospace; font-size: 13.5px; line-height: 1.6;
@@ -29,18 +30,18 @@
   }
   .dark .prompt-box { background: #0b1220; border: 1px solid #1f2937; }
   .callout { border-left: 4px solid; border-radius: 12px; padding: 14px 16px; }
-  .callout.tip   { border-color: #4F46E5; background: #eef2ff; }
+  .callout.tip   { border-color: #1B5E44; background: #f0f5f1; }
   .callout.warn  { border-color: #f59e0b; background: #fffbeb; }
   .callout.ex    { border-color: #10b981; background: #ecfdf5; }
   .callout.note  { border-color: #d4a574; background: #fdf8ef; }
   .callout.bad   { border-color: #ef4444; background: #fef2f2; }
-  .dark .callout.tip   { background: rgba(79,70,229,0.12); }
+  .dark .callout.tip   { background: rgba(27,94,68,0.12); }
   .dark .callout.warn  { background: rgba(245,158,11,0.10); }
   .dark .callout.ex    { background: rgba(16,185,129,0.10); }
   .dark .callout.note  { background: rgba(212,165,116,0.10); }
   .dark .callout.bad   { background: rgba(239,68,68,0.10); }
-  .session-link.active { background: linear-gradient(90deg, rgba(79,70,229,0.10), transparent); color: #4F46E5; }
-  .dark .session-link.active { color: #a5b4fc; background: linear-gradient(90deg, rgba(165,180,252,0.12), transparent); }
+  .session-link.active { background: linear-gradient(90deg, rgba(27,94,68,0.10), transparent); color: #1B5E44; }
+  .dark .session-link.active { color: #8CB89E; background: linear-gradient(90deg, rgba(140,184,158,0.12), transparent); }
   .fade-in { animation: fade 400ms ease-out; }
   @keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
   .pop { animation: pop 350ms ease-out; }
@@ -81,7 +82,7 @@
 
   /* Drag/match cards */
   .tool-card { transition: all .2s ease; cursor: pointer; }
-  .tool-card.selected { outline: 3px solid #4F46E5; transform: translateY(-2px); }
+  .tool-card.selected { outline: 3px solid #1B5E44; transform: translateY(-2px); }
   .scenario.matched { opacity: .55; }
 
   /* Print certificate */
@@ -112,7 +113,7 @@
     </div>
     <div class="grid grid-cols-2 gap-2 mb-4">
       <button onclick="exportProgress()" class="px-3 py-2 rounded-lg bg-brand-600 text-white text-sm hover:bg-brand-700">Export Progress</button>
-      <button onclick="demoUnlock()" class="px-3 py-2 rounded-lg bg-gold-400 text-white text-sm hover:bg-gold-500">Demo Unlock 🎓</button>
+      <button onclick="demoUnlock()" class="px-3 py-2 rounded-lg bg-gold-400 text-white text-sm hover:bg-gold-500">Demo Unlock </button>
     </div>
     <button onclick="resetProgress()" class="w-full px-3 py-2 rounded-lg border border-red-400 text-red-600 text-sm hover:bg-red-50 dark:hover:bg-red-950">Reset All Progress</button>
     <div class="flex justify-end mt-5">
@@ -172,19 +173,19 @@ function firstName() { return (state.name || 'Friend').split(' ')[0]; }
 
 /* ---------------- AI TOOLS ---------------- */
 const TOOLS = [
-  { id:'chatgpt', name:'ChatGPT', url:'https://chat.openai.com', emoji:'💬', tag:'Text', desc:'The versatile all-rounder. Great for writing, coding, brainstorming, and casual chat.' },
-  { id:'claude',  name:'Claude', url:'https://claude.ai', emoji:'📝', tag:'Text', desc:'Thoughtful and nuanced. Best for long documents, careful analysis, and writing with style.' },
-  { id:'gemini',  name:'Google Gemini', url:'https://gemini.google.com', emoji:'✨', tag:'Text', desc:'Plugs into Google apps. Strong for research, multimodal tasks, and live web info.' },
-  { id:'copilot', name:'Microsoft Copilot', url:'https://copilot.microsoft.com', emoji:'🪟', tag:'Text', desc:'Lives inside Word, Excel, PowerPoint, and Windows. Perfect for Office workflows.' },
-  { id:'perplexity', name:'Perplexity', url:'https://www.perplexity.ai', emoji:'🔎', tag:'Research', desc:'Like Google + ChatGPT. Always cites its sources, your research best friend.' },
-  { id:'midjourney', name:'Midjourney', url:'https://www.midjourney.com', emoji:'🎨', tag:'Image', desc:'Artistic, dreamy, beautiful images. The art-school of AI image tools.' },
-  { id:'dalle', name:'DALL·E (inside ChatGPT)', url:'https://chat.openai.com', emoji:'🖼️', tag:'Image', desc:'Quick images with readable text right inside ChatGPT.' },
-  { id:'leonardo', name:'Leonardo AI', url:'https://leonardo.ai', emoji:'🦁', tag:'Image', desc:'Free tier, game-art and concept art focus. Generous daily credits.' },
-  { id:'sora', name:'Sora', url:'https://sora.com', emoji:'🎬', tag:'Video', desc:'OpenAI\'s text-to-video. Cinematic short clips from words.' },
-  { id:'runway', name:'Runway', url:'https://runway.ml', emoji:'🎞️', tag:'Video', desc:'Pro-grade AI video editing, image-to-video, and motion magic.' },
-  { id:'eleven', name:'ElevenLabs', url:'https://elevenlabs.io', emoji:'🎙️', tag:'Audio', desc:'Hyper-realistic AI voices. Read scripts, dub videos, clone your own voice.' },
-  { id:'suno', name:'Suno', url:'https://suno.com', emoji:'🎵', tag:'Audio', desc:'AI music with lyrics, vocals, instruments. Type a vibe, get a song.' },
-  { id:'notebooklm', name:'NotebookLM', url:'https://notebooklm.google.com', emoji:'📚', tag:'Study', desc:'Upload PDFs and have a tutor that only answers from YOUR documents.' },
+  { id:'chatgpt', name:'ChatGPT', url:'https://chat.openai.com', emoji:'', tag:'Text', desc:'The versatile all-rounder. Great for writing, coding, brainstorming, and casual chat.' },
+  { id:'claude',  name:'Claude', url:'https://claude.ai', emoji:'', tag:'Text', desc:'Thoughtful and nuanced. Best for long documents, careful analysis, and writing with style.' },
+  { id:'gemini',  name:'Google Gemini', url:'https://gemini.google.com', emoji:'', tag:'Text', desc:'Plugs into Google apps. Strong for research, multimodal tasks, and live web info.' },
+  { id:'copilot', name:'Microsoft Copilot', url:'https://copilot.microsoft.com', emoji:'', tag:'Text', desc:'Lives inside Word, Excel, PowerPoint, and Windows. Perfect for Office workflows.' },
+  { id:'perplexity', name:'Perplexity', url:'https://www.perplexity.ai', emoji:'', tag:'Research', desc:'Like Google + ChatGPT. Always cites its sources, your research best friend.' },
+  { id:'midjourney', name:'Midjourney', url:'https://www.midjourney.com', emoji:'', tag:'Image', desc:'Artistic, dreamy, beautiful images. The art-school of AI image tools.' },
+  { id:'dalle', name:'DALL·E (inside ChatGPT)', url:'https://chat.openai.com', emoji:'', tag:'Image', desc:'Quick images with readable text right inside ChatGPT.' },
+  { id:'leonardo', name:'Leonardo AI', url:'https://leonardo.ai', emoji:'', tag:'Image', desc:'Free tier, game-art and concept art focus. Generous daily credits.' },
+  { id:'sora', name:'Sora', url:'https://sora.com', emoji:'', tag:'Video', desc:'OpenAI\'s text-to-video. Cinematic short clips from words.' },
+  { id:'runway', name:'Runway', url:'https://runway.ml', emoji:'', tag:'Video', desc:'Pro-grade AI video editing, image-to-video, and motion magic.' },
+  { id:'eleven', name:'ElevenLabs', url:'https://elevenlabs.io', emoji:'', tag:'Audio', desc:'Hyper-realistic AI voices. Read scripts, dub videos, clone your own voice.' },
+  { id:'suno', name:'Suno', url:'https://suno.com', emoji:'', tag:'Audio', desc:'AI music with lyrics, vocals, instruments. Type a vibe, get a song.' },
+  { id:'notebooklm', name:'NotebookLM', url:'https://notebooklm.google.com', emoji:'', tag:'Study', desc:'Upload PDFs and have a tutor that only answers from YOUR documents.' },
 ];
 
 /* ---------------- SESSIONS DATA ---------------- */
@@ -280,7 +281,7 @@ function progressRing(size=72, stroke=8) {
         <circle class="ring-bg" cx="${size/2}" cy="${size/2}" r="${r}" stroke-width="${stroke}" fill="none"/>
         <circle cx="${size/2}" cy="${size/2}" r="${r}" stroke="url(#g1)" stroke-width="${stroke}" fill="none"
           stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${off}" style="transition:stroke-dashoffset .6s ease"/>
-        <defs><linearGradient id="g1" x1="0" x2="1" y1="0" y2="1"><stop offset="0%" stop-color="#4F46E5"/><stop offset="100%" stop-color="#D4A574"/></linearGradient></defs>
+        <defs><linearGradient id="g1" x1="0" x2="1" y1="0" y2="1"><stop offset="0%" stop-color="#1B5E44"/><stop offset="100%" stop-color="#D4A574"/></linearGradient></defs>
       </svg>
       <div class="absolute inset-0 flex items-center justify-center text-xs font-bold">${pct}%</div>
     </div>`;
@@ -308,7 +309,7 @@ function sidebar(activeId) {
         ${progressRing(56,6)}
         <div>
           <div class="text-xs text-slate-500">Welcome,</div>
-          <div class="font-bold text-sm leading-tight">${firstName()} 👋</div>
+          <div class="font-bold text-sm leading-tight">${firstName()} </div>
           <div class="text-[11px] text-slate-500 mt-0.5">${progressPct()}% complete</div>
         </div>
       </div>
@@ -392,7 +393,7 @@ function renderWelcome(app) {
             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 backdrop-blur text-xs font-medium mb-5">
               <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> Personalized for ${state.name}
             </div>
-            <h1 class="font-serif font-bold text-4xl lg:text-6xl leading-tight mb-4">Hello, ${firstName()} <span class="inline-block">👋</span></h1>
+            <h1 class="font-serif font-bold text-4xl lg:text-6xl leading-tight mb-4">Hello, ${firstName()} <span class="inline-block"></span></h1>
             <p class="text-lg text-white/90 leading-relaxed mb-2">Welcome to <b>The Real-World AI &amp; Prompt Engineering Course</b>: a friendly, hands-on journey from zero to confident AI user.</p>
             <p class="text-white/80 leading-relaxed mb-7">By the end, you'll know how to talk to ChatGPT, Claude, Gemini, Midjourney, Sora, and more, like a pro. No jargon. No pressure. Just real practice.</p>
             <div class="flex flex-wrap gap-3 mb-6">
@@ -457,7 +458,7 @@ function renderWelcome(app) {
         }).join('')}
       </div>
       <div class="mt-12 p-6 rounded-3xl bg-gradient-to-br from-brand-50 to-gold-50 dark:from-slate-800 dark:to-slate-800 border border-brand-100 dark:border-slate-700">
-        <div class="font-serif text-2xl font-bold mb-2">A note from your mentor 💌</div>
+        <div class="font-serif text-2xl font-bold mb-2">A note from your mentor </div>
         <p class="text-slate-700 dark:text-slate-300 leading-relaxed">${firstName()}, take your time. You don't have to finish this in a day. Do an exercise, sleep on it, come back. The point isn't to memorize, it's to <b>feel comfortable talking to AI</b>. I'm rooting for you the whole way through., <i>Your AI Mentor</i></p>
       </div>
     </div>`;
@@ -503,7 +504,7 @@ function renderSessionShell(app, id) {
           </div>
           <div id="session-body"></div>
           <div class="mt-10 flex flex-wrap items-center justify-between gap-3 p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
-            <div class="text-sm text-slate-600 dark:text-slate-400">${state.progress[id].done ? '✅ You\'ve completed this session.' : `Ready when you are, ${firstName()}.`}</div>
+            <div class="text-sm text-slate-600 dark:text-slate-400">${state.progress[id].done ? '✓ You\'ve completed this session.' : `Ready when you are, ${firstName()}.`}</div>
             <div class="flex items-center gap-2">
               ${id>1?`<a href="#/session/${id-1}" class="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800">← Previous</a>`:''}
               <button onclick="markSessionDone(${id})" class="px-4 py-2 rounded-xl ${state.progress[id].done?'bg-emerald-500':'bg-brand-600 hover:bg-brand-700'} text-white font-semibold">${state.progress[id].done?'Completed ✓':'Mark as Complete'}</button>
@@ -539,10 +540,10 @@ function playground(initial='', exerciseId='') {
       <button onclick="copyPrompt('${uid}')" class="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-sm hover:bg-slate-200"><i data-lucide="copy" class="w-3.5 h-3.5 inline"></i> Copy</button>
       <button onclick="savePrompt('${uid}','${exerciseId}')" class="px-3 py-1.5 rounded-lg bg-brand-600 text-white text-sm hover:bg-brand-700"><i data-lucide="bookmark-plus" class="w-3.5 h-3.5 inline"></i> Save to Journal</button>
       <span class="mx-1 text-slate-300">|</span>
-      <button onclick="tryOn('${uid}','chatgpt')" class="px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300 text-sm hover:bg-emerald-100"><span class="mr-1">💬</span>Try in ChatGPT</button>
-      <button onclick="tryOn('${uid}','claude')" class="px-3 py-1.5 rounded-lg bg-orange-50 text-orange-700 dark:bg-orange-950/40 dark:text-orange-300 text-sm hover:bg-orange-100"><span class="mr-1">📝</span>Try in Claude</button>
-      <button onclick="tryOn('${uid}','gemini')" class="px-3 py-1.5 rounded-lg bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300 text-sm hover:bg-blue-100"><span class="mr-1">✨</span>Try in Gemini</button>
-      <button onclick="tryOn('${uid}','perplexity')" class="px-3 py-1.5 rounded-lg bg-purple-50 text-purple-700 dark:bg-purple-950/40 dark:text-purple-300 text-sm hover:bg-purple-100"><span class="mr-1">🔎</span>Try in Perplexity</button>
+      <button onclick="tryOn('${uid}','chatgpt')" class="px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300 text-sm hover:bg-emerald-100"><span class="mr-1"></span>Try in ChatGPT</button>
+      <button onclick="tryOn('${uid}','claude')" class="px-3 py-1.5 rounded-lg bg-orange-50 text-orange-700 dark:bg-orange-950/40 dark:text-orange-300 text-sm hover:bg-orange-100"><span class="mr-1"></span>Try in Claude</button>
+      <button onclick="tryOn('${uid}','gemini')" class="px-3 py-1.5 rounded-lg bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300 text-sm hover:bg-blue-100"><span class="mr-1"></span>Try in Gemini</button>
+      <button onclick="tryOn('${uid}','perplexity')" class="px-3 py-1.5 rounded-lg bg-purple-50 text-purple-700 dark:bg-purple-950/40 dark:text-purple-300 text-sm hover:bg-purple-100"><span class="mr-1"></span>Try in Perplexity</button>
     </div>
   </div>`;
 }
@@ -552,10 +553,10 @@ function copyPrompt(uid) {
 }
 function savePrompt(uid, exId) {
   const v = document.getElementById(uid).value.trim();
-  if (!v) { toast('Write a prompt first ✍️'); return; }
+  if (!v) { toast('Write a prompt first '); return; }
   state.journal.unshift({ id:'j'+Date.now(), title:exId || ('Prompt ' + new Date().toLocaleDateString()), body:v, ts:Date.now() });
   saveState();
-  toast('Saved to your Prompt Journal 📔');
+  toast('Saved to your Prompt Journal ');
 }
 function tryOn(uid, toolId) {
   const v = document.getElementById(uid).value;
@@ -597,7 +598,7 @@ function quiz(sessionId, questions) {
                     : correct ? 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-400'
                     : wrong   ? 'bg-red-50 dark:bg-red-950/40 border-red-400'
                     : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 opacity-70';
-                  return `<button ${answers[i]!==null?'disabled':''} onclick="window.__qpick_${qid}(${i},${j})" class="text-left text-sm px-3 py-2 rounded-lg border ${cls}">${o}${answers[i]!==null && j===q.a?' ✅':''}${wrong?' ❌':''}</button>`;
+                  return `<button ${answers[i]!==null?'disabled':''} onclick="window.__qpick_${qid}(${i},${j})" class="text-left text-sm px-3 py-2 rounded-lg border ${cls}">${o}${answers[i]!==null && j===q.a?' ✓':''}${wrong?' ✗':''}</button>`;
                 }).join('')}
               </div>
               ${answers[i]!==null ? `<div class="mt-2 text-xs text-slate-500 italic">${q.exp||''}</div>`:''}
@@ -609,7 +610,7 @@ function quiz(sessionId, questions) {
             state.progress[sessionId].quizScore = score;
             saveState();
             const pct = Math.round(score/questions.length*100);
-            const msg = pct===100 ? `Perfect, ${firstName()}! 🌟` : pct>=70 ? `Great work, ${firstName()}! 💪` : `Good try, ${firstName()}, review and retry anytime.`;
+            const msg = pct===100 ? `Perfect, ${firstName()}! ` : pct>=70 ? `Great work, ${firstName()}! ` : `Good try, ${firstName()}, review and retry anytime.`;
             return `<div class="mt-2 p-3 rounded-xl bg-gradient-to-r from-brand-100 to-gold-100 dark:from-slate-800 dark:to-slate-800 text-sm font-medium">Score: ${score}/${questions.length} (${pct}%), ${msg}</div>`;
           })() : ''}
         </div>`;
@@ -625,11 +626,11 @@ function quiz(sessionId, questions) {
 function badGood(bad, good) {
   return `<div class="grid md:grid-cols-2 gap-3 my-4">
     <div class="callout bad">
-      <div class="text-xs font-bold uppercase tracking-wider text-red-600 mb-1">❌ Bad Prompt</div>
+      <div class="text-xs font-bold uppercase tracking-wider text-red-600 mb-1">✗ Bad Prompt</div>
       <div class="font-mono text-sm">${bad}</div>
     </div>
     <div class="callout ex">
-      <div class="text-xs font-bold uppercase tracking-wider text-emerald-700 mb-1">✅ Good Prompt</div>
+      <div class="text-xs font-bold uppercase tracking-wider text-emerald-700 mb-1">✓ Good Prompt</div>
       <div class="font-mono text-sm">${good}</div>
     </div>
   </div>`;
@@ -648,13 +649,13 @@ function renderSession1(el) {
   el.innerHTML = `
     <p class="text-lg leading-relaxed">Hi ${firstName()}, let's start at the very beginning. Don't worry, we'll go slowly, and by the end of this session you'll already write better prompts than 90% of people just casually using ChatGPT.</p>
 
-    <h2 class="font-serif text-2xl font-bold mt-8 mb-2">🧠 What is AI, really?</h2>
+    <h2 class="font-serif text-2xl font-bold mt-8 mb-2"> What is AI, really?</h2>
     <p>Think of an AI chatbot like a <b>brilliant new intern</b> who has read most of the internet. They are smart, fast, and willing to help, but they have no idea what <i>you</i> want unless you tell them clearly. They can't read your mind. They can't see your calendar. They don't know your boss's name.</p>
     <p class="mt-3">The "intern" you're talking to is called a <b>Large Language Model (LLM)</b>. It works by predicting the next word, one at a time, based on everything you've said. That's it. That's the magic. The clearer your instructions, the better the predictions.</p>
 
-    <div class="callout tip mt-4"><b>💡 Key idea:</b> AI doesn't <i>understand</i> like a human. It <i>predicts</i> based on patterns. Your job is to give it enough pattern to predict well.</div>
+    <div class="callout tip mt-4"><b> Key idea:</b> AI doesn't <i>understand</i> like a human. It <i>predicts</i> based on patterns. Your job is to give it enough pattern to predict well.</div>
 
-    <h2 class="font-serif text-2xl font-bold mt-8 mb-2">✍️ What is Prompt Engineering?</h2>
+    <h2 class="font-serif text-2xl font-bold mt-8 mb-2"> What is Prompt Engineering?</h2>
     <p>A <b>prompt</b> is the message you type to the AI. <b>Prompt engineering</b> is the craft of writing those messages so the AI gives you exactly what you want, the first time, or close to it.</p>
     <p class="mt-3">It's not coding. It's not magic. It's basically <b>clear communication on steroids</b>. If you can write a clear text message to a coworker, you can write a great prompt.</p>
 
@@ -663,7 +664,7 @@ function renderSession1(el) {
       'Write a polite, 4-sentence email to my client Anna apologizing for missing our Tuesday call. Offer two new times: Thursday 10am or Friday 2pm. Sign off with my first name.'
     )}
 
-    <h2 class="font-serif text-2xl font-bold mt-8 mb-2">🏛️ The 4 Pillars of Every Great Prompt</h2>
+    <h2 class="font-serif text-2xl font-bold mt-8 mb-2"> The 4 Pillars of Every Great Prompt</h2>
     <div class="grid md:grid-cols-2 gap-3 mt-3">
       <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-700"><div class="text-brand-600 font-bold text-sm mb-1">1. ROLE</div><div class="text-sm">Who should the AI <i>be</i>? "Act as a kindergarten teacher", "You are a senior copywriter".</div></div>
       <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-700"><div class="text-brand-600 font-bold text-sm mb-1">2. TASK</div><div class="text-sm">What do you want done? "Summarize", "Translate", "Write", "Plan".</div></div>
@@ -671,12 +672,12 @@ function renderSession1(el) {
       <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-700"><div class="text-brand-600 font-bold text-sm mb-1">4. FORMAT</div><div class="text-sm">How do you want the answer? "Bullet list", "150 words", "Table", "Email".</div></div>
     </div>
 
-    <div class="callout note mt-4"><b>📚 Worked example:</b><br/>
+    <div class="callout note mt-4"><b> Worked example:</b><br/>
     <span class="font-mono text-sm">Act as a friendly fitness coach (ROLE). Build me a 7-day beginner workout plan (TASK). I'm a 28-year-old who works at a desk, can train 30 minutes a day, only have dumbbells (CONTEXT). Present it as a table with day, focus, exercises, and notes (FORMAT).</span>
     </div>
 
     <!-- Exercise 1.1 -->
-    <h2 class="font-serif text-2xl font-bold mt-10 mb-2">✅ Exercise 1.1: Your First Prompt</h2>
+    <h2 class="font-serif text-2xl font-bold mt-10 mb-2">✓ Exercise 1.1: Your First Prompt</h2>
     <p><b>Goal:</b> Write your very first 4-pillar prompt and see the AI in action.</p>
     <ol class="list-decimal pl-6 mt-2 space-y-1 text-sm">
       <li>Go to <a class="text-brand-600 underline" href="https://chat.openai.com" target="_blank" rel="noopener noreferrer">ChatGPT</a>, <a class="text-brand-600 underline" href="https://claude.ai" target="_blank" rel="noopener noreferrer">Claude</a>, or <a class="text-brand-600 underline" href="https://gemini.google.com" target="_blank" rel="noopener noreferrer">Gemini</a>. Sign up free with email or Google.</li>
@@ -688,14 +689,14 @@ function renderSession1(el) {
     ${reveal('Reveal sample answer', `<span class="font-mono">Act as a thoughtful mentor. Task: Write me a 3-paragraph pep talk for my first day of a new job. Context: I'm a 24-year-old graphic designer joining a small marketing agency tomorrow; I'm nervous but excited. Format: Warm tone, no clichés, end with one practical tip.</span>`)}
 
     <!-- Exercise 1.2 -->
-    <h2 class="font-serif text-2xl font-bold mt-10 mb-2">✅ Exercise 1.2: Rewrite the Vague Prompt</h2>
+    <h2 class="font-serif text-2xl font-bold mt-10 mb-2">✓ Exercise 1.2: Rewrite the Vague Prompt</h2>
     <p><b>Goal:</b> Practice turning a foggy request into a sharp one.</p>
     <div class="callout bad mt-2"><b>Vague prompt:</b><br/><span class="font-mono">help me with my CV</span></div>
     <p class="mt-2 text-sm">Now rewrite it below using the 4 pillars. Imagine you're applying for a customer-service role with 2 years of retail experience.</p>
     ${playground('', 'S1-Ex1.2')}
     ${reveal('Compare with a model answer', `<span class="font-mono">Act as a professional resume writer. Rewrite the experience section of my CV for a Customer Service Representative role. Context: I have 2 years of retail experience at a clothing store, where I handled returns, trained 3 new hires, and increased upsells by 15%. Format: 4 bullet points starting with action verbs, each under 20 words, focused on measurable impact.</span>`)}
 
-    <div class="callout warn mt-6"><b>⚠️ Watch out:</b> If the AI gives you a weird or wrong answer, don't blame the AI first. Re-read your prompt. 90% of the time, the prompt was unclear.</div>
+    <div class="callout warn mt-6"><b> Watch out:</b> If the AI gives you a weird or wrong answer, don't blame the AI first. Re-read your prompt. 90% of the time, the prompt was unclear.</div>
 
     ${quiz(1, [
       { q:'What is an LLM mainly doing under the hood?', opts:['Searching Google live','Predicting the next word based on patterns','Following hard-coded rules','Watching your screen'], a:1, exp:'LLMs predict the next token based on training patterns and your prompt.' },
@@ -711,7 +712,7 @@ function renderSession2(el) {
   const cards = TOOLS.map(t=>`
     <a href="${t.url}" target="_blank" class="block p-4 rounded-2xl border border-slate-200 dark:border-slate-700 hover:border-brand-400 hover:shadow-soft bg-white dark:bg-slate-900 transition">
       <div class="flex items-center gap-3 mb-2">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-100 to-gold-100 dark:from-slate-800 dark:to-slate-700 flex items-center justify-center text-xl">${t.emoji}</div>
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-100 to-gold-100 dark:from-slate-800 dark:to-slate-700 flex items-center justify-center text-xl">${(t.name || '').slice(0, 1)}</div>
         <div>
           <div class="font-bold leading-tight">${t.name}</div>
           <div class="text-[11px] uppercase tracking-wider text-brand-600">${t.tag}</div>
@@ -722,11 +723,11 @@ function renderSession2(el) {
     </a>`).join('');
   el.innerHTML = `
     <p class="text-lg leading-relaxed">Picking the right AI tool is half the battle, ${firstName()}. Below are the 13 tools you'll actually use this year. Skim them now, you don't need to learn all of them today.</p>
-    <div class="callout tip mt-4"><b>💡 Rule of thumb:</b> Use <b>ChatGPT</b> for most things, <b>Claude</b> for long/sensitive writing, <b>Gemini</b> for live research, <b>Perplexity</b> for cited research, <b>Midjourney/DALL·E</b> for images, <b>Sora/Runway</b> for video, <b>ElevenLabs/Suno</b> for audio, and <b>NotebookLM</b> when studying documents.</div>
-    <h2 class="font-serif text-2xl font-bold mt-8 mb-3">🧰 The 13-Tool Toolbox</h2>
+    <div class="callout tip mt-4"><b> Rule of thumb:</b> Use <b>ChatGPT</b> for most things, <b>Claude</b> for long/sensitive writing, <b>Gemini</b> for live research, <b>Perplexity</b> for cited research, <b>Midjourney/DALL·E</b> for images, <b>Sora/Runway</b> for video, <b>ElevenLabs/Suno</b> for audio, and <b>NotebookLM</b> when studying documents.</div>
+    <h2 class="font-serif text-2xl font-bold mt-8 mb-3"> The 13-Tool Toolbox</h2>
     <div class="grid md:grid-cols-2 gap-3">${cards}</div>
 
-    <h2 class="font-serif text-2xl font-bold mt-10 mb-2">📊 Quick comparison</h2>
+    <h2 class="font-serif text-2xl font-bold mt-10 mb-2"> Quick comparison</h2>
     <div class="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-700 mt-2">
       <table class="w-full text-sm">
         <thead class="bg-slate-50 dark:bg-slate-800 text-left">
@@ -747,7 +748,7 @@ function renderSession2(el) {
     </div>
 
     <!-- Exercise 2.1 -->
-    <h2 class="font-serif text-2xl font-bold mt-10 mb-2">✅ Exercise 2.1: Sign up &amp; compare</h2>
+    <h2 class="font-serif text-2xl font-bold mt-10 mb-2">✓ Exercise 2.1: Sign up &amp; compare</h2>
     <p><b>Goal:</b> Try the same prompt on 3 different tools.</p>
     <ol class="list-decimal pl-6 mt-2 space-y-1 text-sm">
       <li>Make free accounts on <a class="text-brand-600 underline" href="https://chat.openai.com" target="_blank" rel="noopener noreferrer">ChatGPT</a>, <a class="text-brand-600 underline" href="https://claude.ai" target="_blank" rel="noopener noreferrer">Claude</a>, and <a class="text-brand-600 underline" href="https://gemini.google.com" target="_blank" rel="noopener noreferrer">Gemini</a>.</li>
@@ -757,7 +758,7 @@ function renderSession2(el) {
     ${playground('Write a friendly 100-word birthday message to my best friend Sarah, who loves cats, jazz, and bad puns. Make it heartfelt with one cat pun.', 'S2-Ex2.1')}
 
     <!-- Exercise 2.2: Tool Match -->
-    <h2 class="font-serif text-2xl font-bold mt-10 mb-2">🎯 Exercise 2.2: Tool Match Game</h2>
+    <h2 class="font-serif text-2xl font-bold mt-10 mb-2"> Exercise 2.2: Tool Match Game</h2>
     <p>Click a scenario, then click the tool that fits it best. Get all 5 right!</p>
     <div id="toolmatch" class="mt-3"></div>
 
@@ -797,19 +798,19 @@ function initToolMatch() {
             const bad = m && m!==s.correct;
             return `<button onclick="window.__pickScenario('${s.id}')" class="scenario w-full text-left p-3 mb-2 rounded-xl border ${selectedScenario===s.id?'border-brand-500 ring-2 ring-brand-200':'border-slate-200 dark:border-slate-700'} ${m?'matched':''} bg-white dark:bg-slate-900">
               <div class="text-sm font-medium">${s.text}</div>
-              ${m?`<div class="text-xs mt-1 ${ok?'text-emerald-600':'text-red-600'}">${ok?'✅ Matched: '+TOOLS.find(t=>t.id===m).name:'❌ Try again: '+TOOLS.find(t=>t.id===m).name}</div>`:''}
+              ${m?`<div class="text-xs mt-1 ${ok?'text-emerald-600':'text-red-600'}">${ok?'✓ Matched: '+TOOLS.find(t=>t.id===m).name:'✗ Try again: '+TOOLS.find(t=>t.id===m).name}</div>`:''}
             </button>`;
           }).join('')}
         </div>
         <div>
           <div class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Tools</div>
           ${tools.map(t=>`<button onclick="window.__pickTool('${t.id}')" class="tool-card w-full text-left p-3 mb-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
-            <div class="font-medium text-sm">${t.emoji} ${t.name}</div>
+            <div class="font-medium text-sm">${(t.name || '').slice(0, 1)} ${t.name}</div>
             <div class="text-xs text-slate-500">${t.desc}</div>
           </button>`).join('')}
         </div>
       </div>
-      ${done?`<div class="mt-4 p-3 rounded-xl ${correct===scenarios.length?'bg-emerald-50 text-emerald-700':'bg-amber-50 text-amber-700'} text-sm font-medium">You matched ${correct} of ${scenarios.length}. ${correct===scenarios.length?'Perfect, '+firstName()+'! 🌟':'Click any scenario to re-pick.'}</div>`:''}
+      ${done?`<div class="mt-4 p-3 rounded-xl ${correct===scenarios.length?'bg-emerald-50 text-emerald-700':'bg-amber-50 text-amber-700'} text-sm font-medium">You matched ${correct} of ${scenarios.length}. ${correct===scenarios.length?'Perfect, '+firstName()+'! ':'Click any scenario to re-pick.'}</div>`:''}
     `;
   }
   window.__pickScenario = (id)=>{ selectedScenario = id; paint(); };
@@ -822,7 +823,7 @@ function renderSession3(el) {
   el.innerHTML = `
     <p class="text-lg leading-relaxed">${firstName()}, this is the session that changes everything. You're going to learn <b>CO-STAR</b>, the framework used by professionals to get consistent, high-quality results from any AI.</p>
 
-    <h2 class="font-serif text-2xl font-bold mt-8 mb-2">⭐ CO-STAR Framework</h2>
+    <h2 class="font-serif text-2xl font-bold mt-8 mb-2"> CO-STAR Framework</h2>
     <div class="grid md:grid-cols-3 gap-3 mt-3">
       ${[
         ['C','Context',"The background. What's happening, who you are, what's at stake."],
@@ -839,7 +840,7 @@ function renderSession3(el) {
         </div>`).join('')}
     </div>
 
-    <div class="callout note mt-4"><b>📚 Worked example: LinkedIn post:</b>
+    <div class="callout note mt-4"><b> Worked example: LinkedIn post:</b>
       <pre class="prompt-box mt-2">CONTEXT: I'm a junior graphic designer who just shipped my first big client project, a brand redesign for a local bakery.
 OBJECTIVE: Write a LinkedIn post celebrating the win and attracting more small-business clients.
 STYLE: Storytelling, with a clear beginning, middle, end.
@@ -848,7 +849,7 @@ AUDIENCE: Small business owners and fellow creatives.
 RESPONSE: 180 words max. End with one open question. Add 5 relevant hashtags.</pre>
     </div>
 
-    <h2 class="font-serif text-2xl font-bold mt-10 mb-2">🛠️ The Live CO-STAR Builder</h2>
+    <h2 class="font-serif text-2xl font-bold mt-10 mb-2"> The Live CO-STAR Builder</h2>
     <p>Fill in the 6 fields and watch your prompt assemble itself.</p>
     <div class="mt-3 grid md:grid-cols-2 gap-3" id="costar-builder">
       ${[
@@ -870,23 +871,23 @@ RESPONSE: 180 words max. End with one open question. Add 5 relevant hashtags.</p
       <div class="mt-2 flex gap-2">
         <button onclick="copyEl('cs-output')" class="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-sm hover:bg-slate-200"><i data-lucide="copy" class="w-3.5 h-3.5 inline"></i> Copy</button>
         <button onclick="saveAssembled('cs-output','CO-STAR Prompt')" class="px-3 py-1.5 rounded-lg bg-brand-600 text-white text-sm">Save to Journal</button>
-        <button onclick="openWithText('chatgpt','cs-output')" class="px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 text-sm">💬 Try in ChatGPT</button>
-        <button onclick="openWithText('claude','cs-output')" class="px-3 py-1.5 rounded-lg bg-orange-50 text-orange-700 text-sm">📝 Try in Claude</button>
+        <button onclick="openWithText('chatgpt','cs-output')" class="px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 text-sm"> Try in ChatGPT</button>
+        <button onclick="openWithText('claude','cs-output')" class="px-3 py-1.5 rounded-lg bg-orange-50 text-orange-700 text-sm"> Try in Claude</button>
       </div>
     </div>
 
-    <h2 class="font-serif text-2xl font-bold mt-10 mb-2">🧩 Other useful frameworks</h2>
+    <h2 class="font-serif text-2xl font-bold mt-10 mb-2"> Other useful frameworks</h2>
     <div class="grid md:grid-cols-3 gap-3">
       <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-700"><div class="font-bold">RTF</div><div class="text-sm text-slate-600 dark:text-slate-400">Role · Task · Format, the simplest. Great for quick prompts.</div></div>
       <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-700"><div class="font-bold">RISEN</div><div class="text-sm text-slate-600 dark:text-slate-400">Role · Instructions · Steps · End goal · Narrow constraints. Good for tasks with rules.</div></div>
       <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-700"><div class="font-bold">CRISPE</div><div class="text-sm text-slate-600 dark:text-slate-400">Capacity · Insight · Statement · Personality · Experiment. Great when you want multiple options.</div></div>
     </div>
 
-    <h2 class="font-serif text-2xl font-bold mt-10 mb-2">✅ Exercise 3.1: Plan a birthday party</h2>
+    <h2 class="font-serif text-2xl font-bold mt-10 mb-2">✓ Exercise 3.1: Plan a birthday party</h2>
     <p>Use the builder above (or rewrite below) to plan an outdoor 8th birthday party for 12 kids, budget $150, on a Saturday afternoon.</p>
     ${playground('CONTEXT: \nOBJECTIVE: \nSTYLE: \nTONE: \nAUDIENCE: \nRESPONSE: ', 'S3-Ex3.1')}
 
-    <h2 class="font-serif text-2xl font-bold mt-10 mb-2">✅ Exercise 3.2: Write your cover letter</h2>
+    <h2 class="font-serif text-2xl font-bold mt-10 mb-2">✓ Exercise 3.2: Write your cover letter</h2>
     <p>Use CO-STAR to ask the AI for a strong cover letter for a job you'd actually want.</p>
     ${playground("CONTEXT: I'm applying for [role] at [company]. My background is [...]\nOBJECTIVE: Write a cover letter that...\nSTYLE: Confident but warm\nTONE: Professional and genuine\nAUDIENCE: HR manager + hiring manager\nRESPONSE: 280 words, 3 paragraphs", 'S3-Ex3.2')}
     ${reveal('Reveal sample (junior designer applying for marketing agency)', `<pre class="prompt-box">CONTEXT: I am a junior graphic designer with 2 years freelance experience and a degree in visual communication, applying to "Northwind Creative", a 12-person branding agency in my city.
@@ -916,7 +917,7 @@ function updateCostar() {
   if (out) out.textContent = lines.length ? lines.join('\n') : `Fill in any field above, your prompt appears here in real time, ${firstName()}.`;
 }
 function copyEl(id){ navigator.clipboard.writeText(document.getElementById(id).textContent).then(()=>toast('Copied!'));}
-function saveAssembled(id, title){ const b=document.getElementById(id).textContent; if(!b||b.startsWith('Fill in')){toast('Build a prompt first.');return;} state.journal.unshift({id:'j'+Date.now(),title,body:b,ts:Date.now()}); saveState(); toast('Saved to Journal 📔'); }
+function saveAssembled(id, title){ const b=document.getElementById(id).textContent; if(!b||b.startsWith('Fill in')){toast('Build a prompt first.');return;} state.journal.unshift({id:'j'+Date.now(),title,body:b,ts:Date.now()}); saveState(); toast('Saved to Journal '); }
 function openWithText(tool,id){ const t=document.getElementById(id).textContent; navigator.clipboard.writeText(t); const urls={chatgpt:'https://chat.openai.com/?q='+encodeURIComponent(t),claude:'https://claude.ai/new?q='+encodeURIComponent(t),gemini:'https://gemini.google.com/app'}; toast('Opened, prompt also copied.'); window.open(urls[tool],'_blank'); }
 
 /* ============ SESSION 4 ============ */
@@ -924,11 +925,11 @@ function renderSession4(el) {
   el.innerHTML = `
     <p class="text-lg leading-relaxed">${firstName()}, now you'll learn techniques the pros use: zero-shot, few-shot, chain-of-thought, and role prompting. These are like cheat codes.</p>
 
-    <h2 class="font-serif text-2xl font-bold mt-8 mb-2">🎯 Zero-shot</h2>
+    <h2 class="font-serif text-2xl font-bold mt-8 mb-2"> Zero-shot</h2>
     <p>Asking directly without examples. Works great for common tasks.</p>
     <pre class="prompt-box mt-2">Translate this to French: "I'll see you tomorrow at the café."</pre>
 
-    <h2 class="font-serif text-2xl font-bold mt-8 mb-2">🎯 Few-shot</h2>
+    <h2 class="font-serif text-2xl font-bold mt-8 mb-2"> Few-shot</h2>
     <p>Give the AI 2–4 examples of the input → output you want. It mimics the pattern.</p>
     <pre class="prompt-box mt-2">Convert each phrase to a friendly slogan.
 Input: cold brew coffee
@@ -939,20 +940,20 @@ Output: "Bend a little. Live a lot."
 
 Input: secondhand bookstore
 Output:</pre>
-    <div class="callout tip mt-2"><b>💡 Why it works:</b> Few-shot teaches the AI YOUR style without you having to describe it.</div>
+    <div class="callout tip mt-2"><b> Why it works:</b> Few-shot teaches the AI YOUR style without you having to describe it.</div>
 
-    <h2 class="font-serif text-2xl font-bold mt-8 mb-2">🧠 Chain-of-Thought (CoT)</h2>
+    <h2 class="font-serif text-2xl font-bold mt-8 mb-2"> Chain-of-Thought (CoT)</h2>
     <p>Add the magic phrase <b>"Let's think step by step"</b> for math, logic, or planning problems. The AI explains its reasoning, and gets more answers right.</p>
     ${badGood(
       'A train leaves A at 60 km/h, another from B at 40 km/h, 200 km apart. When do they meet?',
       'A train leaves A at 60 km/h, another from B at 40 km/h, 200 km apart. Let\'s think step by step and show the calculation.'
     )}
 
-    <h2 class="font-serif text-2xl font-bold mt-8 mb-2">🎭 Role / Persona Prompting</h2>
+    <h2 class="font-serif text-2xl font-bold mt-8 mb-2"> Role / Persona Prompting</h2>
     <p>Tell the AI <i>who to be</i>. It dramatically changes the quality and feel.</p>
     <pre class="prompt-box mt-2">You are a Michelin-starred chef explaining knife skills to a complete beginner. Be warm, specific, and avoid jargon.</pre>
 
-    <h2 class="font-serif text-2xl font-bold mt-10 mb-2">✅ Exercise 4.1: Few-shot a writing style</h2>
+    <h2 class="font-serif text-2xl font-bold mt-10 mb-2">✓ Exercise 4.1: Few-shot a writing style</h2>
     <p>Teach the AI to write captions in your style by giving 3 examples.</p>
     ${playground(`Here are 3 examples of how I caption my Instagram photos. Match my style for the new one.
 
@@ -968,7 +969,7 @@ Caption: "Built it. Stocked it. Now I just live here, I guess."
 Photo: my homemade pasta dinner
 Caption:`, 'S4-Ex4.1')}
 
-    <h2 class="font-serif text-2xl font-bold mt-10 mb-2">✅ Exercise 4.2: Chain-of-thought puzzle</h2>
+    <h2 class="font-serif text-2xl font-bold mt-10 mb-2">✓ Exercise 4.2: Chain-of-thought puzzle</h2>
     <p>Use CoT to solve this riddle. Notice how the AI's accuracy improves.</p>
     ${playground(`I have 3 daughters. Each daughter has a brother. How many children do I have in total? Let's think step by step and explain your reasoning.`, 'S4-Ex4.2')}
     ${reveal('Reveal the answer', 'Four. The three daughters all share <b>one</b> brother, 3 + 1 = 4 children.')}
@@ -999,14 +1000,14 @@ function renderSession5(el) {
   el.innerHTML = `
     <p class="text-lg leading-relaxed">${firstName()}, this is where AI starts saving you real hours every week. Writing emails, messages, posts, summaries, let's build a personal style guide and 10 templates you'll keep.</p>
 
-    <h2 class="font-serif text-2xl font-bold mt-8 mb-2">🪞 Make AI sound like YOU</h2>
+    <h2 class="font-serif text-2xl font-bold mt-8 mb-2"> Make AI sound like YOU</h2>
     <ol class="list-decimal pl-6 space-y-1 text-sm">
       <li>Paste 2–3 of your own writing samples.</li>
       <li>Tell the AI: <i>"Study the tone, sentence length, and rhythm of these. Then write a new piece in the same voice."</i></li>
       <li>Ask: <i>"What 5 traits define my voice?"</i> → save this list. Reuse it as a "voice card" in future prompts.</li>
     </ol>
 
-    <h2 class="font-serif text-2xl font-bold mt-8 mb-2">📨 10 Ready-to-Use Templates</h2>
+    <h2 class="font-serif text-2xl font-bold mt-8 mb-2"> 10 Ready-to-Use Templates</h2>
     <div class="grid md:grid-cols-2 gap-3">
       ${templates.map(([t,p],i)=>`
         <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
@@ -1017,11 +1018,11 @@ function renderSession5(el) {
         </div>`).join('')}
     </div>
 
-    <h2 class="font-serif text-2xl font-bold mt-10 mb-2">✅ Exercise 5.1: Decline a meeting kindly</h2>
+    <h2 class="font-serif text-2xl font-bold mt-10 mb-2">✓ Exercise 5.1: Decline a meeting kindly</h2>
     <p>Use the template + your own context.</p>
     ${playground(`You are a warm, professional executive assistant. Help me decline a Friday 3pm meeting with my colleague Mark because I'll be traveling. Offer two alternative times next week. 5 sentences max. Sign off as ${firstName()}.`, 'S5-Ex5.1')}
 
-    <h2 class="font-serif text-2xl font-bold mt-10 mb-2">✅ Exercise 5.2: Summarize an article</h2>
+    <h2 class="font-serif text-2xl font-bold mt-10 mb-2">✓ Exercise 5.2: Summarize an article</h2>
     <p>Find any article online (news, blog post). Paste a few paragraphs into the prompt below.</p>
     ${playground(`Summarize the text below into:
 1) A 1-sentence TL;DR
@@ -1045,11 +1046,11 @@ function renderSession6(el) {
   el.innerHTML = `
     <p class="text-lg leading-relaxed">${firstName()}, this session turns AI into your personal tutor and research assistant, without the dangerous habit of taking its word for everything.</p>
 
-    <h2 class="font-serif text-2xl font-bold mt-8 mb-2">🎓 The Feynman Tutor</h2>
+    <h2 class="font-serif text-2xl font-bold mt-8 mb-2"> The Feynman Tutor</h2>
     <p>Ask the AI to teach you anything as if you're 10, then test you. This is the fastest learning loop in existence.</p>
     <pre class="prompt-box mt-2">Teach me [topic] as if I'm 10 years old. Use an everyday analogy. Then ask me 3 questions to check my understanding. Wait for my answers before continuing.</pre>
 
-    <h2 class="font-serif text-2xl font-bold mt-8 mb-2">🔎 Research workflow</h2>
+    <h2 class="font-serif text-2xl font-bold mt-8 mb-2"> Research workflow</h2>
     <ol class="list-decimal pl-6 space-y-1 text-sm">
       <li>Start with <a class="text-brand-600 underline" href="https://www.perplexity.ai" target="_blank" rel="noopener noreferrer">Perplexity</a> for cited overview.</li>
       <li>Drop key PDFs/articles into <a class="text-brand-600 underline" href="https://notebooklm.google.com" target="_blank" rel="noopener noreferrer">NotebookLM</a>, now your AI <i>only</i> cites those sources.</li>
@@ -1057,12 +1058,12 @@ function renderSession6(el) {
       <li>Verify any surprising claim by opening the original source.</li>
     </ol>
 
-    <div class="callout warn mt-4"><b>⚠️ Hallucinations:</b> AI can confidently invent facts, fake citations, wrong dates. Always cross-check anything important. Never trust legal, medical, or financial advice from an LLM without a human expert.</div>
+    <div class="callout warn mt-4"><b> Hallucinations:</b> AI can confidently invent facts, fake citations, wrong dates. Always cross-check anything important. Never trust legal, medical, or financial advice from an LLM without a human expert.</div>
 
-    <h2 class="font-serif text-2xl font-bold mt-10 mb-2">✅ Exercise 6.1: Be tutored on photosynthesis</h2>
+    <h2 class="font-serif text-2xl font-bold mt-10 mb-2">✓ Exercise 6.1: Be tutored on photosynthesis</h2>
     ${playground(`Teach me photosynthesis as if I'm 10 years old. Use a kitchen-recipe analogy. Then quiz me with 3 questions, one easy, one medium, one tricky. Wait for my answers before grading.`, 'S6-Ex6.1')}
 
-    <h2 class="font-serif text-2xl font-bold mt-10 mb-2">✅ Exercise 6.2: Try NotebookLM with a real PDF</h2>
+    <h2 class="font-serif text-2xl font-bold mt-10 mb-2">✓ Exercise 6.2: Try NotebookLM with a real PDF</h2>
     <ol class="list-decimal pl-6 space-y-1 text-sm">
       <li>Open <a class="text-brand-600 underline" href="https://notebooklm.google.com" target="_blank" rel="noopener noreferrer">notebooklm.google.com</a> and log in with Google.</li>
       <li>Click "New" → upload any PDF (a textbook chapter, manual, article).</li>
@@ -1114,23 +1115,23 @@ function renderSession7(el) {
   el.innerHTML = `
     <p class="text-lg leading-relaxed">${firstName()}, image prompting is different, you're not asking a question, you're <b>describing a picture like a photographer or painter would</b>. Let's get good at it.</p>
 
-    <h2 class="font-serif text-2xl font-bold mt-8 mb-2">📐 The Image Prompt Formula</h2>
+    <h2 class="font-serif text-2xl font-bold mt-8 mb-2"> The Image Prompt Formula</h2>
     <p class="font-mono text-sm bg-slate-100 dark:bg-slate-800 p-3 rounded-xl">SUBJECT + STYLE + COMPOSITION + LIGHTING + MOOD + DETAILS + ASPECT RATIO</p>
     ${badGood('a cat in space', 'A fluffy orange tabby cat floating gently inside a transparent astronaut helmet, soft cinematic light from Earth glow, photorealistic 50mm, dreamy mood, deep starfield background, 16:9')}
 
-    <h2 class="font-serif text-2xl font-bold mt-8 mb-2">🛠️ Image Prompt Builder</h2>
+    <h2 class="font-serif text-2xl font-bold mt-8 mb-2"> Image Prompt Builder</h2>
     <p>Pick from each dropdown, your prompt builds itself below.</p>
     <div class="grid md:grid-cols-3 gap-3 mt-3">${opts}</div>
     <pre id="img-output" class="prompt-box mt-3">Pick options above to start, ${firstName()}…</pre>
     <div class="mt-2 flex flex-wrap gap-2">
       <button onclick="copyEl('img-output')" class="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-sm"><i data-lucide="copy" class="w-3.5 h-3.5 inline"></i> Copy</button>
       <button onclick="saveAssembled('img-output','Image Prompt')" class="px-3 py-1.5 rounded-lg bg-brand-600 text-white text-sm">Save</button>
-      <a target="_blank" rel="noopener noreferrer" href="https://www.midjourney.com" class="px-3 py-1.5 rounded-lg bg-pink-50 text-pink-700 text-sm">🎨 Try in Midjourney</a>
-      <a target="_blank" rel="noopener noreferrer" href="https://chat.openai.com" class="px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 text-sm">🖼️ Try DALL·E in ChatGPT</a>
-      <a target="_blank" rel="noopener noreferrer" href="https://leonardo.ai" class="px-3 py-1.5 rounded-lg bg-amber-50 text-amber-700 text-sm">🦁 Try Leonardo</a>
+      <a target="_blank" rel="noopener noreferrer" href="https://www.midjourney.com" class="px-3 py-1.5 rounded-lg bg-pink-50 text-pink-700 text-sm"> Try in Midjourney</a>
+      <a target="_blank" rel="noopener noreferrer" href="https://chat.openai.com" class="px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 text-sm"> Try DALL·E in ChatGPT</a>
+      <a target="_blank" rel="noopener noreferrer" href="https://leonardo.ai" class="px-3 py-1.5 rounded-lg bg-amber-50 text-amber-700 text-sm"> Try Leonardo</a>
     </div>
 
-    <h2 class="font-serif text-2xl font-bold mt-10 mb-2">🖼️ 10 Image Prompt Templates</h2>
+    <h2 class="font-serif text-2xl font-bold mt-10 mb-2"> 10 Image Prompt Templates</h2>
     <div class="grid md:grid-cols-2 gap-3">
       ${tplCards.map(([t,p])=>`<div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
         <div class="flex items-center justify-between mb-2"><div class="font-bold">${t}</div>
@@ -1140,14 +1141,14 @@ function renderSession7(el) {
       </div>`).join('')}
     </div>
 
-    <h2 class="font-serif text-2xl font-bold mt-10 mb-2">✅ Exercise 7.1: Same scene, 3 styles</h2>
+    <h2 class="font-serif text-2xl font-bold mt-10 mb-2">✓ Exercise 7.1: Same scene, 3 styles</h2>
     <p>Generate the SAME subject in 3 different styles. Notice how style alone changes everything.</p>
     ${playground(`Generate the same subject in three styles, one per output:
 Subject: A cozy reading nook by a rainy window
 Styles: 1) photorealistic 35mm  2) Studio Ghibli watercolor  3) Pixar 3D
 Each: 1:1, warm lighting, soft mood.`, 'S7-Ex7.1')}
 
-    <h2 class="font-serif text-2xl font-bold mt-10 mb-2">✅ Exercise 7.2: Book cover for YOUR future book</h2>
+    <h2 class="font-serif text-2xl font-bold mt-10 mb-2">✓ Exercise 7.2: Book cover for YOUR future book</h2>
     ${playground(`Design a book cover for a novel titled "[your title]" by ${state.name}. Genre: [genre]. Mood: [mood]. Include the title and author name as readable text in elegant serif. Style: cinematic concept art, dramatic lighting. 2:3 portrait.`, 'S7-Ex7.2')}
 
     ${quiz(7, [
@@ -1169,24 +1170,24 @@ function renderSession8(el) {
   el.innerHTML = `
     <p class="text-lg leading-relaxed">${firstName()}, video and audio AI feels like science fiction, and you'll write your first prompts for both today.</p>
 
-    <h2 class="font-serif text-2xl font-bold mt-8 mb-2">🎬 Video prompting (Sora, Runway)</h2>
+    <h2 class="font-serif text-2xl font-bold mt-8 mb-2"> Video prompting (Sora, Runway)</h2>
     <p>Describe like a director's slate: <b>scene, subject, action, camera movement, lighting, mood, duration</b>.</p>
     <pre class="prompt-box mt-2">A medium tracking shot following a small wooden sailboat gliding across glassy turquoise water at golden hour. The camera follows alongside, slight handheld sway. Warm cinematic lighting, peaceful mood, lens flare, 5 seconds, 16:9.</pre>
-    <div class="callout tip mt-3"><b>💡 Sora tip:</b> Two 4-second clips you stitch together often look better than one 8-second clip.</div>
+    <div class="callout tip mt-3"><b> Sora tip:</b> Two 4-second clips you stitch together often look better than one 8-second clip.</div>
 
-    <h2 class="font-serif text-2xl font-bold mt-8 mb-2">🎙️ Voice (ElevenLabs)</h2>
+    <h2 class="font-serif text-2xl font-bold mt-8 mb-2"> Voice (ElevenLabs)</h2>
     <p>Write the script, then add direction in brackets, <code>[whispers]</code>, <code>[laughs]</code>, <code>[excited]</code>, <code>[pause]</code>.</p>
     <pre class="prompt-box mt-2">[warm, mid-pace] Welcome back to Deep Work Weekly. [pause] This week, the lost art of doing one thing. [excited] Let's get into it.</pre>
 
-    <h2 class="font-serif text-2xl font-bold mt-8 mb-2">🎵 Music (Suno)</h2>
+    <h2 class="font-serif text-2xl font-bold mt-8 mb-2"> Music (Suno)</h2>
     <p>Genre + mood + instruments + tempo + use case.</p>
     <pre class="prompt-box mt-2">Lo-fi hip-hop, warm and nostalgic, mellow piano, soft drums, vinyl crackle, 75 BPM, perfect background for studying.</pre>
 
-    <h2 class="font-serif text-2xl font-bold mt-10 mb-2">✅ Exercise 8.1: Sora sunset clip</h2>
+    <h2 class="font-serif text-2xl font-bold mt-10 mb-2">✓ Exercise 8.1: Sora sunset clip</h2>
     ${playground(`A slow cinematic dolly-in toward a single empty bench on a cliff at sunset, ocean waves below, soft warm light, gentle breeze moving the grass, peaceful and reflective mood, 5 seconds, 16:9.`, 'S8-Ex8.1')}
     <p class="text-sm mt-2">Open <a class="text-brand-600 underline" href="https://sora.com" target="_blank" rel="noopener noreferrer">Sora</a> or <a class="text-brand-600 underline" href="https://runway.ml" target="_blank" rel="noopener noreferrer">Runway</a> and try it.</p>
 
-    <h2 class="font-serif text-2xl font-bold mt-10 mb-2">✅ Exercise 8.2: Podcast intro voiceover</h2>
+    <h2 class="font-serif text-2xl font-bold mt-10 mb-2">✓ Exercise 8.2: Podcast intro voiceover</h2>
     ${playground(`[friendly, energetic] Hey everyone, welcome to "Curiosity Hour", the podcast where we ask one big question every week. [pause] I'm your host, ${state.name}. [warm] Today: why do we dream?`, 'S8-Ex8.2')}
     <p class="text-sm mt-2">Try this on <a class="text-brand-600 underline" href="https://elevenlabs.io" target="_blank" rel="noopener noreferrer">ElevenLabs</a>, pick any voice, paste the script.</p>
 
@@ -1203,29 +1204,29 @@ function renderSession9(el) {
   el.innerHTML = `
     <p class="text-lg leading-relaxed">${firstName()}, AI is now an analyst on call. Spreadsheets, formulas, summaries, code help, even if you've never written a line of code.</p>
 
-    <h2 class="font-serif text-2xl font-bold mt-8 mb-2">📊 Analyzing files</h2>
-    <p>In ChatGPT or Claude, click the paperclip 📎 and upload a CSV/Excel. Then ask plain-language questions.</p>
+    <h2 class="font-serif text-2xl font-bold mt-8 mb-2"> Analyzing files</h2>
+    <p>In ChatGPT or Claude, click the paperclip  and upload a CSV/Excel. Then ask plain-language questions.</p>
     <pre class="prompt-box mt-2">Here's my last 6 months of expenses (CSV).
 1) Find the top 3 categories I overspend on.
 2) Suggest one cut per category.
 3) Show a simple table with monthly trend.</pre>
 
-    <h2 class="font-serif text-2xl font-bold mt-8 mb-2">🧮 Formula help (no code needed)</h2>
+    <h2 class="font-serif text-2xl font-bold mt-8 mb-2"> Formula help (no code needed)</h2>
     <pre class="prompt-box mt-2">In Google Sheets, I have dates in column A and amounts in column B. Write me one formula that returns the total for the current month only. Explain how it works in 2 sentences.</pre>
 
-    <h2 class="font-serif text-2xl font-bold mt-8 mb-2">🗒️ Meeting notes</h2>
+    <h2 class="font-serif text-2xl font-bold mt-8 mb-2"> Meeting notes</h2>
     <pre class="prompt-box mt-2">Below is a raw transcript. Produce: 1) 5-bullet summary, 2) decisions made, 3) action items with owners, 4) 2 open questions.
 
 """[paste]"""</pre>
 
-    <h2 class="font-serif text-2xl font-bold mt-10 mb-2">✅ Exercise 9.1: Analyze a spreadsheet</h2>
+    <h2 class="font-serif text-2xl font-bold mt-10 mb-2">✓ Exercise 9.1: Analyze a spreadsheet</h2>
     <p>Open ChatGPT, upload any small spreadsheet (your budget, weekly steps, anything), and paste:</p>
     ${playground(`Here's my data. Without changing it, please:
 1) Identify 3 interesting patterns or anomalies in plain English.
 2) Suggest 2 follow-up questions I should investigate.
 3) If useful, draft a simple chart spec (type + x/y axes).`, 'S9-Ex9.1')}
 
-    <h2 class="font-serif text-2xl font-bold mt-10 mb-2">✅ Exercise 9.2: Build a budget formula</h2>
+    <h2 class="font-serif text-2xl font-bold mt-10 mb-2">✓ Exercise 9.2: Build a budget formula</h2>
     ${playground(`In Google Sheets, column A = expense category (e.g., Food, Rent), column B = amount.
 Write 3 formulas:
 1) Total spend across all rows.
@@ -1244,16 +1245,16 @@ For each: explain in one short sentence what it does.`, 'S9-Ex9.2')}
 /* ============ SESSION 10 ============ */
 function renderSession10(el) {
   el.innerHTML = `
-    <p class="text-lg leading-relaxed">Final stretch, ${firstName()}! 🌟 This session turns you from "user" into "power user". You'll also learn the ethics, because using AI well means using it responsibly.</p>
+    <p class="text-lg leading-relaxed">Final stretch, ${firstName()}!  This session turns you from "user" into "power user". You'll also learn the ethics, because using AI well means using it responsibly.</p>
 
-    <h2 class="font-serif text-2xl font-bold mt-8 mb-2">🔁 Iterative prompting</h2>
+    <h2 class="font-serif text-2xl font-bold mt-8 mb-2"> Iterative prompting</h2>
     <p>Don't restart. <b>Refine</b>. Most pros' best output comes by round 3 or 4 in the same chat.</p>
     <pre class="prompt-box mt-2">Good. Now make it 30% shorter, keep the warm tone, and add one concrete example.</pre>
 
-    <h2 class="font-serif text-2xl font-bold mt-8 mb-2">⛓️ Prompt chaining</h2>
+    <h2 class="font-serif text-2xl font-bold mt-8 mb-2"> Prompt chaining</h2>
     <p>Use the output of one prompt as input to the next. Example: outline → draft → edit → headline.</p>
 
-    <h2 class="font-serif text-2xl font-bold mt-8 mb-2">🔒 Privacy & Ethics</h2>
+    <h2 class="font-serif text-2xl font-bold mt-8 mb-2"> Privacy & Ethics</h2>
     <ul class="list-disc pl-6 space-y-1 text-sm">
       <li>Never paste passwords, full ID numbers, medical records, or proprietary client data.</li>
       <li>Treat AI output as a <b>first draft</b>, not the final truth.</li>
@@ -1261,10 +1262,10 @@ function renderSession10(el) {
       <li>Watch for bias, re-roll or re-prompt if you see a stereotype.</li>
     </ul>
 
-    <h2 class="font-serif text-2xl font-bold mt-8 mb-2">📚 Build your Personal Prompt Vault</h2>
+    <h2 class="font-serif text-2xl font-bold mt-8 mb-2"> Build your Personal Prompt Vault</h2>
     <p>Inside the <a class="text-brand-600 underline" href="#/journal">Prompt Journal</a> you have a permanent home for prompts that work. Tag the 5 you'll reuse weekly.</p>
 
-    <h2 class="font-serif text-2xl font-bold mt-10 mb-2">✅ Exercise 10.1: Refine 3 times</h2>
+    <h2 class="font-serif text-2xl font-bold mt-10 mb-2">✓ Exercise 10.1: Refine 3 times</h2>
     <p>Write a first attempt, then refine it twice, each time copying both prompt and improved version.</p>
     ${playground(`First attempt: Write a thank-you note to my mentor.
 
@@ -1272,7 +1273,7 @@ Refinement 1: Make it 60 words, warm but not gushing, mention one specific thing
 
 Refinement 2: Add a single forward-looking sentence about applying her advice this month.`, 'S10-Ex10.1')}
 
-    <h2 class="font-serif text-2xl font-bold mt-10 mb-2">✅ Exercise 10.2: Your Personal Prompt Vault</h2>
+    <h2 class="font-serif text-2xl font-bold mt-10 mb-2">✓ Exercise 10.2: Your Personal Prompt Vault</h2>
     <p>Open the Journal and save the 5 prompts you imagine using <i>every single week</i>. Examples: weekly review, email drafting, meal planning, social caption, study summary.</p>
     <a href="#/journal" class="inline-flex items-center gap-2 mt-2 px-4 py-2 rounded-xl bg-brand-600 text-white text-sm hover:bg-brand-700"><i data-lucide="book-open" class="w-4 h-4"></i> Open my Journal</a>
 
@@ -1282,7 +1283,7 @@ Refinement 2: Add a single forward-looking sentence about applying her advice th
       { q:'AI outputs should be treated as…', opts:['Final truth','First draft','Legal advice','Permanent'], a:1 }
     ])}
 
-    <div class="callout note mt-8"><b>🎉 You did it, ${firstName()}.</b> One step left, complete your Final Project to unlock your certificate.<br/>
+    <div class="callout note mt-8"><b> You did it, ${firstName()}.</b> One step left, complete your Final Project to unlock your certificate.<br/>
       <a href="#/final" class="inline-block mt-2 px-4 py-2 rounded-xl bg-gold-400 text-gold-900 font-semibold">Go to Final Project →</a>
     </div>
   `;
@@ -1336,19 +1337,19 @@ function renderFinal(host) {
   host.innerHTML = `
     <p class="text-slate-700 dark:text-slate-300 mb-6">Your capstone, ${firstName()}: <b>"Your AI-Powered Day"</b>. Choose a real goal, then use 4 different AI tools to chase it. Document each prompt below.</p>
     ${[
-      ['goal','🎯 Your goal','Plan a 1-day mini-retreat to recharge and learn something new.'],
-      ['text','💬 Text-AI prompt (ChatGPT/Claude/Gemini)','e.g., Draft a 1-day retreat schedule with…'],
-      ['image','🎨 Image prompt (Midjourney/DALL·E/Leonardo)','e.g., Watercolor poster of a peaceful retreat…'],
-      ['av','🎙️ Audio/Video prompt (Sora/ElevenLabs/Suno)','e.g., 30s lo-fi music for the morning…'],
-      ['research','🔎 Research prompt (Perplexity/NotebookLM)','e.g., 3 cited articles on benefits of digital detox…'],
-      ['reflect','💭 Reflection (1-2 paragraphs)','What worked? What surprised you? Which prompt did you refine the most?']
+      ['goal',' Your goal','Plan a 1-day mini-retreat to recharge and learn something new.'],
+      ['text',' Text-AI prompt (ChatGPT/Claude/Gemini)','e.g., Draft a 1-day retreat schedule with…'],
+      ['image',' Image prompt (Midjourney/DALL·E/Leonardo)','e.g., Watercolor poster of a peaceful retreat…'],
+      ['av',' Audio/Video prompt (Sora/ElevenLabs/Suno)','e.g., 30s lo-fi music for the morning…'],
+      ['research',' Research prompt (Perplexity/NotebookLM)','e.g., 3 cited articles on benefits of digital detox…'],
+      ['reflect',' Reflection (1-2 paragraphs)','What worked? What surprised you? Which prompt did you refine the most?']
     ].map(([k,l,ph])=>`
       <label class="block mb-4">
         <span class="text-sm font-bold">${l}</span>
         <textarea id="fp-${k}" rows="${k==='reflect'?5:3}" class="mt-1 w-full p-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm font-mono" placeholder="${ph}">${escapeHtml(fp[k]||'')}</textarea>
       </label>`).join('')}
     <button onclick="submitFinal()" class="px-5 py-3 rounded-xl bg-gold-400 text-gold-900 font-bold hover:bg-gold-300"><i data-lucide="flag" class="w-4 h-4 inline"></i> Submit Final Project</button>
-    ${state.finalProject ? `<div class="mt-4 p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 text-sm">✅ Submitted on ${new Date(state.finalProject.ts).toLocaleString()}. <a href="#/certificate" class="underline font-semibold">Go to your certificate →</a></div>`:''}
+    ${state.finalProject ? `<div class="mt-4 p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 text-sm">✓ Submitted on ${new Date(state.finalProject.ts).toLocaleString()}. <a href="#/certificate" class="underline font-semibold">Go to your certificate →</a></div>`:''}
   `;
   lucide.createIcons();
 }
@@ -1359,7 +1360,7 @@ function submitFinal(){
   obj.ts = Date.now();
   state.finalProject = obj;
   saveState();
-  toast('🎉 Project submitted! Certificate unlocked.');
+  toast(' Project submitted! Certificate unlocked.');
   setTimeout(()=> location.hash='#/certificate', 800);
 }
 
@@ -1376,7 +1377,7 @@ function renderCertificate(host) {
         <div class="grid grid-cols-5 gap-2 max-w-md mx-auto mb-4">
           ${SESSIONS.map(s=>`<div class="aspect-square rounded-lg ${state.progress[s.id]?.done?'bg-emerald-500 text-white':'bg-slate-200 dark:bg-slate-700'} flex items-center justify-center text-xs font-bold">${state.progress[s.id]?.done?'✓':s.id}</div>`).join('')}
         </div>
-        <div class="text-sm ${state.finalProject?'text-emerald-600':'text-slate-500'}">${state.finalProject?'✅ Final Project submitted':'⏳ Final Project not yet submitted'}</div>
+        <div class="text-sm ${state.finalProject?'text-emerald-600':'text-slate-500'}">${state.finalProject?'✓ Final Project submitted':' Final Project not yet submitted'}</div>
         <a href="#/welcome" class="inline-block mt-4 px-4 py-2 rounded-xl bg-brand-600 text-white text-sm">Back to course</a>
       </div>`;
     lucide.createIcons();
@@ -1387,7 +1388,7 @@ function renderCertificate(host) {
   const today = new Date().toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' });
   host.innerHTML = `
     <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
-      <p class="text-slate-700 dark:text-slate-300">Congratulations, ${firstName()}. You earned this. 🌟</p>
+      <p class="text-slate-700 dark:text-slate-300">Congratulations, ${firstName()}. You earned this. </p>
       <div class="flex gap-2">
         <button onclick="downloadCertificate()" class="px-4 py-2 rounded-xl bg-brand-600 text-white text-sm hover:bg-brand-700"><i data-lucide="download" class="w-4 h-4 inline"></i> Download PDF</button>
         <button onclick="shareLinkedIn()" class="px-4 py-2 rounded-xl bg-[#0a66c2] text-white text-sm"><i data-lucide="linkedin" class="w-4 h-4 inline"></i> Share on LinkedIn</button>
@@ -1407,7 +1408,7 @@ function renderCertificate(host) {
             <div style="font-family:'Inter'; letter-spacing:.4em; font-size:11px; color:#9b6a33;">P R O M P T M A S T E R Y</div>
             <div style="font-family:'Playfair Display'; font-weight:800; font-size:46px; color:#3a2a14; margin-top:6px;">Certificate of Completion</div>
             <div style="font-family:'Inter'; font-size:13px; color:#7a5a30; margin-top:2px;">This is to certify that</div>
-            <div style="font-family:'Playfair Display'; font-weight:800; font-size:54px; letter-spacing:.05em; color:#4F46E5; margin-top:14px; text-transform:uppercase;">${escapeHtml(state.name)}</div>
+            <div style="font-family:'Playfair Display'; font-weight:800; font-size:54px; letter-spacing:.05em; color:#1B5E44; margin-top:14px; text-transform:uppercase;">${escapeHtml(state.name)}</div>
             <div style="width:60%; height:1px; background:#d4a574; margin:14px auto;"></div>
             <div style="font-family:'Inter'; font-size:15px; color:#3a2a14; max-width:760px; margin:0 auto; line-height:1.55;">
               has successfully completed <b>The Real-World AI &amp; Prompt Engineering Course</b>,
@@ -1424,7 +1425,7 @@ function renderCertificate(host) {
               <div class="seal">
                 <div class="ribbon"></div>
                 <div style="text-align:center;line-height:1;">
-                  <div style="font-size:22px;">★</div>
+                  <div style="font-size:22px;"></div>
                   <div style="font-size:10px;letter-spacing:.15em;margin-top:2px;">CERTIFIED</div>
                   <div style="font-size:18px;font-family:'Playfair Display';margin-top:2px;">P M</div>
                 </div>
@@ -1462,11 +1463,11 @@ async function downloadCertificate(){
   if (h > ph - 10) { h = ph - 10; w = h * ratio; }
   pdf.addImage(img, 'PNG', (pw-w)/2, (ph-h)/2, w, h);
   pdf.save(`PromptMastery-Certificate-${state.name.replace(/\s+/g,'_')}.pdf`);
-  toast('Downloaded! 🎓');
+  toast('Downloaded! ');
 }
 
 function confetti(){
-  const colors = ['#4F46E5','#D4A574','#10B981','#F59E0B','#EF4444','#818CF8'];
+  const colors = ['#1B5E44','#D4A574','#10B981','#F59E0B','#EF4444','#56967A'];
   for (let i=0;i<140;i++){
     const p = document.createElement('div');
     p.className = 'confetti-piece';
@@ -1490,7 +1491,7 @@ function renderTools(host) {
     <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
       ${TOOLS.map(t=>`<a href="${t.url}" target="_blank" class="p-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:border-brand-400 hover:shadow-soft">
         <div class="flex items-center gap-3 mb-2">
-          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-100 to-gold-100 dark:from-slate-800 dark:to-slate-700 flex items-center justify-center text-xl">${t.emoji}</div>
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-100 to-gold-100 dark:from-slate-800 dark:to-slate-700 flex items-center justify-center text-xl">${(t.name || '').slice(0, 1)}</div>
           <div>
             <div class="font-bold leading-tight">${t.name}</div>
             <div class="text-[11px] uppercase tracking-wider text-brand-600">${t.tag}</div>
@@ -1519,7 +1520,7 @@ function renderSearch(host) {
     const tools = TOOLS.filter(t=> t.name.toLowerCase().includes(q) || t.desc.toLowerCase().includes(q));
     res.innerHTML = `
       ${hits.map(h=>`<a href="#/session/${h.id}" class="block p-3 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-brand-400 bg-white dark:bg-slate-900"><div class="text-xs text-brand-600 font-bold">SESSION ${h.id}</div><div class="font-medium">${h.title}</div><div class="text-xs text-slate-500">${h.body}</div></a>`).join('')}
-      ${tools.map(t=>`<a href="${t.url}" target="_blank" class="block p-3 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-brand-400 bg-white dark:bg-slate-900"><div class="text-xs text-gold-600 font-bold">TOOL</div><div class="font-medium">${t.emoji} ${t.name}</div><div class="text-xs text-slate-500">${t.desc}</div></a>`).join('')}
+      ${tools.map(t=>`<a href="${t.url}" target="_blank" class="block p-3 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-brand-400 bg-white dark:bg-slate-900"><div class="text-xs text-gold-600 font-bold">TOOL</div><div class="font-medium">${(t.name || '').slice(0, 1)} ${t.name}</div><div class="text-xs text-slate-500">${t.desc}</div></a>`).join('')}
       ${(hits.length+tools.length)===0?`<div class="text-sm text-slate-500">No matches. Try another keyword.</div>`:''}`;
   };
   inp.dispatchEvent(new Event('input'));
@@ -1528,7 +1529,7 @@ function renderSearch(host) {
 /* ---------------- SETTINGS ---------------- */
 function openSettings(){
   document.getElementById('settings-name').value = state.name;
-  document.getElementById('settings-dark').textContent = state.dark ? '🌙 On' : '☀️ Off';
+  document.getElementById('settings-dark').textContent = state.dark ? ' On' : ' Off';
   document.getElementById('settings-modal').classList.remove('hidden');
   document.getElementById('settings-modal').classList.add('flex');
 }
@@ -1548,7 +1549,7 @@ function toggleDark(){
   state.dark = !state.dark;
   document.documentElement.classList.toggle('dark', state.dark);
   const lab = document.getElementById('settings-dark');
-  if (lab) lab.textContent = state.dark ? '🌙 On' : '☀️ Off';
+  if (lab) lab.textContent = state.dark ? ' On' : ' Off';
   saveState();
 }
 function resetProgress(){
