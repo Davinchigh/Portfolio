@@ -5,6 +5,7 @@ import createGlobe from "cobe"
 import Link from "next/link"
 import { useTheme } from "next-themes"
 import { HandNote } from "@/components/site/hand-note"
+import { Glitch } from "@/components/site/glitch"
 import { Stop } from "@/components/site/route"
 import { useVisitor } from "@/lib/visitor"
 
@@ -191,60 +192,80 @@ export function Globe() {
   }, [dark])
 
   const { home, visitor } = here
+  const place = visitor ? [visitor.city, countryName(visitor.country)].filter(Boolean).join(", ") : ""
+  // Same city as Ben (within about 40 km): one line instead of two that repeat each other.
+  const sameCity =
+    !!visitor && Math.abs(visitor.lat - home.lat) < 0.4 && Math.abs(visitor.lon - home.lon) < 0.4
 
   return (
     <section id="now" aria-labelledby="now-title" className="wrap scroll-mt-20 py-16 sm:py-20">
       <div className="grid items-center gap-10 md:grid-cols-2">
-        <div>
+        <div className="min-w-0">
           <p className="eyebrow relative text-signal">
             <Stop you />
             where you come in
           </p>
           <h2 id="now-title" className="mt-3 text-3xl sm:text-[2.6rem] sm:leading-[1.05]">
-            {mode === "recruiter" ? `next stop: ${company ? company : "your team"}` : "next stop: wherever you're headed"}
+            <Glitch text={mode === "recruiter" ? `next stop: ${company ? company : "your team"}` : "next stop: wherever you're headed"} />
           </h2>
-          <div className="mt-8 space-y-4 text-lg leading-relaxed text-muted-foreground">
-            <p aria-live="polite">
-              {visitor ? (
-                <>
-                  you&apos;re reading this from somewhere near{" "}
-                  <Hi>
-                    {visitor.city}
-                    {countryName(visitor.country) ? `, ${countryName(visitor.country)}` : ""}
-                  </Hi>
-                  {now && visitorTz ? (
+          <div className="mt-8 space-y-4 text-lg leading-relaxed text-muted-foreground [overflow-wrap:anywhere]">
+            {sameCity ? (
+              <p aria-live="polite">
+                you&apos;re reading this from <Hi>{place}</Hi>, and so am i
+                {now && (
+                  <>
+                    . it&apos;s <Hi>{clock(now, HOME_TZ)}</Hi> for both of us
+                  </>
+                )}
+                {home.tempC != null && (
+                  <>
+                    {" "}
+                    and <Hi>{home.tempC}°C</Hi> outside
+                  </>
+                )}
+                . small world.
+              </p>
+            ) : (
+              <>
+                <p aria-live="polite">
+                  {visitor ? (
                     <>
-                      , where it&apos;s <Hi>{clock(now, visitorTz)}</Hi>.
+                      you&apos;re reading this from somewhere near <Hi>{place}</Hi>
+                      {now && visitorTz ? (
+                        <>
+                          , where it&apos;s <Hi>{clock(now, visitorTz)}</Hi>.
+                        </>
+                      ) : (
+                        "."
+                      )}
+                    </>
+                  ) : !loaded ? (
+                    "finding you on the map..."
+                  ) : now && visitorTz ? (
+                    <>
+                      you&apos;re somewhere on this globe, where it&apos;s <Hi>{clock(now, visitorTz)}</Hi>. that much i know.
                     </>
                   ) : (
-                    "."
+                    "you're somewhere on this globe. that much i know."
                   )}
-                </>
-              ) : !loaded ? (
-                "finding you on the map..."
-              ) : now && visitorTz ? (
-                <>
-                  you&apos;re somewhere on this globe, where it&apos;s <Hi>{clock(now, visitorTz)}</Hi>. that much i know.
-                </>
-              ) : (
-                "you're somewhere on this globe. that much i know."
-              )}
-            </p>
-            <p>
-              i&apos;m in <Hi>{home.city.toLowerCase()}</Hi>
-              {now && (
-                <>
-                  , where it&apos;s <Hi>{clock(now, HOME_TZ)}</Hi>
-                </>
-              )}
-              {home.tempC != null && (
-                <>
-                  {" "}
-                  and <Hi>{home.tempC}°C</Hi>
-                </>
-              )}
-              .{now && visitorTz ? ` ${gap(offset(now, visitorTz) - offset(now, HOME_TZ))}` : ""}
-            </p>
+                </p>
+                <p>
+                  i&apos;m in <Hi>{home.city.toLowerCase()}</Hi>
+                  {now && (
+                    <>
+                      , where it&apos;s <Hi>{clock(now, HOME_TZ)}</Hi>
+                    </>
+                  )}
+                  {home.tempC != null && (
+                    <>
+                      {" "}
+                      and <Hi>{home.tempC}°C</Hi>
+                    </>
+                  )}
+                  .{now && visitorTz ? ` ${gap(offset(now, visitorTz) - offset(now, HOME_TZ))}` : ""}
+                </p>
+              </>
+            )}
             <p className="text-foreground">
               {mode === "recruiter"
                 ? "every stop on this road added something: data, testing, teaching, then ai. i'd like the next one to be with you."

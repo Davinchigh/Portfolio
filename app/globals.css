@@ -321,6 +321,21 @@ html:not(.dark) .pill-button {
 .deck-bar i:first-child {
   background: hsl(var(--route));
 }
+/* Light and dark screens share a card. When the theme changes, the new one wipes in, card by card, with a lit edge. */
+.deck-screen { position: relative; aspect-ratio: 16 / 10; overflow: hidden; }
+.deck-screen img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top; }
+.dark .deck-dark, html:not(.dark) .deck-light { z-index: 1; }
+.dark .deck-swap .deck-dark, html:not(.dark) .deck-swap .deck-light {
+  animation: deck-wipe 1000ms cubic-bezier(0.65, 0, 0.35, 1) calc(var(--enter-delay, 0ms) * 1.2) backwards;
+}
+.deck-swap .deck-screen::after {
+  content: ""; position: absolute; left: 0; right: 0; top: 0; height: 2px; z-index: 2; pointer-events: none;
+  background: linear-gradient(90deg, transparent, hsl(var(--route)), transparent);
+  box-shadow: 0 0 14px 2px hsl(var(--route) / 0.6);
+  animation: deck-edge 1000ms cubic-bezier(0.65, 0, 0.35, 1) calc(var(--enter-delay, 0ms) * 1.2) both;
+}
+@keyframes deck-wipe { from { clip-path: inset(0 0 100% 0); } to { clip-path: inset(0); } }
+@keyframes deck-edge { 0% { top: 0; opacity: 1; } 92% { opacity: 1; } 100% { top: 100%; opacity: 0; } }
 /* Each card drops into the stack in turn when the page loads. */
 @keyframes deck-in {
   from { opacity: 0; translate: 60px -40px; scale: 0.94; }
@@ -377,6 +392,7 @@ html.theme-vt::view-transition-new(root) {
   .reveal[data-reveal] { opacity: 1; transform: none; transition: none; }
   .tilt, .deck-stage { transform: none; transition: none; }
   .deck-card { animation: none; transition: none; }
+  .deck-swap .deck-dark, .deck-swap .deck-light, .deck-swap .deck-screen::after { animation: none !important; }
   .fold { transition: none; }
   ::view-transition-old(root), ::view-transition-new(root) { animation: none !important; }
 }
@@ -609,10 +625,18 @@ html:not(.dark) h1, html:not(.dark) h2 { color: hsl(24 18% 7%); }
 
 /* More work: an endless strip. Pauses on hover or focus, scrolls by hand with reduced motion. */
 .marquee { overflow: hidden; margin-inline: calc(50% - 50vw); mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent); -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent); }
-.marquee-track { display: flex; width: max-content; animation: marquee var(--marquee-s, 60s) linear infinite; }
-.marquee:hover .marquee-track, .marquee:focus-within .marquee-track { animation-play-state: paused; }
+.marquee { cursor: grab; touch-action: pan-y; user-select: none; -webkit-user-select: none; }
+.marquee[data-dragging] { cursor: grabbing; }
+.marquee[data-dragging] a { pointer-events: none; }
+.marquee img { -webkit-user-drag: none; }
+.marquee-track { display: flex; width: max-content; will-change: transform; }
+.marquee-controls { display: flex; align-items: center; justify-content: flex-end; gap: 0.5rem; margin-top: 0.25rem; }
+.marquee-controls .meta { margin-right: 0.5rem; }
+.marquee-btn { display: inline-flex; width: 2.75rem; height: 2.75rem; align-items: center; justify-content: center; border-radius: 9999px; border: 1px solid hsl(var(--border)); background: hsl(var(--card)); color: hsl(var(--muted-foreground)); transition: color 200ms ease, border-color 200ms ease, transform 200ms ease; }
+.marquee-btn:hover { color: hsl(var(--foreground)); border-color: hsl(var(--route) / 0.6); }
+.marquee-btn:active { transform: scale(0.94); }
+.marquee-btn svg { width: 1.1rem; height: 1.1rem; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .marquee-run { display: flex; gap: 1.5rem; padding-right: 1.5rem; padding-block: 1rem 1.5rem; }
-@keyframes marquee { to { transform: translate3d(-50%, 0, 0); } }
 .marquee-card { width: min(78vw, 340px); flex: none; }
 .marquee-card .shot { transition: transform 500ms cubic-bezier(0.2, 0.7, 0.1, 1), box-shadow 400ms ease, border-color 300ms ease; }
 .marquee-card:hover .shot, .marquee-card:focus-within .shot { transform: translateY(-6px) rotate(-0.6deg); }
@@ -650,9 +674,6 @@ html:not(.dark) h1, html:not(.dark) h2 { color: hsl(24 18% 7%); }
 
 @media (prefers-reduced-motion: reduce) {
   .mask-line > span, .scroll-band-row, .read-along > span, .sign-off > span { transition: none; transform: none !important; opacity: 1 !important; }
-  .marquee { mask-image: none; -webkit-mask-image: none; overflow-x: auto; }
-  .marquee-track { animation: none; }
-  .marquee-run[aria-hidden] { display: none; }
   .build-screen img, .cert-card { transition: none; }
   .reveal[data-reveal="in"] .deal > * { animation: none; }
   .parallax img { animation: none !important; }
@@ -753,3 +774,40 @@ html:not(.dark) h1, html:not(.dark) h2 { color: hsl(24 18% 7%); }
 
 /* Light mode: the drifting colour in the nav glass stays a whisper, not a peach cast. */
 html:not(.dark) .glass-fluid { opacity: 0.28; }
+
+/* ---------- Glitch: text that shorts out with an arc of current under it ---------- */
+.glitch { --g-a: hsl(var(--route)); --g-b: hsl(188 90% 58%); position: relative; display: block; isolation: isolate; }
+html:not(.dark) .glitch { --g-b: hsl(192 85% 36%); }
+.glitch-a, .glitch-b { position: absolute; inset: 0; pointer-events: none; opacity: 0; }
+.glitch-a { color: var(--g-a); }
+.glitch-b { color: var(--g-b); }
+.glitch-arc { position: absolute; left: 0; bottom: -0.55em; width: min(100%, 22ch); height: 0.6em; overflow: visible; opacity: 0; pointer-events: none; }
+.glitch-arc path { fill: none; stroke: var(--g-b); stroke-width: 2; stroke-linejoin: round; vector-effect: non-scaling-stroke; filter: drop-shadow(0 0 4px var(--g-b)) drop-shadow(0 0 10px var(--g-b)); }
+.glitch[data-glitch] .glitch-base { animation: glitch-base 650ms steps(1) infinite; }
+.glitch[data-glitch] .glitch-a { opacity: 0.85; mix-blend-mode: screen; animation: glitch-a 420ms steps(1) infinite; }
+.glitch[data-glitch] .glitch-b { opacity: 0.85; mix-blend-mode: screen; animation: glitch-b 380ms steps(1) infinite; }
+html:not(.dark) .glitch[data-glitch] .glitch-a, html:not(.dark) .glitch[data-glitch] .glitch-b { mix-blend-mode: multiply; }
+.glitch[data-glitch] .glitch-arc { animation: glitch-arc 160ms steps(1) infinite; }
+@keyframes glitch-base {
+  0% { transform: none; text-shadow: 0 0 12px var(--g-b); }
+  20% { transform: translateX(-2px) skewX(-6deg); text-shadow: 0 0 2px var(--g-b), 0 0 18px var(--g-b); }
+  40% { transform: translateX(1px); text-shadow: none; opacity: 0.85; }
+  60% { transform: translateX(3px) skewX(4deg); text-shadow: 0 0 8px var(--g-a); opacity: 1; }
+  80% { transform: none; text-shadow: 0 0 20px var(--g-b); }
+}
+@keyframes glitch-a {
+  0% { clip-path: inset(8% 0 72% 0); transform: translate(-6px, -1px); }
+  25% { clip-path: inset(55% 0 20% 0); transform: translate(5px, 1px); }
+  50% { clip-path: inset(30% 0 45% 0); transform: translate(-3px, 0); }
+  75% { clip-path: inset(80% 0 4% 0); transform: translate(7px, -2px); }
+}
+@keyframes glitch-b {
+  0% { clip-path: inset(62% 0 12% 0); transform: translate(5px, 1px); }
+  25% { clip-path: inset(10% 0 66% 0); transform: translate(-7px, 0); }
+  50% { clip-path: inset(40% 0 38% 0); transform: translate(4px, 2px); }
+  75% { clip-path: inset(2% 0 86% 0); transform: translate(-4px, -1px); }
+}
+@keyframes glitch-arc { 0% { opacity: 1; } 33% { opacity: 0.25; } 66% { opacity: 0.9; } }
+@media (prefers-reduced-motion: reduce) {
+  .glitch-a, .glitch-b, .glitch-arc { display: none; }
+}
