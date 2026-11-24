@@ -82,6 +82,41 @@ export const sources: Source[] = [
     href: "https://lawlibrary.ug.edu.gh/node/8019",
   },
   {
+    id: "ugel",
+    title: "Jean Nelson Aka Hall",
+    publisher: "University of Ghana Enterprise Limited (UGEL)",
+    date: "undated",
+    href: "https://ugel.com.gh/project/jean-nelson-aka-hall/",
+  },
+  {
+    id: "standout",
+    title: "Jean Nelson Aka Hall unveils itinerary for \"Stand Out\" Hall Week celebration",
+    publisher: "NY DJ Live",
+    date: "undated",
+    href: "https://www.nydjlive.com/jean-nelson-aka-hall-unveils-itinerary-for-stand-out-hall-week-celebration/",
+  },
+  {
+    id: "lpg",
+    title: "Ghana Cylinder Manufacturing Company promotes LPG safety during Jean Nelson Hall Week",
+    publisher: "Ghana Cylinder Manufacturing Company",
+    date: "undated",
+    href: "https://ghanacylinder.gov.gh/ghana-cylinder-manufacturing-company-promotes-lpg-safety-during-jean-nelson-hall-week-celebration-at-university-of-ghana-legon/",
+  },
+  {
+    id: "citi2024",
+    title: "UG students decry poor state of halls despite $16m renovation",
+    publisher: "Citi Newsroom",
+    date: "May 2024",
+    href: "https://citinewsroom.com/2024/05/ug-students-decry-poor-state-of-halls-despite-16m-renovation/",
+  },
+  {
+    id: "fees2526",
+    title: "UGEL hostels: charges per semester, 2025/26",
+    publisher: "University of Ghana, Academic Affairs",
+    date: "2025/26",
+    href: "https://www.ug.edu.gh/aad/sites/academic.ug.edu.gh/files/2025-12/2025_26_UGEL_HOSTELS_Fees_0.pdf",
+  },
+  {
     id: "alloc",
     title: "UG warns against fraud ahead of random room allocation for freshers on January 12",
     publisher: "Graphic Online",
@@ -99,6 +134,7 @@ export const sources: Source[] = [
 
 export const nav = [
   { href: "/", label: "Home" },
+  { href: "/walk/", label: "Walk through" },
   { href: "/hall/", label: "The hall" },
   { href: "/life/", label: "Life" },
   { href: "/rooms/", label: "Rooms" },
