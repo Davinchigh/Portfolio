@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useRef, useState } from "react"
 import Link from "next/link"
 import { ArrowRight, ArrowUp, Sparkles, X } from "lucide-react"
-import { LogoMark } from "@/components/site/logo"
 import { corpus } from "@/lib/recall/corpus"
 import { buildIndex, search, type Hit } from "@/lib/recall/search"
 
@@ -88,7 +87,7 @@ export function Guide() {
         aria-controls="guide-panel"
         className="guide-fab fixed bottom-5 right-5 z-40 inline-flex h-12 items-center gap-2 rounded-full pl-2 pr-4 text-sm font-medium"
       >
-        <LogoMark className="h-8 w-8" />
+        <Sparkles className="ml-2 h-4 w-4 text-route" aria-hidden="true" />
         {open ? "close" : "ask about me"}
       </button>
 
