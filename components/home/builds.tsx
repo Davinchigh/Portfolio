@@ -33,7 +33,9 @@ function BuildCard({ build, index }: { build: (typeof builds)[number]; index: nu
         </div>
         <div className="build-screen">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={`/images/builds/${build.slug}.webp`} alt={`${build.title}, the app's opening screen`} loading="lazy" />
+          <img src={`/images/builds/${build.slug}.webp`} alt={`${build.title}, the app's opening screen`} loading="lazy" className="dark:hidden" />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={`/images/builds/${build.slug}-dark.webp`} alt={`${build.title}, the app's opening screen`} loading="lazy" className="hidden dark:block" />
         </div>
       </div>
       <div className="flex flex-1 flex-col p-6">

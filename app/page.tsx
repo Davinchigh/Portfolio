@@ -10,6 +10,7 @@ import { Certifications, Designs, Stack, Ventures } from "@/components/home/more
 import { Stats } from "@/components/home/stats"
 import { CaseStudy, MarqueeCard } from "@/components/home/work"
 import { WorkWheel } from "@/components/home/work-wheel"
+import { DecodeEyebrows } from "@/components/site/decode"
 import { Marquee } from "@/components/site/kinetic"
 import { Rail } from "@/components/site/route"
 import { Section } from "@/components/site/section"
@@ -22,6 +23,7 @@ const FEATURED = 5
 export default function Home() {
   return (
     <main>
+      <DecodeEyebrows />
       <Rail>
         <Hero />
         <Flow
