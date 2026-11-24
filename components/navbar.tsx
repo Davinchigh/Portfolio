@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation"
 import { Menu, X } from "lucide-react"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { useVisitor } from "@/lib/visitor"
-import { LogoMark } from "@/components/site/logo"
+import { LogoMark, Signature } from "@/components/site/logo"
 
 /** Switch between the recruiter view and the story view. Home page only. */
 function ViewSwitch({ className = "" }: { className?: string }) {
@@ -96,7 +96,7 @@ export default function Navbar() {
       <nav className="flex h-14 items-center justify-between pl-3 pr-2 sm:pl-4" aria-label="Main">
         <Link href="/" className="logo-link inline-flex min-h-11 items-center gap-2.5 font-display text-lg font-bold tracking-tight" aria-label="bfb, Benedict Frimpong Boateng, home">
           <LogoMark className="h-8 w-8" />
-          <span aria-hidden="true">bfb</span>
+          <Signature />
         </Link>
 
         <div className="hidden items-center gap-1 md:flex">

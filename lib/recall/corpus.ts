@@ -31,7 +31,7 @@ export function corpus(): Doc[] {
     id: "road",
     kind: "education and the road so far",
     title: "education and the road so far",
-    text: `Benedict studied statistics with computer science at the University of Ghana, Legon, starting in 2022. ${road.map((r) => `${r.year}, ${r.place}: ${r.line}.`).join(" ")}`,
+    text: `Benedict studied for a BSc in Statistics with Computer Science at the University of Ghana, Legon, from 2022 to 2026. ${road.map((r) => `${r.year}, ${r.place}: ${r.line}.`).join(" ")}`,
     href: "/",
   })
 

@@ -4,7 +4,7 @@ import { useMemo, useRef, useState } from "react"
 import { ChevronDown } from "lucide-react"
 import { HandNote } from "@/components/site/hand-note"
 import { Section } from "@/components/site/section"
-import { roles, type Role } from "@/lib/site"
+import { degree, roles, type Role } from "@/lib/site"
 import { ForMode } from "@/lib/visitor"
 
 const MONTHS = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"]
@@ -282,6 +282,12 @@ export function Experience() {
     >
       <div key={view} className="swap-in">
         {view === "list" ? <ListView /> : <TimelineView />}
+      </div>
+      <div className="mt-10 flex flex-wrap items-baseline gap-x-6 gap-y-2 rounded-2xl border bg-card px-5 py-4">
+        <p className="eyebrow">education</p>
+        <p className="font-medium">{degree.detail}</p>
+        <p className="text-sm text-muted-foreground">{degree.school}</p>
+        <p className="meta sm:ml-auto">{degree.dates}</p>
       </div>
     </Section>
   )

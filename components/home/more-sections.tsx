@@ -101,7 +101,7 @@ export function Stack() {
                     <span className="sr-only">{tool.name}</span>
                     <span
                       aria-hidden="true"
-                      className="pointer-events-none absolute -top-9 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded-md border bg-popover px-2 py-1 text-xs text-foreground opacity-0 shadow-sm transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100"
+                      className="tool-name pointer-events-none absolute -top-10 left-1/2 z-20 whitespace-nowrap rounded-md border bg-popover px-2.5 py-1 text-xs font-medium text-foreground shadow-md"
                     >
                       {tool.name}
                     </span>
@@ -155,7 +155,7 @@ export function Certifications() {
       intro="most recent first. open any certificate to see the original, and verify it where the issuer allows."
     >
       <div>
-        <div className="flex items-baseline justify-between gap-4">
+        <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
           <h3 className="text-xl">professional</h3>
           <p className="meta">{count(professional)} certificates</p>
         </div>
@@ -167,7 +167,7 @@ export function Certifications() {
         </ul>
       </div>
       <div className="mt-14">
-        <div className="flex items-baseline justify-between gap-4">
+        <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
           <h3 className="text-xl">other recognition</h3>
           <p className="meta">languages, volunteering and appreciation</p>
         </div>
