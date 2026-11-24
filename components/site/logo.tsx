@@ -1,5 +1,6 @@
 "use client"
 
+import type React from "react"
 import { useEffect, useRef, useState } from "react"
 import { MARK_B, SIGNATURE } from "@/lib/logo-paths"
 
@@ -20,7 +21,7 @@ export function LogoMark({ className = "h-8 w-8", tile = false }: { className?: 
       {tile ? (
         <rect className="logo-tile" x={x} y={y} width={size} height={size} rx={size * 0.24} />
       ) : (
-        <circle className="logo-ring" cx={x + size / 2} cy={y + size / 2} r={size / 2 - size * 0.02} />
+        <circle className="logo-ring" cx={x + size / 2} cy={y + size / 2} r={size / 2 - size * 0.02} pathLength={1} />
       )}
       <path className="logo-b" d={MARK_B.d} />
       <circle className="logo-stop" cx={bx1 + bw * 0.12} cy={by1 - bh * 0.06} r={bh * 0.055} />
@@ -55,5 +56,21 @@ export function Signature({ className = "" }: { className?: string }) {
       <path className="sig-trace" d={SIGNATURE.d} pathLength={1} />
       <path className="sig-ink" d={SIGNATURE.d} mask={`url(#sig-wipe-${run})`} />
     </svg>
+  )
+}
+
+/**
+ * The "bfb" wordmark in the site's display face. The letters rise in one after another on load,
+ * and a soft sheen sweeps across them on hover.
+ */
+export function Wordmark() {
+  return (
+    <span className="wordmark" aria-hidden="true">
+      {["b", "f", "b"].map((ch, i) => (
+        <span key={i} style={{ animationDelay: `${180 + i * 90}ms`, "--i": i } as React.CSSProperties}>
+          {ch}
+        </span>
+      ))}
+    </span>
   )
 }

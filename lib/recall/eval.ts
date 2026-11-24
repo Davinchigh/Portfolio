@@ -17,6 +17,7 @@ export const QUESTIONS: { question: string; expect: string[] }[] = [
   { question: "is he available for hire?", expect: ["contact", "about"] },
   { question: "what is ShopTally?", expect: ["work:shoptally"] },
   { question: "study planner with a focus timer", expect: ["work:studyflow"] },
+  { question: "has he built an MCP server?", expect: ["work:bfb-mcp"] },
   { question: "where did he study?", expect: ["road"] },
   { question: "mobile money reconciliation", expect: ["work:shoptally"] },
   { question: "has he built anything with FastAPI and MySQL?", expect: ["work:shoptally"] },
