@@ -392,3 +392,36 @@ const EXTRAS = {
     check: { q: "What's the practice-first rule?", options: ["Read every AI newsletter daily", "For every hour reading about AI, spend two using it", "Only use one AI tool", "Wait for tools to mature before trying them"], answer: 1, why: "Using AI builds the skill. Reading only builds the vocabulary." },
   },
 };
+
+// ---------- Narration: every written lesson can be read aloud ----------
+// Audio is pre-generated with Kokoro-82M (open-source, Apache 2.0) and served from audio/masterclass/<lesson>.mp3.
+let MANIFEST = null;
+const manifestReady = fetch("audio/manifest.json").then(r => (r.ok ? r.json() : null)).then(m => (MANIFEST = m)).catch(() => null);
+const fmtT = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
+
+function Narration({ lessonId, color }) {
+  const [ready, setReady] = useState(!!MANIFEST);
+  const [playing, setPlaying] = useState(false);
+  const [t, setT] = useState(0);
+  const [rate, setRate] = useState(1);
+  const audio = useRef(null);
+  useEffect(() => { manifestReady.then(() => setReady(true)); }, []);
+  useEffect(() => { setPlaying(false); setT(0); }, [lessonId]);
+  const dur = MANIFEST && MANIFEST.durations && MANIFEST.durations.masterclass ? MANIFEST.durations.masterclass[lessonId] : null;
+  if (!ready || !dur) return null;
+  const toggle = () => { const a = audio.current; if (!a) return; if (a.paused) { a.playbackRate = rate; a.play().catch(() => {}); } else a.pause(); };
+  const cycle = () => { const r = rate === 1 ? 1.25 : rate === 1.25 ? 1.5 : rate === 1.5 ? 0.85 : 1; setRate(r); if (audio.current) audio.current.playbackRate = r; };
+  return (
+    <div className="narr" title="Narrated by Kokoro-82M, an open-source voice model (Apache 2.0)">
+      <audio ref={audio} key={lessonId} src={`audio/masterclass/${lessonId}.mp3`} preload="none"
+        onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)} onEnded={() => { setPlaying(false); setT(0); }}
+        onTimeUpdate={e => setT(e.currentTarget.currentTime)} />
+      <button type="button" onClick={toggle} aria-label={playing ? "Pause narration" : "Listen to this lesson"} className="narr-btn" style={{ borderColor: color + "66", color }}>
+        {playing ? "❚❚ Pause" : "▶ Listen"}
+      </button>
+      <span className="narr-time">{fmtT(t)} / {fmtT(dur)}</span>
+      <button type="button" onClick={cycle} className="narr-rate" aria-label={`Playback speed ${rate} times`}>{rate}×</button>
+      <span className="narr-bar" aria-hidden="true"><span style={{ width: `${Math.min(100, (t / dur) * 100)}%`, background: color }} /></span>
+    </div>
+  );
+}

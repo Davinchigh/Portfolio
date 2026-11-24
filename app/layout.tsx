@@ -7,6 +7,7 @@ import "./globals.css"
 import Navbar from "@/components/navbar"
 import Footer from "@/components/footer"
 import { Guide } from "@/components/site/guide"
+import { Ambient } from "@/components/site/ambient"
 import { ThemeProvider } from "@/components/theme-provider"
 import { VisitorProvider } from "@/lib/visitor"
 
@@ -45,6 +46,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             skip to content
           </a>
           <VisitorProvider>
+          <Ambient />
           <Navbar />
           <div id="main">{children}</div>
           <Footer />

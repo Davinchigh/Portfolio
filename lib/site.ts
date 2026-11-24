@@ -334,22 +334,22 @@ export const builds = [
   {
     slug: "masterclass",
     title: "AI & Prompt Engineering Masterclass",
-    line: "12 units from zero to agents, with lessons, a prompt coach, reflections and a certificate at the end.",
-    detail: "react, built with claude code. the original runs live on the claude api; this preview uses pre-written lessons.",
+    line: "12 units from zero to agents, with illustrated lessons you can listen to, hands-on activities, quick checks that unlock each lesson, a prompt coach and a certificate.",
+    detail: "react, built with claude code. narrated with kokoro-82m, an open-source voice model. this preview uses pre-written lessons.",
     href: "/builds/masterclass.html",
   },
   {
     slug: "promptmastery",
     title: "PromptMastery",
-    line: "a hands-on prompt course with quizzes, a journal and a downloadable certificate with your name on it.",
+    line: "a hands-on prompt course with narrated sessions, playgrounds, quizzes that unlock each session, a journal and a certificate with your name on it.",
     detail: "vanilla javascript single-page app, saves progress in your browser.",
     href: "/builds/promptmastery.html",
   },
   {
     slug: "the-climb",
     title: "The Climb",
-    line: "a four-week fitness plan with guided timers, form videos and a private progress log.",
-    detail: "a coaching app. everything stays on your device.",
+    line: "a personal training app: answer five questions for a four-week plan, check in each day, and follow a guided workout that adapts to how it felt.",
+    detail: "readiness check-ins, rings, streaks and achievements. everything stays on your device.",
     href: "/builds/the-climb.html",
   },
 ]
