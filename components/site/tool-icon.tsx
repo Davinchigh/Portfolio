@@ -1,5 +1,5 @@
 import type { IconType } from "react-icons"
-import { BsOpenai } from "react-icons/bs"
+import { BsOpenai, BsTerminal } from "react-icons/bs"
 import { PiMicrosoftExcelLogo } from "react-icons/pi"
 import {
   SiAnthropic,
@@ -52,6 +52,7 @@ const ICONS: Record<string, IconType> = {
   anthropic: SiAnthropic,
   mcp: SiModelcontextprotocol,
   openai: BsOpenai,
+  codex: BsTerminal,
   gemini: SiGooglegemini,
   n8n: SiN8N,
   livekit: SiLivekit,
@@ -76,7 +77,7 @@ export const BRAND: Record<string, string> = {
   supabase: "#3ECF8E", neon: "#00E599", zod: "#3E67B1",
   vitest: "#729B1B", playwright: "#2EAD33", git: "#F05032", github: "fg", githubactions: "#2088FF", docker: "#2496ED",
   vercel: "fg", netlify: "#00C7B7", railway: "fg",
-  claude: "#D97757", claudecode: "#D97757", anthropic: "fg", mcp: "fg", openai: "fg", gemini: "#8E6CE6", n8n: "#EA4B71",
+  claude: "#D97757", claudecode: "#D97757", anthropic: "fg", mcp: "fg", openai: "fg", codex: "fg", gemini: "#8E6CE6", n8n: "#EA4B71",
   livekit: "fg", v0: "fg", copilot: "fg", perplexity: "#20808D",
   sap: "#1D8DE0", rise: "#E8682B", figma: "#A259FF", excel: "#107C41", odoo: "#714B67",
 }

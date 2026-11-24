@@ -454,6 +454,7 @@ export const stack: { label: string; tools: Tool[] }[] = [
       { name: "Anthropic API", icon: "anthropic" },
       { name: "MCP", icon: "mcp" },
       { name: "ChatGPT", icon: "openai" },
+      { name: "Codex", icon: "codex" },
       { name: "Gemini", icon: "gemini" },
       { name: "n8n", icon: "n8n" },
       { name: "LiveKit", icon: "livekit" },
