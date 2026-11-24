@@ -8,6 +8,46 @@ const STORE_KEY = "bfb_masterclass_preview_v1";
 const CACHE_KEY = "bfb_masterclass_preview_cache_v1";
 const KEY_KEY   = "bfb_masterclass_unused";
 
+// ── Theme: light or dark, starting from whatever the visitor chose on the main site ──
+const THEME_KEY = "bfb_masterclass_theme";
+let THEME = (() => {
+  try {
+    const t = localStorage.getItem(THEME_KEY) || localStorage.getItem("theme");
+    return t === "light" ? "light" : "dark";
+  } catch (e) { return "dark"; }
+})();
+// Brand and unit colours are tuned for a dark page; on paper they need to be deeper to stay readable.
+const LIGHT_TONE = {"#D9B36C":"#8A6420","#00C9A7":"#0B7F6C","#10A37F":"#0B7A5F","#00D2D3":"#0A8486","#FF6B6B":"#BF3B39","#FF6B35":"#B4471C","#FF6B9D":"#B23E6A","#FFC312":"#8C6A06","#E8A87C":"#A55A2A","#20B2AA":"#137A74","#F59E0B":"#965F05","#FF9F43":"#A35C18","#4285F4":"#2A63C8","#0078D4":"#0B5FA8","#CC785C":"#A1513A","#666":"#5F5A52","#888":"#5F5A52"};
+function tone(c) {
+  if (THEME !== "light" || typeof c !== "string" || c[0] !== "#") return c;
+  const hit = LIGHT_TONE[c.toUpperCase()] || LIGHT_TONE[c];
+  if (hit) return hit;
+  const n = c.length === 4 ? c.slice(1).split("").map(x => x + x).join("") : c.slice(1, 7);
+  const ch = [0, 2, 4].map(i => Math.round(parseInt(n.slice(i, i + 2), 16) * 0.58));
+  return "#" + ch.map(v => v.toString(16).padStart(2, "0")).join("");
+}
+function applyTheme(t) {
+  THEME = t;
+  document.documentElement.dataset.theme = t;
+  document.documentElement.style.colorScheme = t;
+  try { localStorage.setItem(THEME_KEY, t); } catch (e) {}
+}
+// A unit as it should look in the current theme.
+const toned = (u) => u && ({ ...u, color: tone(u.color) });
+
+function ThemeToggle({ onChange, compact }) {
+  const light = THEME === "light";
+  return (
+    <button className={`theme-btn ${compact ? "compact" : ""}`} onClick={() => { applyTheme(light ? "dark" : "light"); onChange(); }}
+      aria-label={light ? "Switch to dark mode" : "Switch to light mode"} title={light ? "Dark mode" : "Light mode"}>
+      {light
+        ? <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+        : <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>}
+      {!compact && <span>{light ? "Dark" : "Light"}</span>}
+    </button>
+  );
+}
+
 // ── Preview build: personalised for the visitor, no live AI ──────────────────
 const NAME = (() => {
   const clean = (v) => (v || "").replace(/[^\p{L}\p{M} .-]/gu, "").replace(/\s+/g, " ").trim().slice(0, 30);
@@ -83,49 +123,186 @@ function usePersistedState(initial) {
 // CSS
 // ═══════════════════════════════════════════════════════════════════════════════
 const CSS = `
+:root,[data-theme="dark"]{
+  --bg:#0D0E11;--bg-rgb:13 14 17;--panel:#111317;--fg-rgb:255 255 255;
+  --ink:#F4F1EA;--ink-2:#C8C4BB;--muted:#918C84;--muted-2:#6C6863;--faint:#47443F;
+  --accent:#D9B36C;--accent-rgb:217 179 108;--accent-ink:#EBD9B0;--on-accent:#17140D;
+  --well:rgba(0,0,0,0.28);--code-ink:#B8CBE4;--card:rgb(255 255 255 / 0.035);--card-solid:#15171B;--line:rgb(255 255 255 / 0.08);
+  --lift:inset 0 1px 0 rgb(255 255 255 / 0.05),0 24px 48px -28px rgb(0 0 0 / 0.9);
+}
+[data-theme="light"]{
+  --bg:#F6F2EA;--bg-rgb:246 242 234;--panel:#FBF8F2;--fg-rgb:40 30 15;
+  --ink:#1C1813;--ink-2:#3E382F;--muted:#6B655B;--muted-2:#837C70;--faint:#B3AB9E;
+  --accent:#8A6420;--accent-rgb:138 100 32;--accent-ink:#6E4F17;--on-accent:#FFFCF5;
+  --well:#FFFFFF;--code-ink:#24476B;--card:#FFFFFF;--card-solid:#FFFFFF;--line:rgb(60 45 20 / 0.12);
+  --lift:0 1px 2px rgb(60 45 20 / 0.06),0 16px 36px -22px rgb(60 45 20 / 0.28);
+}
 *{box-sizing:border-box;}
-html,body{margin:0;padding:0;}
-::-webkit-scrollbar{width:6px;height:6px;}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);}
+body{transition:background-color .4s ease,color .4s ease;}
+::-webkit-scrollbar{width:8px;height:8px;}
 ::-webkit-scrollbar-track{background:transparent;}
-::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.12);border-radius:3px;}
-::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,0.22);}
+::-webkit-scrollbar-thumb{background:rgb(var(--fg-rgb) / 0.14);border-radius:8px;border:2px solid transparent;background-clip:padding-box;}
 textarea,input,button{font-family:'Plus Jakarta Sans',sans-serif;}
-textarea::placeholder,input::placeholder{color:rgba(255,255,255,0.2);}
-button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid #D9B36C;outline-offset:2px;}
+textarea,input{color:var(--ink)!important;}
+textarea::placeholder,input::placeholder{color:var(--muted-2);}
+button:focus-visible,input:focus-visible,textarea:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
 @keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.35;}}
 @keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-7px);}}
 @keyframes celebrate{from{opacity:0;transform:scale(0.8);}60%{transform:scale(1.04);}to{opacity:1;transform:scale(1);}}
 @keyframes spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
-.fu{animation:fadeUp 0.4s ease both;}
+@keyframes drawIn{from{stroke-dashoffset:var(--len);}}
+.fu{animation:fadeUp 0.5s cubic-bezier(.2,.7,.1,1) both;}
+.fu2{animation:fadeUp 0.5s cubic-bezier(.2,.7,.1,1) .08s both;}
 .spin{animation:spin 1s linear infinite;}
 
-/* Responsive */
-@media (max-width: 880px){
-  .sidebar{position:fixed!important;left:0;top:0;bottom:0;z-index:100;transform:translateX(-100%);transition:transform 0.25s ease;width:280px!important;}
-  .sidebar.open{transform:translateX(0);}
-  .sidebar-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:99;}
-  .menu-btn{display:flex!important;}
-  .main-pad{padding:14px 16px 60px!important;}
-  .hero-title{font-size:22px!important;}
-  .lesson-title{font-size:22px!important;}
-  .hero{padding:18px!important;}
-}
+/* Shell: a soft wash of the unit's colour behind everything */
+.shell{position:relative;background:var(--bg);}
+.shell::before{content:"";position:fixed;inset:0;pointer-events:none;background:radial-gradient(60% 50% at 85% -10%,color-mix(in oklab,var(--unit) 22%,transparent),transparent 70%),radial-gradient(50% 40% at 10% 110%,color-mix(in oklab,var(--unit) 10%,transparent),transparent 70%);transition:background .8s ease;}
+[data-theme="light"] .shell::before{opacity:.7;}
+.shell>*{position:relative;}
+
+/* Sidebar */
+.sidebar{background:color-mix(in oklab,var(--panel) 88%,transparent)!important;backdrop-filter:blur(18px);border-right:1px solid var(--line)!important;}
+.sb-head{padding:18px 16px 16px;border-bottom:1px solid var(--line);}
+.sb-brand{display:flex;align-items:center;gap:10px;}
+.sb-ring{position:relative;width:44px;height:44px;flex-shrink:0;}
+.sb-ring svg{width:44px;height:44px;transform:rotate(-90deg);}
+.sb-ring circle{fill:none;stroke-width:4;}
+.sb-ring .track{stroke:rgb(var(--fg-rgb) / 0.08);}
+.sb-ring .val{stroke:var(--accent);stroke-linecap:round;transition:stroke-dashoffset .9s cubic-bezier(.2,.7,.1,1);}
+.sb-ring b{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:var(--ink);font-variant-numeric:tabular-nums;}
+.sb-title{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--ink);line-height:1.15;}
+.sb-sub{font-size:11px;color:var(--muted);margin-top:3px;}
+.sb-units{padding:10px 8px;flex:1;}
+.sb-unit{width:100%;text-align:left;background:transparent;border:1px solid transparent;border-radius:10px;padding:9px 10px;cursor:pointer;display:flex;align-items:center;gap:10px;color:var(--ink-2);transition:background .2s,border-color .2s;font-family:inherit;}
+.sb-unit:hover{background:rgb(var(--fg-rgb) / 0.04);}
+.sb-unit.on{background:color-mix(in oklab,var(--u) 12%,transparent);border-color:color-mix(in oklab,var(--u) 30%,transparent);color:var(--ink);}
+.sb-num{width:26px;height:26px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:800;font-variant-numeric:tabular-nums;background:rgb(var(--fg-rgb) / 0.05);color:var(--muted);}
+.sb-unit.on .sb-num{background:var(--u);color:var(--on-accent);}
+.sb-unit.done .sb-num{background:color-mix(in oklab,var(--u) 22%,transparent);color:var(--u);}
+.sb-name{flex:1;font-size:12.5px;font-weight:600;line-height:1.3;}
+.sb-count{font-size:10.5px;color:var(--muted-2);font-variant-numeric:tabular-nums;}
+.sb-lessons{position:relative;margin:4px 0 8px 22px;padding-left:14px;border-left:2px solid rgb(var(--fg-rgb) / 0.08);}
+.sb-lesson{position:relative;width:100%;text-align:left;background:transparent;border:none;border-radius:8px;padding:7px 10px;cursor:pointer;color:var(--muted);font-size:12px;line-height:1.35;font-family:inherit;transition:background .2s,color .2s;}
+.sb-lesson:hover{color:var(--ink);background:rgb(var(--fg-rgb) / 0.04);}
+.sb-lesson::before{content:"";position:absolute;left:-21px;top:12px;width:10px;height:10px;border-radius:50%;background:var(--bg);border:2px solid rgb(var(--fg-rgb) / 0.2);transition:all .3s;}
+.sb-lesson.done{color:var(--ink-2);}
+.sb-lesson.done::before{background:var(--u);border-color:var(--u);}
+.sb-lesson.on{color:var(--ink);font-weight:700;background:color-mix(in oklab,var(--u) 10%,transparent);}
+.sb-lesson.on::before{border-color:var(--u);box-shadow:0 0 0 4px color-mix(in oklab,var(--u) 22%,transparent);}
+.sb-foot{padding:12px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:8px;}
+.sb-btn{flex:1;background:rgb(var(--fg-rgb) / 0.04);border:1px solid var(--line);border-radius:10px;padding:9px 10px;color:var(--ink-2);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;}
+.sb-btn:hover{color:var(--ink);}
+
+/* Theme switch */
+.theme-btn{display:inline-flex;align-items:center;gap:7px;height:36px;padding:0 13px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink-2);font-size:12px;font-weight:700;cursor:pointer;box-shadow:var(--lift);transition:color .2s,transform .2s;}
+.theme-btn.compact{width:36px;padding:0;justify-content:center;}
+.theme-btn:hover{color:var(--ink);}
+.theme-btn:active{transform:scale(.95);}
+.theme-btn svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+
+/* Topbar */
 .menu-btn{display:none;}
-.topbar{position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:12px;padding:12px 24px 14px;background:rgba(11,12,14,0.86);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,0.05);font-size:12px;color:#9a9a9a;}
+.topbar{position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:12px;padding:12px 24px 14px;background:color-mix(in oklab,var(--bg) 82%,transparent);backdrop-filter:blur(16px) saturate(1.2);-webkit-backdrop-filter:blur(16px) saturate(1.2);border-bottom:1px solid var(--line);font-size:12.5px;color:var(--muted);}
 .topbar-text{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.topbar-pct{font-weight:700;color:#EBD9B0;font-variant-numeric:tabular-nums;}
-.topbar-bar{position:absolute;left:0;right:0;bottom:0;height:3px;background:rgba(255,255,255,0.05);}
-.topbar-bar span{display:block;height:100%;transition:width .8s ease;}
-.menu-btn{align-items:center;gap:6px;background:rgba(217,179,108,0.15);border:1px solid rgba(217,179,108,0.3);border-radius:8px;padding:8px 12px;color:#D9B36C;font-size:12px;font-weight:700;cursor:pointer;flex-shrink:0;}
+.topbar-pct{font-weight:800;color:var(--ink);font-variant-numeric:tabular-nums;}
+.topbar-bar{position:absolute;left:0;right:0;bottom:-1px;height:3px;background:transparent;}
+.topbar-bar span{display:block;height:100%;border-radius:0 3px 3px 0;transition:width .8s ease;box-shadow:0 0 12px currentColor;}
+.menu-btn{align-items:center;gap:6px;background:rgb(var(--accent-rgb) / 0.12);border:1px solid rgb(var(--accent-rgb) / 0.3);border-radius:10px;padding:8px 12px;color:var(--accent);font-size:12px;font-weight:700;cursor:pointer;flex-shrink:0;}
 .narr{display:flex;align-items:center;gap:8px;flex-shrink:0;}
-.narr-btn{background:transparent;border:1px solid;border-radius:999px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;}
-.narr-time{font-size:11px;color:#8a8a8a;font-variant-numeric:tabular-nums;}
-.narr-rate{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:6px;color:#cfcfcf;font-size:11px;padding:3px 6px;cursor:pointer;}
-.narr-bar{width:70px;height:3px;border-radius:3px;background:rgba(255,255,255,0.08);overflow:hidden;}
+.narr-btn{background:var(--card);border:1px solid;border-radius:999px;padding:7px 13px;font-size:12px;font-weight:700;cursor:pointer;}
+.narr-time{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums;}
+.narr-rate{background:rgb(var(--fg-rgb) / 0.05);border:1px solid var(--line);border-radius:6px;color:var(--ink-2);font-size:11px;padding:3px 6px;cursor:pointer;}
+.narr-bar{width:70px;height:3px;border-radius:3px;background:rgb(var(--fg-rgb) / 0.1);overflow:hidden;}
 .narr-bar span{display:block;height:100%;}
-@media (max-width: 880px){ .topbar{padding:10px 14px 12px;} .topbar-title{display:none;} .narr-time,.narr-bar{display:none;} }
-@media (prefers-reduced-motion: reduce){ .fu{animation:none;} .topbar-bar span{transition:none;} }
+
+/* Lesson page: a reading column with a cover, like a well-made course */
+.lesson{max-width:760px;margin:0 auto;padding:40px 40px 90px;}
+.cover{position:relative;overflow:hidden;margin-bottom:36px;padding:34px 34px 30px;border-radius:22px;background:linear-gradient(135deg,color-mix(in oklab,var(--unit) 20%,var(--card-solid)),var(--card-solid) 70%);border:1px solid color-mix(in oklab,var(--unit) 30%,transparent);box-shadow:var(--lift);}
+.cover-num{position:absolute;right:-6px;top:-34px;font-family:'Playfair Display',serif;font-size:190px;font-weight:800;line-height:1;color:transparent;-webkit-text-stroke:1.5px color-mix(in oklab,var(--unit) 45%,transparent);pointer-events:none;user-select:none;}
+.cover>*:not(.cover-num){position:relative;}
+.cover-eyebrow{font-size:11px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--unit);}
+.cover-title{font-family:'Playfair Display',serif;font-size:36px;font-weight:800;color:var(--ink);line-height:1.12;margin:10px 0 8px;max-width:15ch;}
+.cover-tag{font-size:15px;color:var(--ink-2);font-style:italic;max-width:46ch;line-height:1.6;}
+.cover-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:20px;}
+.cover-list span{font-size:11.5px;padding:5px 10px;border-radius:999px;background:rgb(var(--fg-rgb) / 0.05);border:1px solid var(--line);color:var(--ink-2);}
+.lhead{margin-bottom:28px;}
+.lhead-eyebrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);}
+.lhead-eyebrow i{width:22px;height:2px;border-radius:2px;background:var(--unit);}
+.lhead-title{font-family:'Playfair Display',serif;font-size:40px;font-weight:700;color:var(--ink);line-height:1.12;margin:12px 0 0;letter-spacing:-0.01em;}
+.lhead-meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;}
+.lhead-rule{height:1px;margin-top:26px;background:linear-gradient(90deg,var(--unit),transparent 60%);opacity:.5;}
+.lnav{margin-top:48px;display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.lnav button{text-align:left;padding:16px 18px;border-radius:16px;border:1px solid var(--line);background:var(--card);box-shadow:var(--lift);cursor:pointer;font-family:inherit;color:var(--ink);transition:transform .25s cubic-bezier(.2,.7,.1,1),border-color .25s;}
+.lnav button:hover:not(:disabled){transform:translateY(-2px);border-color:color-mix(in oklab,var(--unit) 50%,transparent);}
+.lnav button:disabled{opacity:.45;cursor:default;box-shadow:none;}
+.lnav small{display:block;font-size:10.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:5px;}
+.lnav strong{display:block;font-size:15px;line-height:1.35;}
+.lnav .next{text-align:right;background:linear-gradient(135deg,color-mix(in oklab,var(--unit) 16%,var(--card-solid)),var(--card-solid));border-color:color-mix(in oklab,var(--unit) 40%,transparent);}
+.lnav .next small{color:var(--unit);}
+.lnav-dots{display:flex;gap:5px;justify-content:center;margin-top:40px;}
+.lnav-dots button{height:6px;border-radius:3px;border:none;cursor:pointer;padding:0;transition:all .3s;}
+.lock-note{grid-column:1/-1;text-align:center;font-size:13px;color:var(--muted);}
+
+/* Welcome */
+.welcome{min-height:100vh;background:var(--bg);font-family:'Plus Jakarta Sans',sans-serif;color:var(--ink);position:relative;overflow:hidden;}
+.welcome::before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(50% 45% at 20% 0%,rgb(var(--accent-rgb) / 0.18),transparent 70%),radial-gradient(40% 40% at 100% 100%,rgb(var(--accent-rgb) / 0.08),transparent 70%);}
+.w-top{position:relative;display:flex;align-items:center;justify-content:space-between;padding:20px 32px;}
+.w-brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:14px;}
+.w-brand i{width:30px;height:30px;border-radius:9px;background:var(--accent);color:var(--on-accent);display:flex;align-items:center;justify-content:center;font-style:normal;font-family:'Playfair Display',serif;font-size:16px;}
+.w-badge{font-size:11px;font-weight:700;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:5px 11px;}
+.w-grid{position:relative;max-width:1180px;margin:0 auto;padding:40px 32px 80px;display:grid;grid-template-columns:1.05fr 1fr;gap:56px;align-items:start;}
+.w-eyebrow{font-size:11px;letter-spacing:.3em;color:var(--accent);font-weight:800;}
+.w-title{font-family:'Playfair Display',serif;font-size:64px;font-weight:800;line-height:1.02;letter-spacing:-0.02em;margin:18px 0 14px;}
+.w-title em{color:var(--accent);font-style:italic;font-weight:700;}
+.w-lede{font-size:17px;line-height:1.75;color:var(--ink-2);max-width:48ch;}
+.w-cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:30px;}
+.w-primary{background:var(--accent);color:var(--on-accent);border:none;border-radius:14px;padding:15px 28px;font-size:15px;font-weight:800;cursor:pointer;box-shadow:0 14px 34px -14px rgb(var(--accent-rgb) / 0.8);transition:transform .2s;}
+.w-primary:hover{transform:translateY(-2px);}
+.w-ghost{background:transparent;color:var(--ink);border:1px solid var(--line);border-radius:14px;padding:15px 22px;font-size:14px;font-weight:700;cursor:pointer;}
+.w-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:36px;max-width:520px;}
+.w-stats div{padding:14px 12px;border-radius:14px;background:var(--card);border:1px solid var(--line);box-shadow:var(--lift);}
+.w-stats b{display:block;font-family:'Playfair Display',serif;font-size:28px;color:var(--ink);}
+.w-stats span{font-size:11px;color:var(--muted);font-weight:600;}
+.w-note{margin-top:16px;font-size:12px;color:var(--muted-2);}
+.w-resume{margin-top:26px;padding:18px 20px;border-radius:16px;background:var(--card);border:1px solid rgb(var(--accent-rgb) / 0.35);box-shadow:var(--lift);display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+.w-map{border-radius:22px;background:var(--card);border:1px solid var(--line);box-shadow:var(--lift);padding:10px;}
+.w-map h2{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);font-weight:800;margin:10px 12px 8px;}
+.w-unit{display:grid;grid-template-columns:34px 1fr auto;align-items:center;gap:12px;padding:10px 12px;border-radius:12px;transition:background .2s;}
+.w-unit:hover{background:rgb(var(--fg-rgb) / 0.04);}
+.w-unit .n{font-family:'Playfair Display',serif;font-size:18px;font-weight:800;color:var(--u);font-variant-numeric:tabular-nums;}
+.w-unit .t{font-size:13.5px;font-weight:600;color:var(--ink);line-height:1.3;}
+.w-unit .s{font-size:11.5px;color:var(--muted);margin-top:2px;}
+.w-unit .bar{width:54px;height:4px;border-radius:4px;background:rgb(var(--fg-rgb) / 0.08);overflow:hidden;}
+.w-unit .bar i{display:block;height:100%;background:var(--u);}
+
+/* Reading typography for generated lessons */
+.md p,.md li{font-size:16px!important;line-height:1.85!important;color:var(--ink-2)!important;}
+.md h2{font-size:26px!important;}
+.md h3{font-size:20px!important;margin-top:28px!important;}
+.md blockquote{font-style:normal!important;font-size:16px!important;background:color-mix(in oklab,var(--unit,var(--accent)) 9%,transparent);border-radius:0 14px 14px 0;padding:14px 18px!important;color:var(--ink)!important;}
+
+/* Responsive */
+@media (max-width: 960px){ .w-grid{grid-template-columns:1fr;gap:36px;} .w-title{font-size:46px;} }
+@media (max-width: 880px){
+  .sidebar{position:fixed!important;left:0;top:0;bottom:0;z-index:100;transform:translateX(-100%);transition:transform 0.25s ease;width:290px!important;}
+  .sidebar.open{transform:translateX(0);}
+  .sidebar-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:99;}
+  .menu-btn{display:flex!important;}
+  .lesson{padding:22px 18px 70px;}
+  .cover{padding:24px 20px;border-radius:18px;}
+  .cover-num{font-size:120px;top:-14px;right:-10px;opacity:.45;}
+  .cover-title{font-size:27px;}
+  .lhead-title{font-size:29px;}
+  .lnav{grid-template-columns:1fr;}
+  .lnav .next{order:-1;}
+  .topbar{padding:10px 14px 12px;} .topbar-title{display:none;} .narr-time,.narr-bar{display:none;}
+  .w-top{padding:16px 18px;} .w-grid{padding:20px 18px 60px;} .w-title{font-size:40px;} .w-stats{grid-template-columns:repeat(2,1fr);}
+}
+@media (prefers-reduced-motion: reduce){ .fu,.fu2{animation:none;} .topbar-bar span,.sb-ring .val{transition:none;} body{transition:none;} }
 `;
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -358,27 +535,28 @@ async function askClaude(systemPrompt, userMsg, maxTokens=800, cacheKey=null) {
 // ═══════════════════════════════════════════════════════════════════════════════
 // UI ATOMS
 // ═══════════════════════════════════════════════════════════════════════════════
-const Tag = ({children,color="#D9B36C",small}) => (
+const Tag = ({children,color:c0="#D9B36C",small}) => { const color = tone(c0); return (
   <span style={{display:"inline-block",fontSize:small?9:10,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",padding:small?"2px 8px":"3px 11px",borderRadius:20,background:color+"20",color,border:`1px solid ${color}40`}}>{children}</span>
-);
+); };
 
-const Btn = ({children,onClick,disabled,color="#D9B36C",outline,small,full,style={}}) => (
-  <button onClick={onClick} disabled={disabled} style={{background:outline?"transparent":disabled?"rgba(255,255,255,0.05)":`linear-gradient(135deg,${color},${color}cc)`,border:outline?`1px solid ${color}55`:"none",borderRadius:10,padding:small?"7px 16px":"11px 26px",color:disabled?"#333":outline?color:"#0B0C0E",fontSize:small?11:13,fontWeight:700,letterSpacing:"0.04em",cursor:disabled?"default":"pointer",transition:"all 0.2s",fontFamily:"'Plus Jakarta Sans',sans-serif",width:full?"100%":"auto",...style}}>{children}</button>
-);
+const Btn = ({children,onClick,disabled,color:c0="#D9B36C",outline,small,full,style={}}) => { const color = tone(c0); return (
+  <button onClick={onClick} disabled={disabled} style={{background:outline?"transparent":disabled?"rgb(var(--fg-rgb) / 0.05)":`linear-gradient(135deg,${color},${color}cc)`,border:outline?`1px solid ${color}55`:"none",borderRadius:10,padding:small?"7px 16px":"11px 26px",color:disabled?"var(--faint)":outline?color:"var(--on-accent)",fontSize:small?11:13,fontWeight:700,letterSpacing:"0.04em",cursor:disabled?"default":"pointer",transition:"all 0.2s",fontFamily:"'Plus Jakarta Sans',sans-serif",width:full?"100%":"auto",...style}}>{children}</button>
+); };
 
 const Card = ({children,style={}}) => (
-  <div style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:14,padding:18,...style}}>{children}</div>
+  <div style={{background:"var(--card)",border:"1px solid var(--line)",borderRadius:16,padding:20,boxShadow:"var(--lift)",...style}}>{children}</div>
 );
 
 const SL = ({children}) => (
-  <div style={{fontSize:10,fontWeight:700,letterSpacing:"0.15em",color:"#555",textTransform:"uppercase",marginBottom:10}}>{children}</div>
+  <div style={{fontSize:10,fontWeight:700,letterSpacing:"0.15em",color:"var(--muted-2)",textTransform:"uppercase",marginBottom:10}}>{children}</div>
 );
 
 const Code = ({children}) => (
-  <div style={{background:"rgba(0,0,0,0.4)",border:"1px solid rgba(255,255,255,0.06)",borderRadius:10,padding:"14px 16px",fontFamily:"'JetBrains Mono',monospace",fontSize:12,lineHeight:1.85,color:"#B0C4DE",whiteSpace:"pre-wrap",overflowX:"auto"}}>{children}</div>
+  <div style={{background:"rgba(0,0,0,0.4)",border:"1px solid rgb(var(--fg-rgb) / 0.06)",borderRadius:10,padding:"14px 16px",fontFamily:"'JetBrains Mono',monospace",fontSize:12,lineHeight:1.85,color:"var(--code-ink)",whiteSpace:"pre-wrap",overflowX:"auto"}}>{children}</div>
 );
 
-function Spinner({color="#D9B36C"}) {
+function Spinner({color:c0="#D9B36C"}) {
+  const color = tone(c0);
   return <div className="spin" style={{width:20,height:20,borderRadius:"50%",border:`2px solid ${color}33`,borderTop:`2px solid ${color}`,display:"inline-block"}}/>;
 }
 
@@ -388,21 +566,21 @@ function Spinner({color="#D9B36C"}) {
 function MD({text,color}) {
   if(!text) return null;
   const html = text
-    .replace(/\*\*(.*?)\*\*/g, '<strong style="color:#fff;font-weight:700">$1</strong>')
-    .replace(/`(.*?)`/g, '<code style="background:rgba(255,255,255,0.08);padding:2px 6px;border-radius:4px;font-family:JetBrains Mono,monospace;font-size:11px">$1</code>');
+    .replace(/\*\*(.*?)\*\*/g, '<strong style="color:var(--ink);font-weight:700">$1</strong>')
+    .replace(/`(.*?)`/g, '<code style="background:rgb(var(--fg-rgb) / 0.08);padding:2px 6px;border-radius:4px;font-family:JetBrains Mono,monospace;font-size:11px">$1</code>');
   return (
-    <div>
+    <div className="md">
       {html.split("\n\n").map((para,i) => {
         const p = para.trim();
         if(!p) return null;
-        if(p.startsWith("---")) return <hr key={i} style={{border:"none",borderTop:"1px solid rgba(255,255,255,0.07)",margin:"18px 0"}}/>;
+        if(p.startsWith("---")) return <hr key={i} style={{border:"none",borderTop:"1px solid rgb(var(--fg-rgb) / 0.07)",margin:"18px 0"}}/>;
         if(p.startsWith(">")) return (
-          <blockquote key={i} style={{borderLeft:`3px solid ${color}`,paddingLeft:16,margin:"14px 0",color:"#D0D0E0",fontStyle:"italic",fontSize:14,lineHeight:1.7}}>
+          <blockquote key={i} style={{borderLeft:`3px solid ${color}`,paddingLeft:16,margin:"14px 0",color:"var(--ink-2)",fontStyle:"italic",fontSize:14,lineHeight:1.7}}>
             <span dangerouslySetInnerHTML={{__html:p.slice(1).trim()}}/>
           </blockquote>
         );
-        if(p.startsWith("# ")) return <h2 key={i} style={{fontFamily:"'Playfair Display',serif",fontSize:22,color:"#fff",margin:"20px 0 10px"}} dangerouslySetInnerHTML={{__html:p.slice(2)}}/>;
-        if(p.startsWith("## ")) return <h3 key={i} style={{fontFamily:"'Playfair Display',serif",fontSize:17,color:"#fff",margin:"16px 0 8px"}} dangerouslySetInnerHTML={{__html:p.slice(3)}}/>;
+        if(p.startsWith("# ")) return <h2 key={i} style={{fontFamily:"'Playfair Display',serif",fontSize:22,color:"var(--ink)",margin:"20px 0 10px"}} dangerouslySetInnerHTML={{__html:p.slice(2)}}/>;
+        if(p.startsWith("## ")) return <h3 key={i} style={{fontFamily:"'Playfair Display',serif",fontSize:17,color:"var(--ink)",margin:"16px 0 8px"}} dangerouslySetInnerHTML={{__html:p.slice(3)}}/>;
         // A block of "- " lines is a list; a block that starts with a line of text followed by "- " lines is a heading line plus a list.
         const lines = p.split("\n");
         const firstItem = lines.findIndex(l => /^[-•] /.test(l.trim()));
@@ -410,14 +588,14 @@ function MD({text,color}) {
           const lead = lines.slice(0, firstItem).join(" ").trim();
           return (
             <div key={i} style={{margin:"6px 0 12px"}}>
-              {lead && <p style={{fontSize:14,lineHeight:1.9,color:"#C0C0D0",margin:"0 0 6px"}} dangerouslySetInnerHTML={{__html:lead}}/>}
+              {lead && <p style={{fontSize:14,lineHeight:1.9,color:"var(--ink-2)",margin:"0 0 6px"}} dangerouslySetInnerHTML={{__html:lead}}/>}
               <ul style={{margin:0,paddingLeft:20,display:"grid",gap:6}}>
-                {lines.slice(firstItem).map((l,j)=><li key={j} style={{fontSize:14,lineHeight:1.75,color:"#C0C0D0"}} dangerouslySetInnerHTML={{__html:l.trim().slice(2)}}/>)}
+                {lines.slice(firstItem).map((l,j)=><li key={j} style={{fontSize:14,lineHeight:1.75,color:"var(--ink-2)"}} dangerouslySetInnerHTML={{__html:l.trim().slice(2)}}/>)}
               </ul>
             </div>
           );
         }
-        return <p key={i} style={{fontSize:14,lineHeight:1.9,color:"#C0C0D0",marginBottom:10}} dangerouslySetInnerHTML={{__html:p.split("\n").join("<br/>")}}/>;
+        return <p key={i} style={{fontSize:14,lineHeight:1.9,color:"var(--ink-2)",marginBottom:10}} dangerouslySetInnerHTML={{__html:p.split("\n").join("<br/>")}}/>;
       })}
     </div>
   );
@@ -455,17 +633,17 @@ function LiveChat({color,ctx}) {
 
   return (
     <div style={{marginTop:24}}>
-      <div style={{background:"rgba(0,0,0,0.25)",border:`1px solid ${color}28`,borderRadius:14,overflow:"hidden"}}>
+      <div style={{background:"var(--well)",border:`1px solid ${color}28`,borderRadius:14,overflow:"hidden"}}>
         <div style={{padding:"10px 14px",borderBottom:`1px solid ${color}18`,display:"flex",alignItems:"center",gap:8}}>
           <div style={{width:7,height:7,borderRadius:"50%",background:color,animation:"pulse 2s infinite"}}/>
           <span style={{fontSize:11,fontWeight:700,letterSpacing:"0.12em",color}}>LIVE AI PRACTICE</span>
-          <span style={{fontSize:10,color:"#333",marginLeft:"auto"}}>powered by Claude</span>
+          <span style={{fontSize:10,color:"var(--faint)",marginLeft:"auto"}}>powered by Claude</span>
         </div>
         <div style={{minHeight:90,maxHeight:280,overflowY:"auto",padding:14,display:"flex",flexDirection:"column",gap:10}}>
-          {msgs.length===0 && <div style={{color:"#444",fontSize:13,textAlign:"center",padding:"12px 0"}}> Practice here, type any prompt and your AI tutor will respond and coach you.</div>}
+          {msgs.length===0 && <div style={{color:"var(--faint)",fontSize:13,textAlign:"center",padding:"12px 0"}}> Practice here, type any prompt and your AI tutor will respond and coach you.</div>}
           {msgs.map((m,i)=>(
             <div key={i} style={{display:"flex",justifyContent:m.role==="user"?"flex-end":"flex-start"}}>
-              <div style={{maxWidth:"85%",padding:"9px 13px",borderRadius:10,background:m.role==="user"?color+"28":"rgba(255,255,255,0.04)",border:`1px solid ${m.role==="user"?color+"38":"rgba(255,255,255,0.06)"}`,fontSize:13,lineHeight:1.7,color:m.role==="user"?"#fff":"#D0D0D0",whiteSpace:"pre-wrap"}}>
+              <div style={{maxWidth:"85%",padding:"9px 13px",borderRadius:10,background:m.role==="user"?color+"28":"rgb(var(--fg-rgb) / 0.04)",border:`1px solid ${m.role==="user"?color+"38":"rgb(var(--fg-rgb) / 0.06)"}`,fontSize:13,lineHeight:1.7,color:m.role==="user"?"var(--ink)":"var(--ink-2)",whiteSpace:"pre-wrap"}}>
                 {m.role==="assistant" && <div style={{fontSize:9,color,fontWeight:700,marginBottom:5,letterSpacing:"0.12em"}}> AI TUTOR</div>}
                 {m.content}
               </div>
@@ -473,7 +651,7 @@ function LiveChat({color,ctx}) {
           ))}
           {loading && (
             <div style={{display:"flex"}}>
-              <div style={{padding:"9px 13px",borderRadius:10,background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.06)"}}>
+              <div style={{padding:"9px 13px",borderRadius:10,background:"rgb(var(--fg-rgb) / 0.04)",border:"1px solid rgb(var(--fg-rgb) / 0.06)"}}>
                 <div style={{fontSize:9,color,fontWeight:700,marginBottom:6,letterSpacing:"0.12em"}}> AI TUTOR</div>
                 <div style={{display:"flex",gap:4}}>{[0,1,2].map(j=><div key={j} style={{width:5,height:5,borderRadius:"50%",background:color,animation:`pulse 1.2s ${j*0.2}s infinite`}}/>)}</div>
               </div>
@@ -481,8 +659,8 @@ function LiveChat({color,ctx}) {
           )}
           <div ref={bot}/>
         </div>
-        <div style={{padding:"10px 14px",borderTop:"1px solid rgba(255,255,255,0.04)",display:"flex",gap:10}}>
-          <input value={inp} onChange={e=>setInp(e.target.value)} onKeyDown={e=>e.key==="Enter"&&!e.shiftKey&&send()} placeholder="Type a prompt to practise... press Enter to send" style={{flex:1,background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:8,padding:"9px 12px",color:"#fff",fontSize:12,outline:"none",fontFamily:"'Plus Jakarta Sans',sans-serif"}}/>
+        <div style={{padding:"10px 14px",borderTop:"1px solid rgb(var(--fg-rgb) / 0.04)",display:"flex",gap:10}}>
+          <input value={inp} onChange={e=>setInp(e.target.value)} onKeyDown={e=>e.key==="Enter"&&!e.shiftKey&&send()} placeholder="Type a prompt to practise... press Enter to send" style={{flex:1,background:"rgb(var(--fg-rgb) / 0.04)",border:"1px solid rgb(var(--fg-rgb) / 0.07)",borderRadius:8,padding:"9px 12px",color:"var(--ink)",fontSize:12,outline:"none",fontFamily:"'Plus Jakarta Sans',sans-serif"}}/>
           <Btn onClick={send} disabled={loading||!inp.trim()} color={color} small>→</Btn>
         </div>
       </div>
@@ -526,7 +704,7 @@ function AIContentLesson({lesson,color,onSave,saved,cacheKey,passed,onPass}) {
   return (
     <div className="fu">
       {loading ? (
-        <div style={{display:"flex",alignItems:"center",gap:12,padding:"40px 20px",color:"#555"}}>
+        <div style={{display:"flex",alignItems:"center",gap:12,padding:"40px 20px",color:"var(--muted-2)"}}>
           <Spinner color={color}/>
           <span style={{fontSize:14}}>Loading lesson content...</span>
         </div>
@@ -536,8 +714,8 @@ function AIContentLesson({lesson,color,onSave,saved,cacheKey,passed,onPass}) {
           <LessonExtras key={lesson.id} lessonId={lesson.id} color={color} passed={passed} onPass={onPass}/>
           <Card style={{marginTop:20,borderColor:color+"30"}}>
             <SL> Reflection Exercise</SL>
-            <p style={{fontSize:14,color:"#D0D0D0",marginBottom:12,lineHeight:1.7}}>{reflectionQ}</p>
-            <textarea value={ans} onChange={e=>setAns(e.target.value)} placeholder="Write your reflection here, there are no wrong answers..." rows={5} style={{width:"100%",background:"rgba(0,0,0,0.2)",border:`1px solid ${ans?color+"44":"rgba(255,255,255,0.07)"}`,borderRadius:8,padding:"12px 14px",color:"#fff",fontSize:13,lineHeight:1.7,resize:"vertical",outline:"none",fontFamily:"inherit"}}/>
+            <p style={{fontSize:14,color:"var(--ink-2)",marginBottom:12,lineHeight:1.7}}>{reflectionQ}</p>
+            <textarea value={ans} onChange={e=>setAns(e.target.value)} placeholder="Write your reflection here, there are no wrong answers..." rows={5} style={{width:"100%",background:"var(--well)",border:`1px solid ${ans?color+"44":"rgb(var(--fg-rgb) / 0.07)"}`,borderRadius:8,padding:"12px 14px",color:"var(--ink)",fontSize:13,lineHeight:1.7,resize:"vertical",outline:"none",fontFamily:"inherit"}}/>
             <div style={{marginTop:10,display:"flex",gap:10,alignItems:"center",flexWrap:"wrap"}}>
               <Btn color={color} onClick={()=>onSave(ans)} disabled={!ans.trim()}>Save Reflection</Btn>
               {saved && <Tag color="#00C9A7" small>✓ Saved</Tag>}
@@ -559,24 +737,24 @@ function PlatformsOverview({color}) {
   const catLabels = {text:" Text AI",image:" Image AI",video:" Video AI",audio:" Audio AI",code:" Code AI",automation:" Automation",agents:" Agents"};
   return (
     <div className="fu">
-      <p style={{fontSize:14,color:"#888",marginBottom:18,lineHeight:1.7}}>All AI tools fall into 7 categories. Explore each, click any card to visit the platform directly.</p>
+      <p style={{fontSize:14,color:"var(--muted)",marginBottom:18,lineHeight:1.7}}>All AI tools fall into 7 categories. Explore each, click any card to visit the platform directly.</p>
       <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:18}}>
         {Object.entries(catLabels).map(([k,v])=>(
-          <button key={k} onClick={()=>setCat(k)} style={{background:cat===k?catColors[k]:"rgba(255,255,255,0.04)",border:`1px solid ${cat===k?catColors[k]:"rgba(255,255,255,0.07)"}`,borderRadius:8,padding:"6px 13px",cursor:"pointer",color:cat===k?"#0B0C0E":"#666",fontSize:11,fontWeight:700,fontFamily:"inherit",transition:"all 0.15s"}}>{v}</button>
+          <button key={k} onClick={()=>setCat(k)} style={{background:cat===k?tone(catColors[k]):"rgb(var(--fg-rgb) / 0.04)",border:`1px solid ${cat===k?tone(catColors[k]):"rgb(var(--fg-rgb) / 0.07)"}`,borderRadius:8,padding:"6px 13px",cursor:"pointer",color:cat===k?"var(--bg)":"var(--muted-2)",fontSize:11,fontWeight:700,fontFamily:"inherit",transition:"all 0.15s"}}>{v}</button>
         ))}
       </div>
       <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(200px,1fr))",gap:10}}>
         {(PLATFORMS[cat]||[]).map((p,i)=>(
           <a key={i} href={p.url} target="_blank" rel="noopener noreferrer" style={{textDecoration:"none"}}>
-            <Card style={{borderColor:p.c+"28",transition:"all 0.2s",cursor:"pointer"}}>
+            <Card style={{borderColor:tone(p.c)+"28",transition:"all 0.2s",cursor:"pointer"}}>
               <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:8}}>
-                <div style={{width:34,height:34,borderRadius:8,background:p.c+"18",border:`1px solid ${p.c}38`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:15,flexShrink:0}}>{p.e}</div>
+                <div style={{width:34,height:34,borderRadius:8,background:tone(p.c)+"18",border:`1px solid ${tone(p.c)}38`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:15,flexShrink:0}}>{p.e}</div>
                 <div>
-                  <div style={{fontWeight:700,color:"#fff",fontSize:13}}>{p.n}</div>
-                  <div style={{fontSize:9,color:p.c,letterSpacing:"0.08em",fontWeight:700}}>CLICK TO VISIT →</div>
+                  <div style={{fontWeight:700,color:"var(--ink)",fontSize:13}}>{p.n}</div>
+                  <div style={{fontSize:9,color:tone(p.c),letterSpacing:"0.08em",fontWeight:700}}>CLICK TO VISIT →</div>
                 </div>
               </div>
-              <p style={{fontSize:11,color:"#666",lineHeight:1.5}}>{p.d}</p>
+              <p style={{fontSize:11,color:"var(--muted-2)",lineHeight:1.5}}>{p.d}</p>
             </Card>
           </a>
         ))}
@@ -592,19 +770,19 @@ function PlatformsSection({lesson,color}) {
   const plats = PLATFORMS[lesson.category]||[];
   return (
     <div className="fu">
-      <p style={{fontSize:14,color:"#C0C0D0",marginBottom:16,lineHeight:1.7}}>Top platforms for this category. Click to visit. Try the practice suggestions below to apply what you just learned.</p>
+      <p style={{fontSize:14,color:"var(--ink-2)",marginBottom:16,lineHeight:1.7}}>Top platforms for this category. Click to visit. Try the practice suggestions below to apply what you just learned.</p>
       <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(200px,1fr))",gap:10,marginBottom:20}}>
         {plats.map((p,i)=>(
           <a key={i} href={p.url} target="_blank" rel="noopener noreferrer" style={{textDecoration:"none"}}>
-            <Card style={{borderColor:p.c+"28",transition:"all 0.2s"}}>
+            <Card style={{borderColor:tone(p.c)+"28",transition:"all 0.2s"}}>
               <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:8}}>
-                <div style={{width:32,height:32,borderRadius:8,background:p.c+"18",border:`1px solid ${p.c}35`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,flexShrink:0}}>{p.e}</div>
+                <div style={{width:32,height:32,borderRadius:8,background:tone(p.c)+"18",border:`1px solid ${tone(p.c)}35`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,flexShrink:0}}>{p.e}</div>
                 <div>
-                  <div style={{fontWeight:700,color:"#fff",fontSize:13}}>{p.n}</div>
-                  <div style={{fontSize:9,color:p.c,letterSpacing:"0.08em",fontWeight:700}}>VISIT →</div>
+                  <div style={{fontWeight:700,color:"var(--ink)",fontSize:13}}>{p.n}</div>
+                  <div style={{fontSize:9,color:tone(p.c),letterSpacing:"0.08em",fontWeight:700}}>VISIT →</div>
                 </div>
               </div>
-              <p style={{fontSize:11,color:"#666",lineHeight:1.4}}>{p.d}</p>
+              <p style={{fontSize:11,color:"var(--muted-2)",lineHeight:1.4}}>{p.d}</p>
             </Card>
           </a>
         ))}
@@ -615,7 +793,7 @@ function PlatformsSection({lesson,color}) {
           {lesson.tips.map((tip,i)=>(
             <div key={i} style={{display:"flex",gap:10,marginBottom:10}}>
               <div style={{width:22,height:22,borderRadius:"50%",background:color+"18",border:`1px solid ${color}35`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:700,color,flexShrink:0}}>{i+1}</div>
-              <p style={{fontSize:13,color:"#C0C0D0",lineHeight:1.6}}>{tip}</p>
+              <p style={{fontSize:13,color:"var(--ink-2)",lineHeight:1.6}}>{tip}</p>
             </div>
           ))}
         </Card>
@@ -674,12 +852,12 @@ function TechniquesLesson({lesson,color,onSave,saved,cacheKey}) {
 
   return (
     <div className="fu">
-      <p style={{fontSize:13,color:"#666",marginBottom:18,lineHeight:1.7}}>8 essential techniques. Click any card to deep-dive, see what it is, compare weak vs strong examples, then practise it.</p>
+      <p style={{fontSize:13,color:"var(--muted-2)",marginBottom:18,lineHeight:1.7}}>8 essential techniques. Click any card to deep-dive, see what it is, compare weak vs strong examples, then practise it.</p>
       <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(180px,1fr))",gap:10,marginBottom:20}}>
         {TECHNIQUE_NAMES.map((t,i)=>(
-          <div key={i} onClick={()=>handleSelect(i)} style={{background:sel===i?color+"10":"rgba(255,255,255,0.03)",border:`1px solid ${sel===i?color+"40":"rgba(255,255,255,0.07)"}`,borderRadius:12,padding:14,cursor:"pointer",transition:"all 0.2s"}}>
+          <div key={i} onClick={()=>handleSelect(i)} style={{background:sel===i?color+"10":"rgb(var(--fg-rgb) / 0.03)",border:`1px solid ${sel===i?color+"40":"rgb(var(--fg-rgb) / 0.07)"}`,borderRadius:12,padding:14,cursor:"pointer",transition:"all 0.2s"}}>
             <div style={{fontSize:22,marginBottom:8}}>{t.emoji}</div>
-            <div style={{fontSize:12,fontWeight:700,color:sel===i?color:"#D0D0D0",lineHeight:1.3}}>{t.name}</div>
+            <div style={{fontSize:12,fontWeight:700,color:sel===i?color:"var(--ink-2)",lineHeight:1.3}}>{t.name}</div>
           </div>
         ))}
       </div>
@@ -688,19 +866,19 @@ function TechniquesLesson({lesson,color,onSave,saved,cacheKey}) {
         <Card style={{borderColor:color+"38",animation:"fadeUp 0.3s ease"}}>
           <div style={{display:"flex",gap:8,marginBottom:16,flexWrap:"wrap"}}>
             {["learn","compare","practice"].map(tb=>(
-              <button key={tb} onClick={()=>setTab(tb)} style={{background:tab===tb?color:"transparent",border:`1px solid ${tab===tb?color:"rgba(255,255,255,0.1)"}`,borderRadius:7,padding:"6px 14px",cursor:"pointer",color:tab===tb?"#0B0C0E":"#777",fontSize:11,fontWeight:700,fontFamily:"inherit",transition:"all 0.2s"}}>
+              <button key={tb} onClick={()=>setTab(tb)} style={{background:tab===tb?color:"transparent",border:`1px solid ${tab===tb?color:"rgb(var(--fg-rgb) / 0.1)"}`,borderRadius:7,padding:"6px 14px",cursor:"pointer",color:tab===tb?"var(--bg)":"var(--muted)",fontSize:11,fontWeight:700,fontFamily:"inherit",transition:"all 0.2s"}}>
                 {tb==="learn"?" Learn":tb==="compare"?" Compare":" Practice"}
               </button>
             ))}
           </div>
 
           {tab==="learn" && (
-            loading ? <div style={{display:"flex",gap:10,alignItems:"center",color:"#555",padding:"20px 0"}}><Spinner color={color}/><span>Loading technique...</span></div>
+            loading ? <div style={{display:"flex",gap:10,alignItems:"center",color:"var(--muted-2)",padding:"20px 0"}}><Spinner color={color}/><span>Loading technique...</span></div>
             : <MD text={tc_content.split("BAD:")[0].split("GOOD:")[0]} color={color}/>
           )}
 
           {tab==="compare" && (
-            loading ? <div style={{display:"flex",gap:10,alignItems:"center",color:"#555",padding:"20px 0"}}><Spinner color={color}/><span>Loading examples...</span></div>
+            loading ? <div style={{display:"flex",gap:10,alignItems:"center",color:"var(--muted-2)",padding:"20px 0"}}><Spinner color={color}/><span>Loading examples...</span></div>
             : (
               <div>
                 <div style={{marginBottom:14}}>
@@ -717,8 +895,8 @@ function TechniquesLesson({lesson,color,onSave,saved,cacheKey}) {
 
           {tab==="practice" && (
             <div>
-              <p style={{fontSize:14,color:"#C0C0D0",lineHeight:1.7,marginBottom:14}}>Now use the <strong style={{color:"#fff"}}>{tc?.name}</strong> technique for a real task in your own life or work.</p>
-              <textarea value={ans} onChange={e=>setAns(e.target.value)} placeholder={`Write your own prompt using ${tc?.name}...`} rows={6} style={{width:"100%",background:"rgba(0,0,0,0.2)",border:`1px solid ${color}38`,borderRadius:8,padding:"12px 14px",color:"#fff",fontSize:13,lineHeight:1.7,resize:"vertical",outline:"none",fontFamily:"inherit"}}/>
+              <p style={{fontSize:14,color:"var(--ink-2)",lineHeight:1.7,marginBottom:14}}>Now use the <strong style={{color:"var(--ink)"}}>{tc?.name}</strong> technique for a real task in your own life or work.</p>
+              <textarea value={ans} onChange={e=>setAns(e.target.value)} placeholder={`Write your own prompt using ${tc?.name}...`} rows={6} style={{width:"100%",background:"var(--well)",border:`1px solid ${color}38`,borderRadius:8,padding:"12px 14px",color:"var(--ink)",fontSize:13,lineHeight:1.7,resize:"vertical",outline:"none",fontFamily:"inherit"}}/>
               <div style={{marginTop:10,display:"flex",gap:10,alignItems:"center",flexWrap:"wrap"}}>
                 <Btn color={color} onClick={()=>onSave(ans)} disabled={!ans.trim()}>Save Practice</Btn>
                 {saved && <Tag color="#00C9A7" small>✓ Saved</Tag>}
@@ -776,18 +954,18 @@ function TemplatesLesson({color}) {
 
   return (
     <div className="fu">
-      <p style={{fontSize:13,color:"#888",marginBottom:18,lineHeight:1.7}}>Ready-to-use prompt templates, click to expand, then copy and fill in the [BRACKETS] with your own details.</p>
+      <p style={{fontSize:13,color:"var(--muted)",marginBottom:18,lineHeight:1.7}}>Ready-to-use prompt templates, click to expand, then copy and fill in the [BRACKETS] with your own details.</p>
       <div style={{display:"flex",gap:8,marginBottom:18,flexWrap:"wrap"}}>
         {TEMPLATE_CATS.map((ca,i)=>(
-          <button key={i} onClick={()=>{setCat(i);setOpen(null);}} style={{background:cat===i?color:"rgba(255,255,255,0.04)",border:`1px solid ${cat===i?color:"rgba(255,255,255,0.08)"}`,borderRadius:8,padding:"6px 14px",cursor:"pointer",color:cat===i?"#0B0C0E":"#777",fontSize:11,fontWeight:700,fontFamily:"inherit",transition:"all 0.2s"}}>{ca.name}</button>
+          <button key={i} onClick={()=>{setCat(i);setOpen(null);}} style={{background:cat===i?color:"rgb(var(--fg-rgb) / 0.04)",border:`1px solid ${cat===i?color:"rgb(var(--fg-rgb) / 0.08)"}`,borderRadius:8,padding:"6px 14px",cursor:"pointer",color:cat===i?"var(--bg)":"var(--muted)",fontSize:11,fontWeight:700,fontFamily:"inherit",transition:"all 0.2s"}}>{ca.name}</button>
         ))}
       </div>
       <div style={{display:"flex",flexDirection:"column",gap:10}}>
         {templates.map((t,i)=>(
-          <Card key={i} style={{borderColor:open===i?color+"40":"rgba(255,255,255,0.07)",transition:"all 0.2s"}}>
+          <Card key={i} style={{borderColor:open===i?color+"40":"rgb(var(--fg-rgb) / 0.07)",transition:"all 0.2s"}}>
             <div onClick={()=>setOpen(open===i?null:i)} style={{display:"flex",justifyContent:"space-between",alignItems:"center",cursor:"pointer"}}>
-              <div style={{fontWeight:700,color:"#fff",fontSize:14}}>{t.title}</div>
-              <span style={{color:"#444",fontSize:12}}>{open===i?"▲":"▼"}</span>
+              <div style={{fontWeight:700,color:"var(--ink)",fontSize:14}}>{t.title}</div>
+              <span style={{color:"var(--faint)",fontSize:12}}>{open===i?"▲":"▼"}</span>
             </div>
             {open===i && (
               <div style={{marginTop:14,animation:"fadeUp 0.25s ease"}}>
@@ -850,21 +1028,21 @@ function IndustryLesson({lesson,color,cacheKey}) {
     <div className="fu">
       <div style={{marginBottom:18,padding:14,background:color+"10",border:`1px solid ${color}28`,borderRadius:12}}>
         <div style={{fontSize:11,fontWeight:700,color,marginBottom:5,letterSpacing:"0.1em"}}>{lesson.industry.toUpperCase()}</div>
-        <p style={{fontSize:13,color:"#C0C0D0",lineHeight:1.6}}>Ready-to-use professional templates. Click to expand and copy.</p>
+        <p style={{fontSize:13,color:"var(--ink-2)",lineHeight:1.6}}>Ready-to-use professional templates. Click to expand and copy.</p>
       </div>
 
       {loading ? (
-        <div style={{display:"flex",alignItems:"center",gap:12,padding:"30px 0",color:"#555"}}>
+        <div style={{display:"flex",alignItems:"center",gap:12,padding:"30px 0",color:"var(--muted-2)"}}>
           <Spinner color={color}/>
           <span style={{fontSize:14}}>Generating professional templates for {lesson.industry}...</span>
         </div>
       ) : (
         <div style={{display:"flex",flexDirection:"column",gap:10}}>
           {templates.map((t,i)=>(
-            <Card key={i} style={{borderColor:open===i?color+"40":"rgba(255,255,255,0.07)",transition:"all 0.2s"}}>
+            <Card key={i} style={{borderColor:open===i?color+"40":"rgb(var(--fg-rgb) / 0.07)",transition:"all 0.2s"}}>
               <div onClick={()=>setOpen(open===i?null:i)} style={{display:"flex",justifyContent:"space-between",alignItems:"center",cursor:"pointer"}}>
-                <div style={{fontWeight:700,color:"#fff",fontSize:14}}>{t.task}</div>
-                <span style={{color:"#444",fontSize:12}}>{open===i?"▲":"▼"}</span>
+                <div style={{fontWeight:700,color:"var(--ink)",fontSize:14}}>{t.task}</div>
+                <span style={{color:"var(--faint)",fontSize:12}}>{open===i?"▲":"▼"}</span>
               </div>
               {open===i && (
                 <div style={{marginTop:14,animation:"fadeUp 0.25s ease"}}>
@@ -901,10 +1079,10 @@ function FinalLesson({lesson,color,onSave,saved,onDone,cacheKey}) {
       </div>
       <Card style={{borderColor:color+"28",marginBottom:18}}>
         <SL> Instructions</SL>
-        <div style={{fontSize:14,lineHeight:1.9,color:"#C0C0D0",whiteSpace:"pre-wrap"}}>{lesson.instructions}</div>
+        <div style={{fontSize:14,lineHeight:1.9,color:"var(--ink-2)",whiteSpace:"pre-wrap"}}>{lesson.instructions}</div>
       </Card>
-      <textarea value={ans} onChange={e=>setAns(e.target.value)} placeholder={lesson.placeholder} rows={14} style={{width:"100%",background:"rgba(0,0,0,0.2)",border:`1px solid ${ans?color+"40":"rgba(255,255,255,0.07)"}`,borderRadius:10,padding:"14px 16px",color:"#fff",fontSize:13,lineHeight:1.7,resize:"vertical",outline:"none",fontFamily:"'Plus Jakarta Sans',sans-serif"}}/>
-      <div style={{marginTop:6,fontSize:11,color:ok?"#00C9A7":"#555"}}>{ans.trim().length} / {lesson.minLen||100} characters minimum</div>
+      <textarea value={ans} onChange={e=>setAns(e.target.value)} placeholder={lesson.placeholder} rows={14} style={{width:"100%",background:"var(--well)",border:`1px solid ${ans?color+"40":"rgb(var(--fg-rgb) / 0.07)"}`,borderRadius:10,padding:"14px 16px",color:"var(--ink)",fontSize:13,lineHeight:1.7,resize:"vertical",outline:"none",fontFamily:"'Plus Jakarta Sans',sans-serif"}}/>
+      <div style={{marginTop:6,fontSize:11,color:ok?"#00C9A7":"var(--muted-2)"}}>{ans.trim().length} / {lesson.minLen||100} characters minimum</div>
       <div style={{marginTop:14,display:"flex",gap:10,alignItems:"center",flexWrap:"wrap"}}>
         <Btn color={color} onClick={()=>{onSave(ans);onDone();}} disabled={!ok}>✓ Submit This Part</Btn>
         {saved && <Tag color="#00C9A7" small>✓ Submitted</Tag>}
@@ -919,36 +1097,36 @@ function FinalLesson({lesson,color,onSave,saved,onDone,cacheKey}) {
 // ═══════════════════════════════════════════════════════════════════════════════
 function Certificate({onBack}) {
   const d = new Date().toLocaleDateString("en-GB",{day:"numeric",month:"long",year:"numeric"});
-  const corners = [{top:18,left:18,borderTop:"2px solid rgba(217,179,108,0.4)",borderLeft:"2px solid rgba(217,179,108,0.4)"},{top:18,right:18,borderTop:"2px solid rgba(217,179,108,0.4)",borderRight:"2px solid rgba(217,179,108,0.4)"},{bottom:18,left:18,borderBottom:"2px solid rgba(217,179,108,0.4)",borderLeft:"2px solid rgba(217,179,108,0.4)"},{bottom:18,right:18,borderBottom:"2px solid rgba(217,179,108,0.4)",borderRight:"2px solid rgba(217,179,108,0.4)"}];
+  const corners = [{top:18,left:18,borderTop:"2px solid rgb(var(--accent-rgb) / 0.4)",borderLeft:"2px solid rgb(var(--accent-rgb) / 0.4)"},{top:18,right:18,borderTop:"2px solid rgb(var(--accent-rgb) / 0.4)",borderRight:"2px solid rgb(var(--accent-rgb) / 0.4)"},{bottom:18,left:18,borderBottom:"2px solid rgb(var(--accent-rgb) / 0.4)",borderLeft:"2px solid rgb(var(--accent-rgb) / 0.4)"},{bottom:18,right:18,borderBottom:"2px solid rgb(var(--accent-rgb) / 0.4)",borderRight:"2px solid rgb(var(--accent-rgb) / 0.4)"}];
   return (
-    <div style={{minHeight:"100vh",background:"#0B0C0E",display:"flex",alignItems:"center",justifyContent:"center",padding:40,fontFamily:"'Plus Jakarta Sans',sans-serif"}}>
+    <div style={{minHeight:"100vh",background:"var(--bg)",display:"flex",alignItems:"center",justifyContent:"center",padding:40,fontFamily:"'Plus Jakarta Sans',sans-serif"}}>
       <div style={{maxWidth:700,width:"100%"}}>
-        <div style={{background:"#111215",border:"1px solid rgba(255,255,255,0.1)",borderRadius:28,padding:60,textAlign:"center",position:"relative",overflow:"hidden",animation:"celebrate 0.8s cubic-bezier(0.34,1.56,0.64,1)",boxShadow:"0 0 100px rgba(217,179,108,0.3)"}}>
+        <div style={{background:"var(--panel)",border:"1px solid rgb(var(--fg-rgb) / 0.1)",borderRadius:28,padding:60,textAlign:"center",position:"relative",overflow:"hidden",animation:"celebrate 0.8s cubic-bezier(0.34,1.56,0.64,1)",boxShadow:"0 0 100px rgb(var(--accent-rgb) / 0.3)"}}>
           {corners.map((c,i)=><div key={i} style={{position:"absolute",...c,width:44,height:44}}/>)}
           <div style={{fontSize:60,marginBottom:16,animation:"float 3s ease-in-out infinite"}}></div>
-          <div style={{fontSize:10,letterSpacing:"0.35em",color:"#D9B36C",fontWeight:700,marginBottom:16}}>CERTIFICATE OF COMPLETION</div>
-          <p style={{fontFamily:"'Playfair Display',serif",fontSize:15,color:"#555",fontStyle:"italic",marginBottom:8}}>This proudly certifies that</p>
-          <div style={{fontFamily:"'Playfair Display',serif",fontSize:50,fontWeight:800,background:"#D9B36C",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",marginBottom:10,lineHeight:1.15}}>{NAME}</div>
-          <p style={{fontFamily:"'Playfair Display',serif",fontSize:15,color:"#555",fontStyle:"italic",marginBottom:6}}>has successfully mastered</p>
-          <div style={{fontFamily:"'Playfair Display',serif",fontSize:26,color:"#fff",fontWeight:700,marginBottom:6}}>AI & Prompt Engineering</div>
-          <div style={{fontFamily:"'Playfair Display',serif",fontSize:17,color:"#D9B36C",fontStyle:"italic",marginBottom:32}}>The Complete Masterclass</div>
+          <div style={{fontSize:10,letterSpacing:"0.35em",color:"var(--accent)",fontWeight:700,marginBottom:16}}>CERTIFICATE OF COMPLETION</div>
+          <p style={{fontFamily:"'Playfair Display',serif",fontSize:15,color:"var(--muted-2)",fontStyle:"italic",marginBottom:8}}>This proudly certifies that</p>
+          <div style={{fontFamily:"'Playfair Display',serif",fontSize:50,fontWeight:800,background:"var(--accent)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",marginBottom:10,lineHeight:1.15}}>{NAME}</div>
+          <p style={{fontFamily:"'Playfair Display',serif",fontSize:15,color:"var(--muted-2)",fontStyle:"italic",marginBottom:6}}>has successfully mastered</p>
+          <div style={{fontFamily:"'Playfair Display',serif",fontSize:26,color:"var(--ink)",fontWeight:700,marginBottom:6}}>AI & Prompt Engineering</div>
+          <div style={{fontFamily:"'Playfair Display',serif",fontSize:17,color:"var(--accent)",fontStyle:"italic",marginBottom:32}}>The Complete Masterclass</div>
           <div style={{display:"flex",justifyContent:"center",gap:8,flexWrap:"wrap",marginBottom:30}}>
             {["12 Units","40+ Lessons","Text · Image · Video · Audio","Code · Automation · Agents","RAG & Knowledge Bases","Industry Templates","AI Ethics & Safety","Career Development"].map(b=>(
-              <span key={b} style={{padding:"4px 12px",borderRadius:20,background:"rgba(217,179,108,0.1)",border:"1px solid rgba(217,179,108,0.2)",fontSize:10,color:"#D9B36C",fontWeight:600}}>{b}</span>
+              <span key={b} style={{padding:"4px 12px",borderRadius:20,background:"rgb(var(--accent-rgb) / 0.1)",border:"1px solid rgb(var(--accent-rgb) / 0.2)",fontSize:10,color:"var(--accent)",fontWeight:600}}>{b}</span>
             ))}
           </div>
-          <div style={{borderTop:"1px solid rgba(255,255,255,0.06)",paddingTop:22,display:"flex",justifyContent:"space-between",alignItems:"flex-end",marginBottom:28,flexWrap:"wrap",gap:14}}>
+          <div style={{borderTop:"1px solid rgb(var(--fg-rgb) / 0.06)",paddingTop:22,display:"flex",justifyContent:"space-between",alignItems:"flex-end",marginBottom:28,flexWrap:"wrap",gap:14}}>
             <div>
-              <div style={{fontFamily:"'Playfair Display',serif",fontSize:18,color:"#fff",fontStyle:"italic",marginBottom:2}}>Claude AI</div>
-              <div style={{fontSize:10,color:"#333",letterSpacing:"0.1em"}}>COURSE INSTRUCTOR</div>
+              <div style={{fontFamily:"'Playfair Display',serif",fontSize:18,color:"var(--ink)",fontStyle:"italic",marginBottom:2}}>Claude AI</div>
+              <div style={{fontSize:10,color:"var(--faint)",letterSpacing:"0.1em"}}>COURSE INSTRUCTOR</div>
             </div>
             <div style={{textAlign:"right"}}>
-              <div style={{fontSize:14,color:"#777",marginBottom:2}}>{d}</div>
-              <div style={{fontSize:10,color:"#333",letterSpacing:"0.1em"}}>DATE COMPLETED</div>
+              <div style={{fontSize:14,color:"var(--muted)",marginBottom:2}}>{d}</div>
+              <div style={{fontSize:10,color:"var(--faint)",letterSpacing:"0.1em"}}>DATE COMPLETED</div>
             </div>
           </div>
-          <div style={{padding:22,background:"rgba(255,255,255,0.02)",borderRadius:14,border:"1px solid rgba(255,255,255,0.05)"}}>
-            <p style={{fontFamily:"'Playfair Display',serif",fontSize:14,color:"#C0C0D0",lineHeight:1.85,fontStyle:"italic"}}>
+          <div style={{padding:22,background:"rgb(var(--fg-rgb) / 0.02)",borderRadius:14,border:"1px solid rgb(var(--fg-rgb) / 0.05)"}}>
+            <p style={{fontFamily:"'Playfair Display',serif",fontSize:14,color:"var(--ink-2)",lineHeight:1.85,fontStyle:"italic"}}>
               "{NAME}, you came into this course as a beginner and leave as someone who genuinely understands AI across every domain: text, image, video, audio, code, automation, agents, ethics, and career. That is remarkable. More importantly, you know HOW to think about AI, critically, responsibly, and strategically. The world needs more people like you using this technology thoughtfully. Go build something extraordinary. The tools are in your hands. "
             </p>
           </div>
@@ -965,41 +1143,56 @@ function Certificate({onBack}) {
 // ═══════════════════════════════════════════════════════════════════════════════
 // WELCOME / RESUME
 // ═══════════════════════════════════════════════════════════════════════════════
-function Welcome({onStart, hasProgress, progress}) {
+function Welcome({onStart, hasProgress, progress, doneSet, onTheme}) {
+  const lessonsTotal = UNITS.reduce((n,u)=>n+u.lessons.length,0);
   return (
-    <div style={{minHeight:"100vh",background:"#0B0C0E",display:"flex",alignItems:"center",justifyContent:"center",padding:40,fontFamily:"'Plus Jakarta Sans',sans-serif"}}>
-      <div style={{maxWidth:640,textAlign:"center"}}>
-        <div style={{fontSize:64,marginBottom:20,animation:"float 3s ease-in-out infinite"}}></div>
-        <div style={{fontSize:10,letterSpacing:"0.32em",color:"#D9B36C",fontWeight:700,marginBottom:16}}>PERSONALISED MASTERCLASS</div>
-        <h1 style={{fontFamily:"'Playfair Display',serif",fontSize:50,fontWeight:800,color:"#fff",lineHeight:1.15,marginBottom:10}}>AI & Prompt<br/>Engineering</h1>
-        <div style={{fontFamily:"'Playfair Display',serif",fontSize:20,color:"#D9B36C",fontStyle:"italic",marginBottom:24}}>Designed for {NAME}</div>
-        <p style={{fontSize:15,color:"#888",lineHeight:1.9,marginBottom:36,maxWidth:500,margin:"0 auto 36px"}}>Hey {NAME}!  This is your complete AI course, from absolute zero to full mastery. Every lesson is warm and practical, with practice in every unit. No jargon. No rushing.</p>
-
-        {hasProgress && (
-          <div style={{marginBottom:30,padding:18,background:"rgba(217,179,108,0.08)",border:"1px solid rgba(217,179,108,0.3)",borderRadius:14}}>
-            <div style={{fontSize:11,color:"#D9B36C",fontWeight:700,letterSpacing:"0.12em",marginBottom:8}}> WELCOME BACK</div>
-            <p style={{fontSize:14,color:"#D0D0E0",lineHeight:1.6,marginBottom:14}}>You've completed <strong style={{color:"#fff"}}>{progress.doneCount}</strong> of <strong style={{color:"#fff"}}>{progress.totalL}</strong> lessons. Your progress is saved, pick up exactly where you left off.</p>
-            <button onClick={()=>onStart(true)} style={{background:"#D9B36C",border:"none",borderRadius:12,padding:"12px 32px",color:"#0B0C0E",fontSize:14,fontWeight:800,cursor:"pointer",fontFamily:"inherit"}}>▶ Resume where I left off</button>
-          </div>
-        )}
-
-        <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10,marginBottom:36,maxWidth:480,margin:"0 auto 36px"}}>
-          {[["12","Units"],["40+","Lessons"],["7","AI Types"],["1","Certificate"]].map(([n,l])=>(
-            <div key={l} style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:12,padding:"14px 8px"}}>
-              <div style={{fontFamily:"'Playfair Display',serif",fontSize:28,fontWeight:800,color:"#D9B36C"}}>{n}</div>
-              <div style={{fontSize:10,color:"#666",fontWeight:600,letterSpacing:"0.06em"}}>{l}</div>
+    <div className="welcome">
+      <header className="w-top">
+        <div className="w-brand"><i>M</i> AI Masterclass</div>
+        <div style={{display:"flex",gap:10,alignItems:"center"}}>
+          <span className="w-badge">Preview build</span>
+          <ThemeToggle onChange={onTheme}/>
+        </div>
+      </header>
+      <div className="w-grid">
+        <div className="fu">
+          <div className="w-eyebrow">A PERSONAL MASTERCLASS</div>
+          <h1 className="w-title">AI &amp; prompt<br/>engineering, <em>for {NAME}</em></h1>
+          <p className="w-lede">From your first conversation with an AI to agents, automation and a capstone you can show off. Short lessons, a diagram or activity in each, a quick check before you move on, and every lesson read aloud if you'd rather listen.</p>
+          {hasProgress ? (
+            <div className="w-resume">
+              <div style={{flex:"1 1 220px"}}>
+                <div style={{fontSize:11,fontWeight:800,letterSpacing:".16em",color:"var(--accent)"}}>WELCOME BACK</div>
+                <div style={{fontSize:15,color:"var(--ink)",marginTop:4}}>{progress.doneCount} of {progress.totalL} lessons done. Pick up where you left off.</div>
+              </div>
+              <button className="w-primary" onClick={()=>onStart(true)}>Resume →</button>
             </div>
-          ))}
+          ) : null}
+          <div className="w-cta">
+            {!hasProgress && <button className="w-primary" onClick={()=>onStart(false)}>Start unit 1 →</button>}
+            {hasProgress && <button className="w-ghost" onClick={()=>onStart(false)}>Start again from unit 1</button>}
+          </div>
+          <div className="w-stats">
+            {[[UNITS.length,"units"],[lessonsTotal,"lessons"],["7","kinds of AI"],["1","certificate"]].map(([n,l])=>(
+              <div key={l}><b>{n}</b><span>{l}</span></div>
+            ))}
+          </div>
+          <p className="w-note">About 6 to 10 hours. Go at your own pace; progress is saved in this browser.</p>
         </div>
-        <div style={{display:"flex",gap:8,justifyContent:"center",flexWrap:"wrap",marginBottom:36}}>
-          {["Text Prompting","Image Generation","Video AI","Voice & Music","Code AI","Automation","AI Agents","RAG","Ethics","Career","Industry Templates","Certificate"].map(t=>(
-            <Tag key={t} color="#D9B36C">{t}</Tag>
-          ))}
-        </div>
-        <button onClick={()=>onStart(false)} style={{background:"#D9B36C",border:"none",borderRadius:14,padding:"14px 42px",color:"#0B0C0E",fontSize:15,fontWeight:800,letterSpacing:"0.04em",cursor:"pointer",fontFamily:"'Plus Jakarta Sans',sans-serif",boxShadow:"0 0 50px rgba(217,179,108,0.4)"}}>
-          {hasProgress ? " Start again from unit 1" : ` Start unit 1, ${NAME} →`}
-        </button>
-        <p style={{marginTop:14,fontSize:11,color:"#444"}}>~6–10 hours total · Go at your own pace · Progress saved automatically to this browser</p>
+        <nav className="w-map fu2" aria-label="Course map">
+          <h2>What you'll learn</h2>
+          {UNITS.map((u0,ui)=>{
+            const u = toned(u0);
+            const d = u.lessons.filter((_,li)=>doneSet.has(`${ui}-${li}`)).length;
+            return (
+              <div key={u.id} className="w-unit" style={{"--u":u.color}}>
+                <span className="n">{String(u.id).padStart(2,"0")}</span>
+                <div><div className="t">{u.title}</div><div className="s">{u.lessons.length} lessons{d ? ` · ${d} done` : ""}</div></div>
+                <span className="bar" aria-label={`${d} of ${u.lessons.length} done`}><i style={{width:`${(d/u.lessons.length)*100}%`}}/></span>
+              </div>
+            );
+          })}
+        </nav>
       </div>
     </div>
   );
@@ -1023,20 +1216,20 @@ function ApiKeyModal({onClose}) {
   };
   return (
     <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.7)",backdropFilter:"blur(8px)",zIndex:200,display:"flex",alignItems:"center",justifyContent:"center",padding:20}}>
-      <div style={{maxWidth:500,width:"100%",background:"#111215",border:"1px solid rgba(217,179,108,0.3)",borderRadius:16,padding:28}}>
+      <div style={{maxWidth:500,width:"100%",background:"var(--panel)",border:"1px solid rgb(var(--accent-rgb) / 0.3)",borderRadius:16,padding:28}}>
         <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:14}}>
           <div style={{fontSize:24}}></div>
           <div>
-            <h3 style={{fontFamily:"'Playfair Display',serif",fontSize:20,color:"#fff",margin:0}}>Anthropic API Key</h3>
-            <p style={{fontSize:11,color:"#666",margin:"2px 0 0"}}>For live AI-generated lessons and chat tutor</p>
+            <h3 style={{fontFamily:"'Playfair Display',serif",fontSize:20,color:"var(--ink)",margin:0}}>Anthropic API Key</h3>
+            <p style={{fontSize:11,color:"var(--muted-2)",margin:"2px 0 0"}}>For live AI-generated lessons and chat tutor</p>
           </div>
         </div>
-        <p style={{fontSize:13,color:"#C0C0D0",lineHeight:1.7,marginBottom:14}}>
+        <p style={{fontSize:13,color:"var(--ink-2)",lineHeight:1.7,marginBottom:14}}>
           To unlock AI-generated lesson content and the live tutor chat, paste your Anthropic API key below.
-          It is stored <strong style={{color:"#fff"}}>only in this browser</strong> (localStorage) and sent only to Anthropic's API.
+          It is stored <strong style={{color:"var(--ink)"}}>only in this browser</strong> (localStorage) and sent only to Anthropic's API.
         </p>
-        <p style={{fontSize:12,color:"#888",lineHeight:1.6,marginBottom:14}}>
-          Don't have one? Get a key at <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener" style={{color:"#D9B36C"}}>console.anthropic.com</a>.
+        <p style={{fontSize:12,color:"var(--muted)",lineHeight:1.6,marginBottom:14}}>
+          Don't have one? Get a key at <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener" style={{color:"var(--accent)"}}>console.anthropic.com</a>.
           Without a key, the course still works, you just see placeholder content for AI-generated lessons.
         </p>
         <div style={{position:"relative",marginBottom:12}}>
@@ -1045,9 +1238,9 @@ function ApiKeyModal({onClose}) {
             value={val}
             onChange={e=>setVal(e.target.value)}
             placeholder="sk-ant-api03-..."
-            style={{width:"100%",background:"rgba(0,0,0,0.4)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:10,padding:"12px 50px 12px 14px",color:"#fff",fontSize:13,fontFamily:"'JetBrains Mono',monospace",outline:"none"}}
+            style={{width:"100%",background:"rgba(0,0,0,0.4)",border:"1px solid rgb(var(--fg-rgb) / 0.1)",borderRadius:10,padding:"12px 50px 12px 14px",color:"var(--ink)",fontSize:13,fontFamily:"'JetBrains Mono',monospace",outline:"none"}}
           />
-          <button onClick={()=>setShow(!show)} style={{position:"absolute",right:8,top:"50%",transform:"translateY(-50%)",background:"transparent",border:"none",color:"#888",cursor:"pointer",padding:6,fontSize:11}}>{show?"":""}</button>
+          <button onClick={()=>setShow(!show)} style={{position:"absolute",right:8,top:"50%",transform:"translateY(-50%)",background:"transparent",border:"none",color:"var(--muted)",cursor:"pointer",padding:6,fontSize:11}}>{show?"":""}</button>
         </div>
         <div style={{display:"flex",gap:10,flexWrap:"wrap"}}>
           <Btn color="#D9B36C" onClick={save}> Save Key</Btn>
@@ -1112,28 +1305,28 @@ function SettingsModal({onClose, onReset}) {
 
   return (
     <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.7)",backdropFilter:"blur(8px)",zIndex:200,display:"flex",alignItems:"center",justifyContent:"center",padding:20}}>
-      <div style={{maxWidth:500,width:"100%",background:"#111215",border:"1px solid rgba(217,179,108,0.3)",borderRadius:16,padding:28}}>
+      <div style={{maxWidth:500,width:"100%",background:"var(--panel)",border:"1px solid rgb(var(--accent-rgb) / 0.3)",borderRadius:16,padding:28}}>
         <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:18}}>
           <div style={{fontSize:24}}></div>
-          <h3 style={{fontFamily:"'Playfair Display',serif",fontSize:20,color:"#fff",margin:0}}>Progress Settings</h3>
+          <h3 style={{fontFamily:"'Playfair Display',serif",fontSize:20,color:"var(--ink)",margin:0}}>Progress Settings</h3>
         </div>
 
         <Card style={{marginBottom:12}}>
           <SL> Backup Your Progress</SL>
-          <p style={{fontSize:12,color:"#999",lineHeight:1.6,marginBottom:10}}>Download a JSON file with all your reflections, completed lessons, and cached lesson content.</p>
+          <p style={{fontSize:12,color:"var(--muted)",lineHeight:1.6,marginBottom:10}}>Download a JSON file with all your reflections, completed lessons, and cached lesson content.</p>
           <Btn color="#D9B36C" small onClick={exportData}> Export Backup</Btn>
         </Card>
 
         <Card style={{marginBottom:12}}>
           <SL> Restore from Backup</SL>
-          <p style={{fontSize:12,color:"#999",lineHeight:1.6,marginBottom:10}}>Restore from a previously exported backup file. This will replace your current progress.</p>
+          <p style={{fontSize:12,color:"var(--muted)",lineHeight:1.6,marginBottom:10}}>Restore from a previously exported backup file. This will replace your current progress.</p>
           <input type="file" accept=".json" ref={fileRef} onChange={importData} style={{display:"none"}}/>
           <Btn outline color="#00C9A7" small onClick={()=>fileRef.current.click()}> Choose Backup File</Btn>
         </Card>
 
         <Card style={{marginBottom:18,borderColor:"rgba(255,107,107,0.2)"}}>
           <SL> Reset Everything</SL>
-          <p style={{fontSize:12,color:"#999",lineHeight:1.6,marginBottom:10}}>Delete all your saved progress, reflections, and cached content. This cannot be undone.</p>
+          <p style={{fontSize:12,color:"var(--muted)",lineHeight:1.6,marginBottom:10}}>Delete all your saved progress, reflections, and cached content. This cannot be undone.</p>
           <Btn outline color="#FF6B6B" small onClick={reset}> Reset All Progress</Btn>
         </Card>
 
@@ -1161,6 +1354,8 @@ function App() {
   const [showKey, setShowKey] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [tick, setTick] = useState(0); // forces re-render after reset
+  const [, setThemeTick] = useState(0);
+  const onTheme = () => setThemeTick(t => t + 1);
   const mainRef = useRef(null);
 
   const { screen, uIdx, lIdx, saved, done } = state;
@@ -1173,7 +1368,7 @@ function App() {
     window.scrollTo(0, 0);
   }, [uIdx, lIdx, screen]);
 
-  const unit = UNITS[uIdx];
+  const unit = toned(UNITS[uIdx]);
   const lesson = unit?.lessons[lIdx];
   const totalL = UNITS.reduce((s,u)=>s+u.lessons.length,0);
   const doneCount = doneSet.size;
@@ -1223,12 +1418,13 @@ function App() {
         <Welcome
           hasProgress={hasProgress}
           progress={{doneCount, totalL}}
+          doneSet={doneSet}
+          onTheme={onTheme}
           onStart={(resume) => {
             if (!resume) setState({ screen:"course", uIdx:0, lIdx:0, saved:{}, done:[], checks:{} });
             else setState(s => ({ ...s, screen: "course" }));
           }}
         />
-        <div style={{position:"fixed",top:16,right:16,background:"rgba(217,179,108,0.12)",border:"1px solid rgba(217,179,108,0.3)",borderRadius:8,padding:"7px 14px",color:"#EBD9B0",fontSize:11,fontWeight:700,fontFamily:"inherit"}}>Preview build</div>
       </>
     );
   }
@@ -1261,46 +1457,45 @@ function App() {
   return (
     <>
       <style>{CSS}</style>
-      <div key={tick} className="shell" style={{display:"flex",height:"100dvh",overflow:"hidden",background:"#0B0C0E",fontFamily:"'Plus Jakarta Sans',sans-serif",color:"#fff"}}>
+      <div key={tick} className="shell" style={{"--unit":unit.color,display:"flex",height:"100dvh",overflow:"hidden",fontFamily:"'Plus Jakarta Sans',sans-serif",color:"var(--ink)"}}>
 
         {sidebarOpen && <div className="sidebar-backdrop" onClick={()=>setSidebarOpen(false)}/>}
 
-        {/* SIDEBAR */}
-        <nav aria-label="Course contents" className={`sidebar ${sidebarOpen?"open":""}`} style={{width:268,minWidth:268,height:"100%",borderRight:"1px solid rgba(255,255,255,0.05)",display:"flex",flexDirection:"column",background:"#0E0F12",overflowY:"auto",flexShrink:0}}>
-          <div style={{padding:"16px 14px",borderBottom:"1px solid rgba(255,255,255,0.05)"}}>
-            <div style={{display:"flex",alignItems:"center",gap:9,marginBottom:12}}>
-              <div style={{width:28,height:28,borderRadius:7,background:"rgba(217,179,108,0.2)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,fontWeight:700,color:"#D9B36C"}}>M</div>
-              <div style={{flex:1}}><div style={{fontSize:11,fontWeight:700,color:"#fff"}}>AI Masterclass</div><div style={{fontSize:9,color:"#666"}}>{NAME}</div></div>
+        {/* SIDEBAR: the whole course, always in view */}
+        <nav aria-label="Course contents" className={`sidebar ${sidebarOpen?"open":""}`} style={{width:288,minWidth:288,height:"100%",display:"flex",flexDirection:"column",overflowY:"auto",flexShrink:0}}>
+          <div className="sb-head">
+            <div className="sb-brand">
+              <div className="sb-ring" role="img" aria-label={`${Math.round((doneCount/totalL)*100)}% of the course done`}>
+                <svg viewBox="0 0 44 44"><circle className="track" cx="22" cy="22" r="18"/><circle className="val" cx="22" cy="22" r="18" strokeDasharray={113.1} strokeDashoffset={113.1*(1-doneCount/totalL)}/></svg>
+                <b>{Math.round((doneCount/totalL)*100)}%</b>
+              </div>
+              <div style={{flex:1,minWidth:0}}>
+                <div className="sb-title">AI Masterclass</div>
+                <div className="sb-sub">{doneCount} of {totalL} lessons · for {NAME}</div>
+              </div>
             </div>
-            <div style={{display:"flex",justifyContent:"space-between",marginBottom:5}}>
-              <span style={{fontSize:9,color:"#555",letterSpacing:"0.1em"}}>PROGRESS</span>
-              <span style={{fontSize:9,color:"#D9B36C",fontWeight:700}}>{Math.round((doneCount/totalL)*100)}%</span>
-            </div>
-            <div style={{height:3,background:"rgba(255,255,255,0.05)",borderRadius:2,overflow:"hidden"}}>
-              <div style={{height:"100%",width:`${(doneCount/totalL)*100}%`,background:"#D9B36C",borderRadius:2,transition:"width 0.8s ease"}}/>
-            </div>
-            <div style={{fontSize:9,color:"#555",marginTop:4}}>{doneCount}/{totalL} lessons done ·  auto-saved</div>
           </div>
 
-          <div style={{padding:"8px 6px",flex:1}}>
-            {UNITS.map((u,ui)=>{
-              const uDone = u.lessons.every((_,li)=>doneSet.has(`${ui}-${li}`));
+          <div className="sb-units">
+            {UNITS.map((u0,ui)=>{
+              const u = toned(u0);
+              const dCount = u.lessons.filter((_,li)=>doneSet.has(`${ui}-${li}`)).length;
+              const uDone = dCount === u.lessons.length;
               const active = uIdx===ui;
               return (
-                <div key={u.id} style={{marginBottom:2}}>
-                  <button onClick={()=>goto(ui,0)} style={{width:"100%",textAlign:"left",background:active?u.color+"14":"transparent",border:`1px solid ${active?u.color+"28":"transparent"}`,borderRadius:7,padding:"7px 9px",cursor:"pointer",display:"flex",alignItems:"center",gap:7,color:active?"#fff":"#888",transition:"all 0.15s",fontFamily:"inherit"}}>
-                    <span style={{fontSize:13,flexShrink:0}}>{u.emoji}</span>
-                    <span style={{fontSize:10,fontWeight:600,flex:1,lineHeight:1.3}}>{u.title}</span>
-                    {uDone && <span style={{fontSize:9,color:"#00C9A7",flexShrink:0}}>✓</span>}
+                <div key={u.id} style={{"--u":u.color,marginBottom:2}}>
+                  <button onClick={()=>goto(ui,0)} aria-expanded={active} className={`sb-unit ${active?"on":""} ${uDone?"done":""}`}>
+                    <span className="sb-num">{uDone?"✓":String(u.id).padStart(2,"0")}</span>
+                    <span className="sb-name">{u.title}</span>
+                    <span className="sb-count">{dCount}/{u.lessons.length}</span>
                   </button>
                   {active && (
-                    <div style={{paddingLeft:6,paddingBottom:2}}>
+                    <div className="sb-lessons">
                       {u.lessons.map((l,li)=>{
                         const lDone = doneSet.has(`${ui}-${li}`);
                         return (
-                          <button key={l.id} onClick={()=>goto(ui,li)} style={{width:"100%",textAlign:"left",background:lIdx===li?u.color+"0E":"transparent",border:`1px solid ${lIdx===li?u.color+"20":"transparent"}`,borderRadius:5,padding:"5px 8px",cursor:"pointer",display:"flex",alignItems:"center",gap:5,color:lIdx===li?"#fff":lDone?"#888":"#555",fontSize:10,fontFamily:"inherit",transition:"all 0.15s"}}>
-                            <span style={{flexShrink:0,fontSize:9}}>{lDone?"✓":"○"}</span>
-                            <span style={{lineHeight:1.3}}>{l.title}</span>
+                          <button key={l.id} onClick={()=>goto(ui,li)} aria-current={lIdx===li?"step":undefined} className={`sb-lesson ${lIdx===li?"on":""} ${lDone?"done":""}`}>
+                            {l.title}{lDone && <span className="sr-only"> (done)</span>}
                           </button>
                         );
                       })}
@@ -1311,12 +1506,13 @@ function App() {
             })}
           </div>
 
-          <div style={{padding:10,borderTop:"1px solid rgba(255,255,255,0.05)",display:"flex",flexDirection:"column",gap:6}}>
+          <div className="sb-foot">
             {allDone && (
-              <button onClick={()=>setState(s=>({...s, screen:"certificate"}))} style={{width:"100%",background:"#D9B36C",border:"none",borderRadius:9,padding:10,color:"#0B0C0E",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"inherit"}}> Get My Certificate</button>
+              <button onClick={()=>setState(s=>({...s, screen:"certificate"}))} className="w-primary" style={{width:"100%",padding:12,fontSize:13}}>Get my certificate</button>
             )}
-            <div style={{display:"flex",gap:6}}>
-              <button onClick={()=>setShowSettings(true)} title="Backup / Reset" style={{flex:1,background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.08)",borderRadius:7,padding:"7px 8px",color:"#888",fontSize:10,fontWeight:600,cursor:"pointer",fontFamily:"inherit"}}> Save</button>
+            <div style={{display:"flex",gap:8}}>
+              <button onClick={()=>setState(s=>({...s, screen:"welcome"}))} className="sb-btn">Course home</button>
+              <button onClick={()=>setShowSettings(true)} title="Backup or reset" className="sb-btn">Save & reset</button>
             </div>
           </div>
         </nav>
@@ -1325,49 +1521,62 @@ function App() {
         <main ref={mainRef} style={{flex:1,height:"100%",overflowY:"auto",minWidth:0,scrollBehavior:"auto"}}>
           <div className="topbar">
             <button className="menu-btn" onClick={()=>setSidebarOpen(true)} aria-label="Open course contents">☰ Lessons</button>
-            <div className="topbar-text"><span style={{color:unit.color}}>Unit {unit.id}</span> · Lesson {lIdx+1} of {unit.lessons.length}<span className="topbar-title"> · {lesson.title}</span></div>
+            <div className="topbar-text"><span style={{color:unit.color,fontWeight:700}}>Unit {unit.id}</span> · Lesson {lIdx+1} of {unit.lessons.length}<span className="topbar-title"> · {lesson.title}</span></div>
             <Narration lessonId={lesson.id} color={unit.color}/>
             <div className="topbar-pct">{Math.round((doneCount/totalL)*100)}%</div>
-            <div className="topbar-bar" role="progressbar" aria-label="Course progress" aria-valuemin={0} aria-valuemax={totalL} aria-valuenow={doneCount}><span style={{width:`${(doneCount/totalL)*100}%`,background:unit.color}}/></div>
+            <ThemeToggle compact onChange={onTheme}/>
+            <div className="topbar-bar" role="progressbar" aria-label="Course progress" aria-valuemin={0} aria-valuemax={totalL} aria-valuenow={doneCount}><span style={{width:`${(doneCount/totalL)*100}%`,background:unit.color,color:unit.color}}/></div>
           </div>
-          <div className="main-pad" style={{maxWidth:800,margin:"0 auto",padding:"36px 36px 80px"}} key={`${uIdx}-${lIdx}`}>
+          <div className="lesson" key={`${uIdx}-${lIdx}`}>
 
             {lIdx===0 && (
-              <div className="fu hero" style={{marginBottom:28,padding:24,borderRadius:16,background:`linear-gradient(135deg,${unit.dark},rgba(11,12,14,0.5))`,border:`1px solid ${unit.color}28`}}>
-                <div style={{display:"flex",alignItems:"flex-start",gap:14}}>
-                  <div style={{fontSize:42,flexShrink:0}}>{unit.emoji}</div>
-                  <div>
-                    <Tag color={unit.color} small>Unit {unit.id} of {UNITS.length}</Tag>
-                    <h1 className="hero-title" style={{fontFamily:"'Playfair Display',serif",fontSize:26,fontWeight:800,color:"#fff",margin:"8px 0 5px",lineHeight:1.2}}>{unit.title}</h1>
-                    <p style={{fontSize:13,color:unit.color,fontStyle:"italic"}}>{unit.tagline}</p>
-                  </div>
+              <div className="fu cover">
+                <div className="cover-num" aria-hidden="true">{String(unit.id).padStart(2,"0")}</div>
+                <div className="cover-eyebrow">Unit {unit.id} of {UNITS.length}</div>
+                <h1 className="cover-title">{unit.title}</h1>
+                <p className="cover-tag">{unit.tagline}</p>
+                <div className="cover-list" aria-label="Lessons in this unit">
+                  {unit.lessons.map((l,li)=><span key={l.id}>{li+1}. {l.title}</span>)}
                 </div>
               </div>
             )}
 
-            <div className="fu" style={{marginBottom:22}}>
-              <div style={{display:"flex",gap:8,marginBottom:8,flexWrap:"wrap",alignItems:"center"}}>
-                <Tag color={unit.color} small>Lesson {lIdx+1} of {unit.lessons.length}</Tag>
-                {doneSet.has(`${uIdx}-${lIdx}`) && <Tag color="#00C9A7" small>✓ Completed</Tag>}
-                {sv && <Tag color="#D9B36C" small> Reflection saved</Tag>}
-              </div>
-              <h2 className="lesson-title" style={{fontFamily:"'Playfair Display',serif",fontSize:26,fontWeight:700,color:"#fff",lineHeight:1.3}}>{lesson.title}</h2>
-            </div>
+            <header className="fu lhead">
+              <div className="lhead-eyebrow"><i aria-hidden="true"/>Lesson {lIdx+1} of {unit.lessons.length}</div>
+              <h2 className="lhead-title">{lesson.title}</h2>
+              {(doneSet.has(`${uIdx}-${lIdx}`) || sv) && (
+                <div className="lhead-meta">
+                  {doneSet.has(`${uIdx}-${lIdx}`) && <Tag color="#00C9A7" small>✓ Completed</Tag>}
+                  {sv && <Tag color="#D9B36C" small>Reflection saved</Tag>}
+                </div>
+              )}
+              <div className="lhead-rule" aria-hidden="true"/>
+            </header>
 
             {renderLesson()}
 
-            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:38,paddingTop:22,borderTop:"1px solid rgba(255,255,255,0.05)",flexWrap:"wrap",gap:12}}>
-              <Btn outline color="#666" small onClick={back} disabled={uIdx===0&&lIdx===0}>← Back</Btn>
-              <div style={{display:"flex",gap:4,alignItems:"center"}}>
-                {unit.lessons.map((_,li)=>(
-                  <div key={li} onClick={()=>setState(s=>({...s, lIdx:li}))} style={{width:li===lIdx?18:6,height:6,borderRadius:3,cursor:"pointer",background:li===lIdx?unit.color:doneSet.has(`${uIdx}-${li}`)?unit.color+"55":"rgba(255,255,255,0.07)",transition:"all 0.3s"}}/>
-                ))}
-              </div>
-              {locked && <span style={{fontSize:12,color:"#9A9A9A"}}>Answer the quick check to continue</span>}
-              <Btn color={unit.color} onClick={next} disabled={locked}>
-                {uIdx===UNITS.length-1&&lIdx===unit.lessons.length-1?" Complete & Get Certificate":lIdx===unit.lessons.length-1?`Next: Unit ${uIdx+2} →`:"Next Lesson →"}
-              </Btn>
+            <div className="lnav-dots" aria-label="Lessons in this unit">
+              {unit.lessons.map((l,li)=>(
+                <button key={li} aria-label={`Lesson ${li+1}: ${l.title}`} onClick={()=>setState(s=>({...s, lIdx:li}))} style={{width:li===lIdx?22:7,background:li===lIdx?unit.color:doneSet.has(`${uIdx}-${li}`)?unit.color+"66":"rgb(var(--fg-rgb) / 0.12)"}}/>
+              ))}
             </div>
+            <nav className="lnav" aria-label="Lesson navigation">
+              {(() => {
+                const prev = lIdx>0 ? unit.lessons[lIdx-1] : uIdx>0 ? UNITS[uIdx-1].lessons[UNITS[uIdx-1].lessons.length-1] : null;
+                const last = uIdx===UNITS.length-1 && lIdx===unit.lessons.length-1;
+                const nxt = lIdx<unit.lessons.length-1 ? unit.lessons[lIdx+1] : !last ? UNITS[uIdx+1].lessons[0] : null;
+                return (
+                  <>
+                    <button onClick={back} disabled={!prev}><small>← Previous</small><strong>{prev ? prev.title : "You're at the start"}</strong></button>
+                    <button className="next" onClick={next} disabled={locked}>
+                      <small>{last ? "Finish" : lIdx===unit.lessons.length-1 ? `Next: unit ${uIdx+2}` : "Next lesson"} →</small>
+                      <strong>{last ? "Complete and get your certificate" : nxt.title}</strong>
+                    </button>
+                    {locked && <p className="lock-note">Answer the quick check above to unlock the next lesson.</p>}
+                  </>
+                );
+              })()}
+            </nav>
           </div>
         </main>
       </div>
@@ -1377,4 +1586,5 @@ function App() {
   );
 }
 
+applyTheme(THEME);
 ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
