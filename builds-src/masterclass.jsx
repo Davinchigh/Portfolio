@@ -118,7 +118,13 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
 .topbar-bar{position:absolute;left:0;right:0;bottom:0;height:3px;background:rgba(255,255,255,0.05);}
 .topbar-bar span{display:block;height:100%;transition:width .8s ease;}
 .menu-btn{align-items:center;gap:6px;background:rgba(217,179,108,0.15);border:1px solid rgba(217,179,108,0.3);border-radius:8px;padding:8px 12px;color:#D9B36C;font-size:12px;font-weight:700;cursor:pointer;flex-shrink:0;}
-@media (max-width: 880px){ .topbar{padding:10px 14px 12px;} .topbar-title{display:none;} }
+.narr{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.narr-btn{background:transparent;border:1px solid;border-radius:999px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;}
+.narr-time{font-size:11px;color:#8a8a8a;font-variant-numeric:tabular-nums;}
+.narr-rate{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:6px;color:#cfcfcf;font-size:11px;padding:3px 6px;cursor:pointer;}
+.narr-bar{width:70px;height:3px;border-radius:3px;background:rgba(255,255,255,0.08);overflow:hidden;}
+.narr-bar span{display:block;height:100%;}
+@media (max-width: 880px){ .topbar{padding:10px 14px 12px;} .topbar-title{display:none;} .narr-time,.narr-bar{display:none;} }
 @media (prefers-reduced-motion: reduce){ .fu{animation:none;} .topbar-bar span{transition:none;} }
 `;
 
@@ -1320,6 +1326,7 @@ function App() {
           <div className="topbar">
             <button className="menu-btn" onClick={()=>setSidebarOpen(true)} aria-label="Open course contents">☰ Lessons</button>
             <div className="topbar-text"><span style={{color:unit.color}}>Unit {unit.id}</span> · Lesson {lIdx+1} of {unit.lessons.length}<span className="topbar-title"> · {lesson.title}</span></div>
+            <Narration lessonId={lesson.id} color={unit.color}/>
             <div className="topbar-pct">{Math.round((doneCount/totalL)*100)}%</div>
             <div className="topbar-bar" role="progressbar" aria-label="Course progress" aria-valuemin={0} aria-valuemax={totalL} aria-valuenow={doneCount}><span style={{width:`${(doneCount/totalL)*100}%`,background:unit.color}}/></div>
           </div>

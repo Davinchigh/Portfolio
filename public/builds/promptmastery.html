@@ -92,6 +92,7 @@
     #certificate-print { position: absolute; inset: 0; }
   }
 </style>
+<style>.pm-fig{color:#334155}.dark .pm-fig{color:#e2e8f0}</style>
 </head>
 <body class="min-h-screen">
 
@@ -478,6 +479,33 @@ function renderWelcome(app) {
 }
 
 /* ---------------- SESSION SHELL ---------------- */
+
+/* One diagram per session: the idea in a picture. Drawn as SVG, with a text alternative and a caption. */
+const FIGS = {
+  1: { steps:['Your prompt','The model','Likely next words','The answer'], hi:1, alt:'Diagram: your prompt goes into the model, which predicts likely next words one at a time to build the answer.', cap:'A language model predicts the next word, again and again. Clear prompts make good predictions likely.' },
+  2: { steps:['Text','Images','Video','Audio','Code'], hi:0, alt:'Diagram: five kinds of AI tool side by side: text, images, video, audio and code.', cap:'Pick the tool by the kind of output you need, then prompt it well.' },
+  3: { steps:['Context','Objective','Style','Tone','Audience','Response'], hi:1, alt:'Diagram: the CO-STAR prompt framework as six blocks: Context, Objective, Style, Tone, Audience and Response format.', cap:'CO-STAR: six blocks that turn a vague request into a precise brief.' },
+  4: { steps:['Zero-shot','Few-shot','Step by step','Role','Chain prompts'], hi:2, alt:'Diagram: five prompting techniques from simplest to most structured: zero-shot, few-shot, step by step, role prompting and chained prompts.', cap:'Reach for more structure as the task gets harder.' },
+  5: { steps:['Brief','Draft','Feedback','Refine','Send'], hi:2, alt:'Diagram: the writing loop. Brief the AI, get a draft, give feedback, refine, then send.', cap:'The best writing comes from the feedback loop, not the first draft.' },
+  6: { steps:['Question','Sources','Summary','Verify'], hi:3, alt:'Diagram: research with AI. Ask a question, gather sources, summarise, and verify before relying on it.', cap:'Use AI to read faster, then check the claims that matter.' },
+  7: { steps:['Subject','Style','Setting','Lighting','Mood','Specs'], hi:0, alt:'Diagram: the image prompt formula: subject, style, setting, lighting, mood and technical specs.', cap:'Fill each block and the image stops being random.' },
+  8: { steps:['Scene','Subject','Action','Camera','Light','Length'], hi:3, alt:'Diagram: a video prompt written like a director\'s slate: scene, subject, action, camera movement, lighting and length.', cap:'Write video prompts like a director: say what the camera does.' },
+  9: { steps:['Your data','Ask a question','Insight','Check numbers'], hi:3, alt:'Diagram: data analysis with AI. Share your data, ask a clear question, get an insight, and check the numbers before acting.', cap:'AI spots patterns quickly. You confirm the numbers.' },
+  10:{ steps:['Private?','True?','Fair?','Ship it'], hi:3, alt:'Diagram: three checks before using AI output: is it private, is it true, is it fair, then ship it.', cap:'Three questions before anything AI-made leaves your hands.' },
+};
+function sessionFigure(id){
+  const f = FIGS[id]; if (!f) return '';
+  const n = f.steps.length, W = 640, gap = 14, w = (W - 20 - gap*(n-1))/n;
+  const boxes = f.steps.map((t,i)=>{
+    const x = 10 + i*(w+gap), on = i===f.hi;
+    const arrow = i < n-1 ? `<path d="M${x+w+2} 60 l${gap-4} 0 m-5 -4 l5 4 l-5 4" stroke="#B8935F" stroke-width="2" fill="none"/>` : '';
+    return `<rect x="${x}" y="30" width="${w}" height="60" rx="12" fill="${on?'#1B5E44':'rgba(148,163,184,.12)'}" stroke="${on?'#1B5E44':'rgba(148,163,184,.45)'}"/>
+      <text x="${x+w/2}" y="65" text-anchor="middle" font-size="${n>5?12:13.5}" font-weight="700" fill="${on?'#fff':'currentColor'}">${t}</text>${arrow}`;
+  }).join('');
+  return `<figure class="mb-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4">
+    <svg viewBox="0 0 ${W} 120" role="img" aria-label="${f.alt}" style="width:100%;height:auto;display:block" class="pm-fig"><title>${f.alt}</title>${boxes}</svg>
+    <figcaption class="text-xs text-slate-500 mt-2">${f.cap}</figcaption></figure>`;
+}
 function renderSessionShell(app, id) {
   const s = SESSIONS.find(x=>x.id===id);
   if (!s) { location.hash = '#/welcome'; return; }
@@ -501,6 +529,7 @@ function renderSessionShell(app, id) {
               ${id<SESSIONS.length?`<a href="#/session/${id+1}" class="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200">Next <i data-lucide="arrow-right" class="w-3 h-3 inline"></i></a>`:''}
             </div>
           </div>
+          <div id="narration" class="mb-4"></div>
           <div class="rounded-3xl bg-gradient-to-br from-brand-600 to-brand-800 text-white p-6 lg:p-8 mb-6 shadow-soft">
             <div class="flex items-start justify-between gap-4">
               <div>
@@ -515,6 +544,7 @@ function renderSessionShell(app, id) {
               <div class="hidden md:flex w-20 h-20 rounded-2xl bg-white/15 items-center justify-center text-3xl font-serif font-bold">${id}</div>
             </div>
           </div>
+          ${sessionFigure(id)}
           <div id="session-body"></div>
           <div id="session-footer" class="mt-10 flex flex-wrap items-center justify-between gap-3 p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
             <div class="text-sm text-slate-600 dark:text-slate-400" id="session-status">${state.progress[id].done ? '✓ You\'ve completed this session.' : sessionUnlocked(id) ? `Quiz done. Ready when you are, ${firstName()}.` : 'Finish the end-of-session quiz above to complete this session.'}</div>
@@ -529,6 +559,35 @@ function renderSessionShell(app, id) {
     </div>`;
   s.render(document.getElementById('session-body'));
   lucide.createIcons();
+  renderNarration(id);
+}
+
+/* Narration: each session read aloud by Kokoro-82M, an open-source voice model (Apache 2.0), pre-generated as MP3. */
+let NARR = null;
+const narrReady = fetch('audio/manifest.json').then(r => r.ok ? r.json() : null).then(m => (NARR = m)).catch(() => null);
+function renderNarration(id) {
+  narrReady.then(() => {
+    const box = document.getElementById('narration');
+    const dur = NARR && NARR.durations && NARR.durations.promptmastery ? NARR.durations.promptmastery[String(id)] : null;
+    if (!box || !dur) return;
+    const fmt = s => `${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`;
+    box.innerHTML = `<div class="flex items-center gap-3 p-3 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900" title="Narrated by Kokoro-82M, an open-source voice model (Apache 2.0)">
+      <button id="narr-btn" class="px-4 py-2 rounded-xl bg-brand-600 text-white text-sm font-semibold" aria-label="Listen to this session">▶ Listen</button>
+      <div style="flex:1;min-width:0">
+        <div class="text-xs text-slate-500">Listen to this session · <span id="narr-time">0:00 / ${fmt(dur)}</span></div>
+        <div style="height:4px;border-radius:4px;background:rgba(148,163,184,.25);margin-top:6px;overflow:hidden"><span id="narr-bar" style="display:block;height:100%;width:0;background:linear-gradient(90deg,#1B5E44,#D4A574)"></span></div>
+      </div>
+      <button id="narr-rate" class="px-2 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-xs" aria-label="Playback speed">1×</button>
+      <audio id="narr-audio" preload="none" src="audio/promptmastery/${id}.mp3"></audio>
+    </div>`;
+    const a = document.getElementById('narr-audio'), b = document.getElementById('narr-btn'), r = document.getElementById('narr-rate');
+    const rates = [1, 1.25, 1.5, 0.85]; let ri = 0;
+    b.onclick = () => { if (a.paused) { a.playbackRate = rates[ri]; a.play().catch(()=>{}); } else a.pause(); };
+    r.onclick = () => { ri = (ri + 1) % rates.length; a.playbackRate = rates[ri]; r.textContent = rates[ri] + '×'; };
+    a.onplay = () => { b.textContent = '❚❚ Pause'; b.setAttribute('aria-label','Pause narration'); };
+    a.onpause = () => { b.textContent = '▶ Listen'; b.setAttribute('aria-label','Listen to this session'); };
+    a.ontimeupdate = () => { document.getElementById('narr-time').textContent = `${fmt(a.currentTime)} / ${fmt(dur)}`; document.getElementById('narr-bar').style.width = Math.min(100, a.currentTime/dur*100) + '%'; };
+  });
 }
 
 /* A session can be completed once its quiz has been answered (or if it has no quiz, or was already completed). */
