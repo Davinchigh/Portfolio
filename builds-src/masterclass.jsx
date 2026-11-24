@@ -397,7 +397,21 @@ function MD({text,color}) {
         );
         if(p.startsWith("# ")) return <h2 key={i} style={{fontFamily:"'Playfair Display',serif",fontSize:22,color:"#fff",margin:"20px 0 10px"}} dangerouslySetInnerHTML={{__html:p.slice(2)}}/>;
         if(p.startsWith("## ")) return <h3 key={i} style={{fontFamily:"'Playfair Display',serif",fontSize:17,color:"#fff",margin:"16px 0 8px"}} dangerouslySetInnerHTML={{__html:p.slice(3)}}/>;
-        return <p key={i} style={{fontSize:14,lineHeight:1.9,color:"#C0C0D0",marginBottom:10}} dangerouslySetInnerHTML={{__html:p}}/>;
+        // A block of "- " lines is a list; a block that starts with a line of text followed by "- " lines is a heading line plus a list.
+        const lines = p.split("\n");
+        const firstItem = lines.findIndex(l => /^[-•] /.test(l.trim()));
+        if (firstItem !== -1 && lines.slice(firstItem).every(l => /^[-•] /.test(l.trim()))) {
+          const lead = lines.slice(0, firstItem).join(" ").trim();
+          return (
+            <div key={i} style={{margin:"6px 0 12px"}}>
+              {lead && <p style={{fontSize:14,lineHeight:1.9,color:"#C0C0D0",margin:"0 0 6px"}} dangerouslySetInnerHTML={{__html:lead}}/>}
+              <ul style={{margin:0,paddingLeft:20,display:"grid",gap:6}}>
+                {lines.slice(firstItem).map((l,j)=><li key={j} style={{fontSize:14,lineHeight:1.75,color:"#C0C0D0"}} dangerouslySetInnerHTML={{__html:l.trim().slice(2)}}/>)}
+              </ul>
+            </div>
+          );
+        }
+        return <p key={i} style={{fontSize:14,lineHeight:1.9,color:"#C0C0D0",marginBottom:10}} dangerouslySetInnerHTML={{__html:p.split("\n").join("<br/>")}}/>;
       })}
     </div>
   );
@@ -473,7 +487,7 @@ function LiveChat({color,ctx}) {
 // ═══════════════════════════════════════════════════════════════════════════════
 // AI CONTENT LESSON
 // ═══════════════════════════════════════════════════════════════════════════════
-function AIContentLesson({lesson,color,onSave,saved,cacheKey}) {
+function AIContentLesson({lesson,color,onSave,saved,cacheKey,passed,onPass}) {
   const [content,setContent] = useState("");
   const [loading,setLoading] = useState(false);
   const [err,setErr] = useState("");
@@ -513,6 +527,7 @@ function AIContentLesson({lesson,color,onSave,saved,cacheKey}) {
       ) : (
         <>
           <MD text={mainContent} color={color}/>
+          <LessonExtras key={lesson.id} lessonId={lesson.id} color={color} passed={passed} onPass={onPass}/>
           <Card style={{marginTop:20,borderColor:color+"30"}}>
             <SL> Reflection Exercise</SL>
             <p style={{fontSize:14,color:"#D0D0D0",marginBottom:12,lineHeight:1.7}}>{reflectionQ}</p>
@@ -1134,6 +1149,7 @@ function App() {
     lIdx: 0,
     saved: {},
     done: [],
+    checks: {},
   });
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showKey, setShowKey] = useState(false);
@@ -1142,6 +1158,7 @@ function App() {
   const mainRef = useRef(null);
 
   const { screen, uIdx, lIdx, saved, done } = state;
+  const checks = state.checks || {};
   const doneSet = useMemo(() => new Set(done), [done]);
 
   // Every lesson starts at its top: the lesson pane is its own scroller, so reset it (and the page) on each change.
@@ -1186,7 +1203,7 @@ function App() {
 
   const onReset = () => {
     setShowSettings(false);
-    setState({ screen: "welcome", uIdx: 0, lIdx: 0, saved: {}, done: [] });
+    setState({ screen: "welcome", uIdx: 0, lIdx: 0, saved: {}, done: [], checks: {} });
     setTick(t=>t+1);
   };
 
@@ -1201,7 +1218,7 @@ function App() {
           hasProgress={hasProgress}
           progress={{doneCount, totalL}}
           onStart={(resume) => {
-            if (!resume) setState({ screen:"course", uIdx:0, lIdx:0, saved:{}, done:[] });
+            if (!resume) setState({ screen:"course", uIdx:0, lIdx:0, saved:{}, done:[], checks:{} });
             else setState(s => ({ ...s, screen: "course" }));
           }}
         />
@@ -1216,8 +1233,14 @@ function App() {
   const onSave = v => save(k,v);
   const cacheKey = `lesson_${unit.id}_${lesson.id}_v1`;
 
+  // A lesson with a quick check unlocks Next once it is passed. Lessons finished before checks existed stay unlocked.
+  const hasCheck = !!(typeof EXTRAS !== "undefined" && EXTRAS[lesson.id] && EXTRAS[lesson.id].check);
+  const passed = !!checks[k] || doneSet.has(k);
+  const locked = hasCheck && !passed;
+  const onPass = () => setState(s => ({ ...s, checks: { ...(s.checks || {}), [k]: true } }));
+
   const renderLesson = () => {
-    const props = {lesson, color:unit.color, onSave, saved:sv, cacheKey};
+    const props = {lesson, color:unit.color, onSave, saved:sv, cacheKey, passed, onPass};
     switch(lesson.type) {
       case"platforms": return <PlatformsOverview {...props}/>;
       case"platforms_section": return <PlatformsSection {...props}/>;
@@ -1333,7 +1356,8 @@ function App() {
                   <div key={li} onClick={()=>setState(s=>({...s, lIdx:li}))} style={{width:li===lIdx?18:6,height:6,borderRadius:3,cursor:"pointer",background:li===lIdx?unit.color:doneSet.has(`${uIdx}-${li}`)?unit.color+"55":"rgba(255,255,255,0.07)",transition:"all 0.3s"}}/>
                 ))}
               </div>
-              <Btn color={unit.color} onClick={next}>
+              {locked && <span style={{fontSize:12,color:"#9A9A9A"}}>Answer the quick check to continue</span>}
+              <Btn color={unit.color} onClick={next} disabled={locked}>
                 {uIdx===UNITS.length-1&&lIdx===unit.lessons.length-1?" Complete & Get Certificate":lIdx===unit.lessons.length-1?`Next: Unit ${uIdx+2} →`:"Next Lesson →"}
               </Btn>
             </div>

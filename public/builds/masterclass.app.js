@@ -906,7 +906,13 @@ function MD({ text, color }) {
     if (p.startsWith(">")) return /* @__PURE__ */ React.createElement("blockquote", { key: i, style: { borderLeft: `3px solid ${color}`, paddingLeft: 16, margin: "14px 0", color: "#D0D0E0", fontStyle: "italic", fontSize: 14, lineHeight: 1.7 } }, /* @__PURE__ */ React.createElement("span", { dangerouslySetInnerHTML: { __html: p.slice(1).trim() } }));
     if (p.startsWith("# ")) return /* @__PURE__ */ React.createElement("h2", { key: i, style: { fontFamily: "'Playfair Display',serif", fontSize: 22, color: "#fff", margin: "20px 0 10px" }, dangerouslySetInnerHTML: { __html: p.slice(2) } });
     if (p.startsWith("## ")) return /* @__PURE__ */ React.createElement("h3", { key: i, style: { fontFamily: "'Playfair Display',serif", fontSize: 17, color: "#fff", margin: "16px 0 8px" }, dangerouslySetInnerHTML: { __html: p.slice(3) } });
-    return /* @__PURE__ */ React.createElement("p", { key: i, style: { fontSize: 14, lineHeight: 1.9, color: "#C0C0D0", marginBottom: 10 }, dangerouslySetInnerHTML: { __html: p } });
+    const lines = p.split("\n");
+    const firstItem = lines.findIndex((l) => /^[-•] /.test(l.trim()));
+    if (firstItem !== -1 && lines.slice(firstItem).every((l) => /^[-•] /.test(l.trim()))) {
+      const lead = lines.slice(0, firstItem).join(" ").trim();
+      return /* @__PURE__ */ React.createElement("div", { key: i, style: { margin: "6px 0 12px" } }, lead && /* @__PURE__ */ React.createElement("p", { style: { fontSize: 14, lineHeight: 1.9, color: "#C0C0D0", margin: "0 0 6px" }, dangerouslySetInnerHTML: { __html: lead } }), /* @__PURE__ */ React.createElement("ul", { style: { margin: 0, paddingLeft: 20, display: "grid", gap: 6 } }, lines.slice(firstItem).map((l, j) => /* @__PURE__ */ React.createElement("li", { key: j, style: { fontSize: 14, lineHeight: 1.75, color: "#C0C0D0" }, dangerouslySetInnerHTML: { __html: l.trim().slice(2) } }))));
+    }
+    return /* @__PURE__ */ React.createElement("p", { key: i, style: { fontSize: 14, lineHeight: 1.9, color: "#C0C0D0", marginBottom: 10 }, dangerouslySetInnerHTML: { __html: p.split("\n").join("<br/>") } });
   }));
 }
 function LiveChat({ color, ctx }) {
@@ -940,7 +946,7 @@ function LiveChat({ color, ctx }) {
   };
   return /* @__PURE__ */ React.createElement("div", { style: { marginTop: 24 } }, /* @__PURE__ */ React.createElement("div", { style: { background: "rgba(0,0,0,0.25)", border: `1px solid ${color}28`, borderRadius: 14, overflow: "hidden" } }, /* @__PURE__ */ React.createElement("div", { style: { padding: "10px 14px", borderBottom: `1px solid ${color}18`, display: "flex", alignItems: "center", gap: 8 } }, /* @__PURE__ */ React.createElement("div", { style: { width: 7, height: 7, borderRadius: "50%", background: color, animation: "pulse 2s infinite" } }), /* @__PURE__ */ React.createElement("span", { style: { fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", color } }, "LIVE AI PRACTICE"), /* @__PURE__ */ React.createElement("span", { style: { fontSize: 10, color: "#333", marginLeft: "auto" } }, "powered by Claude")), /* @__PURE__ */ React.createElement("div", { style: { minHeight: 90, maxHeight: 280, overflowY: "auto", padding: 14, display: "flex", flexDirection: "column", gap: 10 } }, msgs.length === 0 && /* @__PURE__ */ React.createElement("div", { style: { color: "#444", fontSize: 13, textAlign: "center", padding: "12px 0" } }, " Practice here, type any prompt and your AI tutor will respond and coach you."), msgs.map((m, i) => /* @__PURE__ */ React.createElement("div", { key: i, style: { display: "flex", justifyContent: m.role === "user" ? "flex-end" : "flex-start" } }, /* @__PURE__ */ React.createElement("div", { style: { maxWidth: "85%", padding: "9px 13px", borderRadius: 10, background: m.role === "user" ? color + "28" : "rgba(255,255,255,0.04)", border: `1px solid ${m.role === "user" ? color + "38" : "rgba(255,255,255,0.06)"}`, fontSize: 13, lineHeight: 1.7, color: m.role === "user" ? "#fff" : "#D0D0D0", whiteSpace: "pre-wrap" } }, m.role === "assistant" && /* @__PURE__ */ React.createElement("div", { style: { fontSize: 9, color, fontWeight: 700, marginBottom: 5, letterSpacing: "0.12em" } }, " AI TUTOR"), m.content))), loading && /* @__PURE__ */ React.createElement("div", { style: { display: "flex" } }, /* @__PURE__ */ React.createElement("div", { style: { padding: "9px 13px", borderRadius: 10, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)" } }, /* @__PURE__ */ React.createElement("div", { style: { fontSize: 9, color, fontWeight: 700, marginBottom: 6, letterSpacing: "0.12em" } }, " AI TUTOR"), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 4 } }, [0, 1, 2].map((j) => /* @__PURE__ */ React.createElement("div", { key: j, style: { width: 5, height: 5, borderRadius: "50%", background: color, animation: `pulse 1.2s ${j * 0.2}s infinite` } }))))), /* @__PURE__ */ React.createElement("div", { ref: bot })), /* @__PURE__ */ React.createElement("div", { style: { padding: "10px 14px", borderTop: "1px solid rgba(255,255,255,0.04)", display: "flex", gap: 10 } }, /* @__PURE__ */ React.createElement("input", { value: inp, onChange: (e) => setInp(e.target.value), onKeyDown: (e) => e.key === "Enter" && !e.shiftKey && send(), placeholder: "Type a prompt to practise... press Enter to send", style: { flex: 1, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 8, padding: "9px 12px", color: "#fff", fontSize: 12, outline: "none", fontFamily: "'Plus Jakarta Sans',sans-serif" } }), /* @__PURE__ */ React.createElement(Btn, { onClick: send, disabled: loading || !inp.trim(), color, small: true }, "→"))));
 }
-function AIContentLesson({ lesson, color, onSave, saved, cacheKey }) {
+function AIContentLesson({ lesson, color, onSave, saved, cacheKey, passed, onPass }) {
   var _a;
   const [content, setContent] = useState("");
   const [loading, setLoading] = useState(false);
@@ -976,7 +982,7 @@ function AIContentLesson({ lesson, color, onSave, saved, cacheKey }) {
   const parts = content.split("##  Reflection Exercise");
   const mainContent = parts[0] || "";
   const reflectionQ = ((_a = parts[1]) == null ? void 0 : _a.trim()) || "What is one thing from this lesson you'll try in the next 7 days?";
-  return /* @__PURE__ */ React.createElement("div", { className: "fu" }, loading ? /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 12, padding: "40px 20px", color: "#555" } }, /* @__PURE__ */ React.createElement(Spinner, { color }), /* @__PURE__ */ React.createElement("span", { style: { fontSize: 14 } }, "Loading lesson content...")) : /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(MD, { text: mainContent, color }), /* @__PURE__ */ React.createElement(Card, { style: { marginTop: 20, borderColor: color + "30" } }, /* @__PURE__ */ React.createElement(SL, null, " Reflection Exercise"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 14, color: "#D0D0D0", marginBottom: 12, lineHeight: 1.7 } }, reflectionQ), /* @__PURE__ */ React.createElement("textarea", { value: ans, onChange: (e) => setAns(e.target.value), placeholder: "Write your reflection here, there are no wrong answers...", rows: 5, style: { width: "100%", background: "rgba(0,0,0,0.2)", border: `1px solid ${ans ? color + "44" : "rgba(255,255,255,0.07)"}`, borderRadius: 8, padding: "12px 14px", color: "#fff", fontSize: 13, lineHeight: 1.7, resize: "vertical", outline: "none", fontFamily: "inherit" } }), /* @__PURE__ */ React.createElement("div", { style: { marginTop: 10, display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" } }, /* @__PURE__ */ React.createElement(Btn, { color, onClick: () => onSave(ans), disabled: !ans.trim() }, "Save Reflection"), saved && /* @__PURE__ */ React.createElement(Tag, { color: "#00C9A7", small: true }, "✓ Saved")))), /* @__PURE__ */ React.createElement(LiveChat, { color, ctx: lesson.title }));
+  return /* @__PURE__ */ React.createElement("div", { className: "fu" }, loading ? /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 12, padding: "40px 20px", color: "#555" } }, /* @__PURE__ */ React.createElement(Spinner, { color }), /* @__PURE__ */ React.createElement("span", { style: { fontSize: 14 } }, "Loading lesson content...")) : /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(MD, { text: mainContent, color }), /* @__PURE__ */ React.createElement(LessonExtras, { key: lesson.id, lessonId: lesson.id, color, passed, onPass }), /* @__PURE__ */ React.createElement(Card, { style: { marginTop: 20, borderColor: color + "30" } }, /* @__PURE__ */ React.createElement(SL, null, " Reflection Exercise"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 14, color: "#D0D0D0", marginBottom: 12, lineHeight: 1.7 } }, reflectionQ), /* @__PURE__ */ React.createElement("textarea", { value: ans, onChange: (e) => setAns(e.target.value), placeholder: "Write your reflection here, there are no wrong answers...", rows: 5, style: { width: "100%", background: "rgba(0,0,0,0.2)", border: `1px solid ${ans ? color + "44" : "rgba(255,255,255,0.07)"}`, borderRadius: 8, padding: "12px 14px", color: "#fff", fontSize: 13, lineHeight: 1.7, resize: "vertical", outline: "none", fontFamily: "inherit" } }), /* @__PURE__ */ React.createElement("div", { style: { marginTop: 10, display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" } }, /* @__PURE__ */ React.createElement(Btn, { color, onClick: () => onSave(ans), disabled: !ans.trim() }, "Save Reflection"), saved && /* @__PURE__ */ React.createElement(Tag, { color: "#00C9A7", small: true }, "✓ Saved")))), /* @__PURE__ */ React.createElement(LiveChat, { color, ctx: lesson.title }));
 }
 function PlatformsOverview({ color }) {
   const [cat, setCat] = useState("text");
@@ -1363,7 +1369,8 @@ function App() {
     uIdx: 0,
     lIdx: 0,
     saved: {},
-    done: []
+    done: [],
+    checks: {}
   });
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showKey, setShowKey] = useState(false);
@@ -1371,6 +1378,7 @@ function App() {
   const [tick, setTick] = useState(0);
   const mainRef = useRef(null);
   const { screen, uIdx, lIdx, saved, done } = state;
+  const checks = state.checks || {};
   const doneSet = useMemo(() => new Set(done), [done]);
   useEffect(() => {
     if (mainRef.current) mainRef.current.scrollTop = 0;
@@ -1406,7 +1414,7 @@ function App() {
   };
   const onReset = () => {
     setShowSettings(false);
-    setState({ screen: "welcome", uIdx: 0, lIdx: 0, saved: {}, done: [] });
+    setState({ screen: "welcome", uIdx: 0, lIdx: 0, saved: {}, done: [], checks: {} });
     setTick((t) => t + 1);
   };
   if (screen === "certificate") {
@@ -1419,7 +1427,7 @@ function App() {
         hasProgress,
         progress: { doneCount, totalL },
         onStart: (resume) => {
-          if (!resume) setState({ screen: "course", uIdx: 0, lIdx: 0, saved: {}, done: [] });
+          if (!resume) setState({ screen: "course", uIdx: 0, lIdx: 0, saved: {}, done: [], checks: {} });
           else setState((s) => ({ ...s, screen: "course" }));
         }
       }
@@ -1430,8 +1438,12 @@ function App() {
   const sv = saved[k];
   const onSave = (v) => save(k, v);
   const cacheKey = `lesson_${unit.id}_${lesson.id}_v1`;
+  const hasCheck = !!(typeof EXTRAS !== "undefined" && EXTRAS[lesson.id] && EXTRAS[lesson.id].check);
+  const passed = !!checks[k] || doneSet.has(k);
+  const locked = hasCheck && !passed;
+  const onPass = () => setState((s) => ({ ...s, checks: { ...s.checks || {}, [k]: true } }));
   const renderLesson = () => {
-    const props = { lesson, color: unit.color, onSave, saved: sv, cacheKey };
+    const props = { lesson, color: unit.color, onSave, saved: sv, cacheKey, passed, onPass };
     switch (lesson.type) {
       case "platforms":
         return /* @__PURE__ */ React.createElement(PlatformsOverview, { ...props });
@@ -1456,6 +1468,237 @@ function App() {
       const lDone = doneSet.has(`${ui}-${li}`);
       return /* @__PURE__ */ React.createElement("button", { key: l.id, onClick: () => goto(ui, li), style: { width: "100%", textAlign: "left", background: lIdx === li ? u.color + "0E" : "transparent", border: `1px solid ${lIdx === li ? u.color + "20" : "transparent"}`, borderRadius: 5, padding: "5px 8px", cursor: "pointer", display: "flex", alignItems: "center", gap: 5, color: lIdx === li ? "#fff" : lDone ? "#888" : "#555", fontSize: 10, fontFamily: "inherit", transition: "all 0.15s" } }, /* @__PURE__ */ React.createElement("span", { style: { flexShrink: 0, fontSize: 9 } }, lDone ? "✓" : "○"), /* @__PURE__ */ React.createElement("span", { style: { lineHeight: 1.3 } }, l.title));
     })));
-  })), /* @__PURE__ */ React.createElement("div", { style: { padding: 10, borderTop: "1px solid rgba(255,255,255,0.05)", display: "flex", flexDirection: "column", gap: 6 } }, allDone && /* @__PURE__ */ React.createElement("button", { onClick: () => setState((s) => ({ ...s, screen: "certificate" })), style: { width: "100%", background: "#D9B36C", border: "none", borderRadius: 9, padding: 10, color: "#0B0C0E", fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" } }, " Get My Certificate"), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 6 } }, /* @__PURE__ */ React.createElement("button", { onClick: () => setShowSettings(true), title: "Backup / Reset", style: { flex: 1, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 7, padding: "7px 8px", color: "#888", fontSize: 10, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" } }, " Save")))), /* @__PURE__ */ React.createElement("main", { ref: mainRef, style: { flex: 1, height: "100%", overflowY: "auto", minWidth: 0, scrollBehavior: "auto" } }, /* @__PURE__ */ React.createElement("div", { className: "topbar" }, /* @__PURE__ */ React.createElement("button", { className: "menu-btn", onClick: () => setSidebarOpen(true), "aria-label": "Open course contents" }, "☰ Lessons"), /* @__PURE__ */ React.createElement("div", { className: "topbar-text" }, /* @__PURE__ */ React.createElement("span", { style: { color: unit.color } }, "Unit ", unit.id), " · Lesson ", lIdx + 1, " of ", unit.lessons.length, /* @__PURE__ */ React.createElement("span", { className: "topbar-title" }, " · ", lesson.title)), /* @__PURE__ */ React.createElement("div", { className: "topbar-pct" }, Math.round(doneCount / totalL * 100), "%"), /* @__PURE__ */ React.createElement("div", { className: "topbar-bar", role: "progressbar", "aria-label": "Course progress", "aria-valuemin": 0, "aria-valuemax": totalL, "aria-valuenow": doneCount }, /* @__PURE__ */ React.createElement("span", { style: { width: `${doneCount / totalL * 100}%`, background: unit.color } }))), /* @__PURE__ */ React.createElement("div", { className: "main-pad", style: { maxWidth: 800, margin: "0 auto", padding: "36px 36px 80px" }, key: `${uIdx}-${lIdx}` }, lIdx === 0 && /* @__PURE__ */ React.createElement("div", { className: "fu hero", style: { marginBottom: 28, padding: 24, borderRadius: 16, background: `linear-gradient(135deg,${unit.dark},rgba(11,12,14,0.5))`, border: `1px solid ${unit.color}28` } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "flex-start", gap: 14 } }, /* @__PURE__ */ React.createElement("div", { style: { fontSize: 42, flexShrink: 0 } }, unit.emoji), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement(Tag, { color: unit.color, small: true }, "Unit ", unit.id, " of ", UNITS.length), /* @__PURE__ */ React.createElement("h1", { className: "hero-title", style: { fontFamily: "'Playfair Display',serif", fontSize: 26, fontWeight: 800, color: "#fff", margin: "8px 0 5px", lineHeight: 1.2 } }, unit.title), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 13, color: unit.color, fontStyle: "italic" } }, unit.tagline)))), /* @__PURE__ */ React.createElement("div", { className: "fu", style: { marginBottom: 22 } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 8, marginBottom: 8, flexWrap: "wrap", alignItems: "center" } }, /* @__PURE__ */ React.createElement(Tag, { color: unit.color, small: true }, "Lesson ", lIdx + 1, " of ", unit.lessons.length), doneSet.has(`${uIdx}-${lIdx}`) && /* @__PURE__ */ React.createElement(Tag, { color: "#00C9A7", small: true }, "✓ Completed"), sv && /* @__PURE__ */ React.createElement(Tag, { color: "#D9B36C", small: true }, " Reflection saved")), /* @__PURE__ */ React.createElement("h2", { className: "lesson-title", style: { fontFamily: "'Playfair Display',serif", fontSize: 26, fontWeight: 700, color: "#fff", lineHeight: 1.3 } }, lesson.title)), renderLesson(), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 38, paddingTop: 22, borderTop: "1px solid rgba(255,255,255,0.05)", flexWrap: "wrap", gap: 12 } }, /* @__PURE__ */ React.createElement(Btn, { outline: true, color: "#666", small: true, onClick: back, disabled: uIdx === 0 && lIdx === 0 }, "← Back"), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 4, alignItems: "center" } }, unit.lessons.map((_, li) => /* @__PURE__ */ React.createElement("div", { key: li, onClick: () => setState((s) => ({ ...s, lIdx: li })), style: { width: li === lIdx ? 18 : 6, height: 6, borderRadius: 3, cursor: "pointer", background: li === lIdx ? unit.color : doneSet.has(`${uIdx}-${li}`) ? unit.color + "55" : "rgba(255,255,255,0.07)", transition: "all 0.3s" } }))), /* @__PURE__ */ React.createElement(Btn, { color: unit.color, onClick: next }, uIdx === UNITS.length - 1 && lIdx === unit.lessons.length - 1 ? " Complete & Get Certificate" : lIdx === unit.lessons.length - 1 ? `Next: Unit ${uIdx + 2} →` : "Next Lesson →"))))), showSettings && /* @__PURE__ */ React.createElement(SettingsModal, { onClose: () => setShowSettings(false), onReset }));
+  })), /* @__PURE__ */ React.createElement("div", { style: { padding: 10, borderTop: "1px solid rgba(255,255,255,0.05)", display: "flex", flexDirection: "column", gap: 6 } }, allDone && /* @__PURE__ */ React.createElement("button", { onClick: () => setState((s) => ({ ...s, screen: "certificate" })), style: { width: "100%", background: "#D9B36C", border: "none", borderRadius: 9, padding: 10, color: "#0B0C0E", fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" } }, " Get My Certificate"), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 6 } }, /* @__PURE__ */ React.createElement("button", { onClick: () => setShowSettings(true), title: "Backup / Reset", style: { flex: 1, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 7, padding: "7px 8px", color: "#888", fontSize: 10, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" } }, " Save")))), /* @__PURE__ */ React.createElement("main", { ref: mainRef, style: { flex: 1, height: "100%", overflowY: "auto", minWidth: 0, scrollBehavior: "auto" } }, /* @__PURE__ */ React.createElement("div", { className: "topbar" }, /* @__PURE__ */ React.createElement("button", { className: "menu-btn", onClick: () => setSidebarOpen(true), "aria-label": "Open course contents" }, "☰ Lessons"), /* @__PURE__ */ React.createElement("div", { className: "topbar-text" }, /* @__PURE__ */ React.createElement("span", { style: { color: unit.color } }, "Unit ", unit.id), " · Lesson ", lIdx + 1, " of ", unit.lessons.length, /* @__PURE__ */ React.createElement("span", { className: "topbar-title" }, " · ", lesson.title)), /* @__PURE__ */ React.createElement("div", { className: "topbar-pct" }, Math.round(doneCount / totalL * 100), "%"), /* @__PURE__ */ React.createElement("div", { className: "topbar-bar", role: "progressbar", "aria-label": "Course progress", "aria-valuemin": 0, "aria-valuemax": totalL, "aria-valuenow": doneCount }, /* @__PURE__ */ React.createElement("span", { style: { width: `${doneCount / totalL * 100}%`, background: unit.color } }))), /* @__PURE__ */ React.createElement("div", { className: "main-pad", style: { maxWidth: 800, margin: "0 auto", padding: "36px 36px 80px" }, key: `${uIdx}-${lIdx}` }, lIdx === 0 && /* @__PURE__ */ React.createElement("div", { className: "fu hero", style: { marginBottom: 28, padding: 24, borderRadius: 16, background: `linear-gradient(135deg,${unit.dark},rgba(11,12,14,0.5))`, border: `1px solid ${unit.color}28` } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "flex-start", gap: 14 } }, /* @__PURE__ */ React.createElement("div", { style: { fontSize: 42, flexShrink: 0 } }, unit.emoji), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement(Tag, { color: unit.color, small: true }, "Unit ", unit.id, " of ", UNITS.length), /* @__PURE__ */ React.createElement("h1", { className: "hero-title", style: { fontFamily: "'Playfair Display',serif", fontSize: 26, fontWeight: 800, color: "#fff", margin: "8px 0 5px", lineHeight: 1.2 } }, unit.title), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 13, color: unit.color, fontStyle: "italic" } }, unit.tagline)))), /* @__PURE__ */ React.createElement("div", { className: "fu", style: { marginBottom: 22 } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 8, marginBottom: 8, flexWrap: "wrap", alignItems: "center" } }, /* @__PURE__ */ React.createElement(Tag, { color: unit.color, small: true }, "Lesson ", lIdx + 1, " of ", unit.lessons.length), doneSet.has(`${uIdx}-${lIdx}`) && /* @__PURE__ */ React.createElement(Tag, { color: "#00C9A7", small: true }, "✓ Completed"), sv && /* @__PURE__ */ React.createElement(Tag, { color: "#D9B36C", small: true }, " Reflection saved")), /* @__PURE__ */ React.createElement("h2", { className: "lesson-title", style: { fontFamily: "'Playfair Display',serif", fontSize: 26, fontWeight: 700, color: "#fff", lineHeight: 1.3 } }, lesson.title)), renderLesson(), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 38, paddingTop: 22, borderTop: "1px solid rgba(255,255,255,0.05)", flexWrap: "wrap", gap: 12 } }, /* @__PURE__ */ React.createElement(Btn, { outline: true, color: "#666", small: true, onClick: back, disabled: uIdx === 0 && lIdx === 0 }, "← Back"), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 4, alignItems: "center" } }, unit.lessons.map((_, li) => /* @__PURE__ */ React.createElement("div", { key: li, onClick: () => setState((s) => ({ ...s, lIdx: li })), style: { width: li === lIdx ? 18 : 6, height: 6, borderRadius: 3, cursor: "pointer", background: li === lIdx ? unit.color : doneSet.has(`${uIdx}-${li}`) ? unit.color + "55" : "rgba(255,255,255,0.07)", transition: "all 0.3s" } }))), locked && /* @__PURE__ */ React.createElement("span", { style: { fontSize: 12, color: "#9A9A9A" } }, "Answer the quick check to continue"), /* @__PURE__ */ React.createElement(Btn, { color: unit.color, onClick: next, disabled: locked }, uIdx === UNITS.length - 1 && lIdx === unit.lessons.length - 1 ? " Complete & Get Certificate" : lIdx === unit.lessons.length - 1 ? `Next: Unit ${uIdx + 2} →` : "Next Lesson →"))))), showSettings && /* @__PURE__ */ React.createElement(SettingsModal, { onClose: () => setShowSettings(false), onReset }));
 }
+const FIG_TEXT = "#E8E6E1", FIG_MUTED = "#8A8A8A", FIG_LINE = "rgba(255,255,255,0.14)";
+function Figure({ alt, caption, children, color }) {
+  return /* @__PURE__ */ React.createElement("figure", { style: { margin: "22px 0", padding: 18, borderRadius: 14, background: "rgba(255,255,255,0.025)", border: `1px solid ${color}26` } }, /* @__PURE__ */ React.createElement("svg", { viewBox: "0 0 640 240", role: "img", "aria-label": alt, style: { width: "100%", height: "auto", display: "block" } }, /* @__PURE__ */ React.createElement("title", null, alt), children), caption && /* @__PURE__ */ React.createElement("figcaption", { style: { marginTop: 10, fontSize: 12, color: FIG_MUTED, lineHeight: 1.6 } }, caption));
+}
+const Box = ({ x, y, w, h, label, sub, color, filled }) => /* @__PURE__ */ React.createElement("g", null, /* @__PURE__ */ React.createElement("rect", { x, y, width: w, height: h, rx: "12", fill: filled ? color + "26" : "rgba(255,255,255,0.03)", stroke: filled ? color : FIG_LINE }), /* @__PURE__ */ React.createElement("text", { x: x + w / 2, y: y + h / 2 + (sub ? -4 : 5), textAnchor: "middle", fill: FIG_TEXT, fontSize: "14", fontWeight: "700" }, label), sub && /* @__PURE__ */ React.createElement("text", { x: x + w / 2, y: y + h / 2 + 15, textAnchor: "middle", fill: FIG_MUTED, fontSize: "11" }, sub));
+const Arrow = ({ x1, y1, x2, y2, color }) => /* @__PURE__ */ React.createElement("g", { stroke: color, strokeWidth: "2", fill: "none" }, /* @__PURE__ */ React.createElement("line", { x1, y1, x2, y2 }), /* @__PURE__ */ React.createElement("path", { d: `M${x2 - 8} ${y2 - 5} L${x2} ${y2} L${x2 - 8} ${y2 + 5}` }));
+const FIGURES = {
+  prediction: (c) => /* @__PURE__ */ React.createElement(Figure, { color: c, alt: "Diagram: the words 'Write a warm welcome for' go into an AI model, which ranks possible next words by likelihood: 'our' 62 percent, 'new' 21 percent, 'the' 11 percent, 'customers' 6 percent.", caption: "AI writes by predicting the most likely next word, again and again. Your prompt decides which words look likely." }, /* @__PURE__ */ React.createElement(Box, { x: 20, y: 88, w: 190, h: 64, label: "Your prompt", sub: "“Write a warm welcome for…”", color: c }), /* @__PURE__ */ React.createElement(Arrow, { x1: 214, y1: 120, x2: 262, y2: 120, color: c }), /* @__PURE__ */ React.createElement(Box, { x: 266, y: 80, w: 120, h: 80, label: "AI model", sub: "patterns from text", color: c, filled: true }), /* @__PURE__ */ React.createElement(Arrow, { x1: 390, y1: 120, x2: 430, y2: 120, color: c }), [["our", 62], ["new", 21], ["the", 11], ["customers", 6]].map(([w, p], i) => /* @__PURE__ */ React.createElement("g", { key: w }, /* @__PURE__ */ React.createElement("text", { x: 440, y: 62 + i * 40, fill: FIG_TEXT, fontSize: "13" }, w), /* @__PURE__ */ React.createElement("rect", { x: 520, y: 50 + i * 40, width: 100, height: 14, rx: "7", fill: "rgba(255,255,255,0.06)" }), /* @__PURE__ */ React.createElement("rect", { x: 520, y: 50 + i * 40, width: p, height: 14, rx: "7", fill: c, opacity: 1 - i * 0.2 }), /* @__PURE__ */ React.createElement("text", { x: 620, y: 62 + i * 40, textAnchor: "end", fill: FIG_MUTED, fontSize: "10" }, p, "%")))),
+  ingredients: (c) => /* @__PURE__ */ React.createElement(Figure, { color: c, alt: "Diagram: six prompt ingredients in a row, Role, Task, Context, Format, Tone and Constraints, combining into one complete prompt.", caption: "The six ingredients. Task is the only one you always need; each extra one makes the answer more yours." }, ["Role", "Task", "Context", "Format", "Tone", "Limits"].map((t, i) => /* @__PURE__ */ React.createElement(Box, { key: t, x: 14 + i * 104, y: 40, w: 92, h: 56, label: t, color: c, filled: t === "Task" })), [0, 1, 2, 3, 4, 5].map((i) => /* @__PURE__ */ React.createElement("line", { key: i, x1: 60 + i * 104, y1: 100, x2: 320, y2: 160, stroke: FIG_LINE })), /* @__PURE__ */ React.createElement(Box, { x: 200, y: 160, w: 240, h: 56, label: "A prompt that works", sub: "specific, shaped, on brand", color: c, filled: true })),
+  imageFormula: (c) => /* @__PURE__ */ React.createElement(Figure, { color: c, alt: "Diagram: the image prompt formula as six blocks, Subject, Style, Setting, Lighting, Mood and Technical specs, each with an example.", caption: "Fill each block and the image stops being random." }, [["Subject", "a straw handbag"], ["Style", "editorial"], ["Setting", "cream linen"], ["Lighting", "soft morning"], ["Mood", "calm, premium"], ["Specs", "4:5, sharp"]].map(([t, e], i) => /* @__PURE__ */ React.createElement(Box, { key: t, x: 10 + i * 105, y: 80, w: 95, h: 72, label: t, sub: e, color: c, filled: i === 0 }))),
+  automation: (c) => /* @__PURE__ */ React.createElement(Figure, { color: c, alt: "Diagram: an automation in three steps. A trigger, a new form submission, starts an AI step that scores and summarises it, which leads to an action, adding a row to a sheet and alerting you.", caption: "Every automation is a trigger, an AI step and an action." }, /* @__PURE__ */ React.createElement(Box, { x: 20, y: 84, w: 170, h: 72, label: "Trigger", sub: "a form is submitted", color: c }), /* @__PURE__ */ React.createElement(Arrow, { x1: 194, y1: 120, x2: 232, y2: 120, color: c }), /* @__PURE__ */ React.createElement(Box, { x: 236, y: 84, w: 170, h: 72, label: "AI step", sub: "score + summarise (JSON)", color: c, filled: true }), /* @__PURE__ */ React.createElement(Arrow, { x1: 410, y1: 120, x2: 448, y2: 120, color: c }), /* @__PURE__ */ React.createElement(Box, { x: 452, y: 84, w: 170, h: 72, label: "Action", sub: "add to sheet, alert you", color: c })),
+  agentLoop: (c) => /* @__PURE__ */ React.createElement(Figure, { color: c, alt: "Diagram: the agent loop. A goal leads to a plan, the agent acts with tools, checks the result, and loops back to plan again until the goal is met, then reports back.", caption: "A chatbot answers once. An agent loops: plan, act, check, until the goal is met." }, /* @__PURE__ */ React.createElement(Box, { x: 14, y: 90, w: 110, h: 60, label: "Goal", color: c }), /* @__PURE__ */ React.createElement(Arrow, { x1: 128, y1: 120, x2: 168, y2: 120, color: c }), /* @__PURE__ */ React.createElement(Box, { x: 172, y: 40, w: 120, h: 56, label: "Plan", color: c, filled: true }), /* @__PURE__ */ React.createElement(Box, { x: 332, y: 40, w: 130, h: 56, label: "Act", sub: "search, email, book", color: c, filled: true }), /* @__PURE__ */ React.createElement(Box, { x: 252, y: 150, w: 130, h: 56, label: "Check", sub: "is it done?", color: c, filled: true }), /* @__PURE__ */ React.createElement(Arrow, { x1: 296, y1: 68, x2: 328, y2: 68, color: c }), /* @__PURE__ */ React.createElement(Arrow, { x1: 400, y1: 100, x2: 360, y2: 146, color: c }), /* @__PURE__ */ React.createElement(Arrow, { x1: 252, y1: 170, x2: 230, y2: 100, color: c }), /* @__PURE__ */ React.createElement(Arrow, { x1: 386, y1: 178, x2: 500, y2: 178, color: c }), /* @__PURE__ */ React.createElement(Box, { x: 504, y: 150, w: 120, h: 56, label: "Report back", color: c })),
+  rag: (c) => /* @__PURE__ */ React.createElement(Figure, { color: c, alt: "Diagram: retrieval augmented generation. A question searches your own documents, the most relevant passages are passed to the AI, and it answers using only those passages, with sources.", caption: "RAG is an open-book exam: the AI answers from your documents, and can show which page it used." }, /* @__PURE__ */ React.createElement(Box, { x: 10, y: 90, w: 120, h: 60, label: "Question", color: c }), /* @__PURE__ */ React.createElement(Arrow, { x1: 134, y1: 120, x2: 164, y2: 120, color: c }), /* @__PURE__ */ React.createElement(Box, { x: 168, y: 70, w: 140, h: 100, label: "Your files", sub: "search, find 3 passages", color: c }), /* @__PURE__ */ React.createElement(Arrow, { x1: 312, y1: 120, x2: 342, y2: 120, color: c }), /* @__PURE__ */ React.createElement(Box, { x: 346, y: 80, w: 120, h: 80, label: "AI", sub: "reads the passages", color: c, filled: true }), /* @__PURE__ */ React.createElement(Arrow, { x1: 470, y1: 120, x2: 500, y2: 120, color: c }), /* @__PURE__ */ React.createElement(Box, { x: 504, y: 80, w: 126, h: 80, label: "Answer", sub: "with its sources", color: c })),
+  verify: (c) => /* @__PURE__ */ React.createElement(Figure, { color: c, alt: "Diagram: the verification habit. AI draft, then check facts, numbers and names against a source, then publish. A warning marks skipping the check.", caption: "Draft with AI. Check anything you will publish, send or act on. Then ship." }, /* @__PURE__ */ React.createElement(Box, { x: 20, y: 90, w: 160, h: 64, label: "AI draft", color: c }), /* @__PURE__ */ React.createElement(Arrow, { x1: 184, y1: 122, x2: 232, y2: 122, color: c }), /* @__PURE__ */ React.createElement(Box, { x: 236, y: 80, w: 170, h: 84, label: "You check", sub: "facts · numbers · names", color: c, filled: true }), /* @__PURE__ */ React.createElement(Arrow, { x1: 410, y1: 122, x2: 458, y2: 122, color: c }), /* @__PURE__ */ React.createElement(Box, { x: 462, y: 90, w: 160, h: 64, label: "Publish", color: c }))
+};
+const choiceBtn = (on, color) => ({
+  background: on ? color + "22" : "rgba(255,255,255,0.03)",
+  border: `1px solid ${on ? color : "rgba(255,255,255,0.1)"}`,
+  borderRadius: 10,
+  padding: "10px 14px",
+  color: "#EDEDED",
+  fontSize: 13,
+  cursor: "pointer",
+  textAlign: "left",
+  fontFamily: "inherit",
+  transition: "background .2s, border-color .2s, transform .2s"
+});
+function FlipCards({ data, color, onDone }) {
+  const [seen, setSeen] = useState(/* @__PURE__ */ new Set());
+  const flip = (i) => setSeen((s) => {
+    const n = new Set(s);
+    n.add(i);
+    if (n.size === data.cards.length) onDone();
+    return n;
+  });
+  return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("p", { style: { fontSize: 13, color: "#9A9A9A", marginBottom: 12 } }, data.intro, " ", /* @__PURE__ */ React.createElement("span", { style: { color } }, seen.size, "/", data.cards.length, " turned")), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(170px,1fr))", gap: 10 } }, data.cards.map(([front, back], i) => /* @__PURE__ */ React.createElement("button", { key: front, type: "button", onClick: () => flip(i), "aria-pressed": seen.has(i), className: "flip", style: { ...choiceBtn(seen.has(i), color), minHeight: 108, display: "flex", flexDirection: "column", justifyContent: "center" } }, /* @__PURE__ */ React.createElement("span", { style: { fontWeight: 700, fontSize: 14, color: seen.has(i) ? color : "#fff" } }, front), /* @__PURE__ */ React.createElement("span", { style: { marginTop: 6, fontSize: 12, lineHeight: 1.5, color: "#C9C9C9", display: seen.has(i) ? "block" : "none" } }, back), !seen.has(i) && /* @__PURE__ */ React.createElement("span", { style: { marginTop: 6, fontSize: 11, color: "#666" } }, "tap to turn")))));
+}
+function Builder({ data, color, onDone }) {
+  const [added, setAdded] = useState([]);
+  const add = (i) => setAdded((a) => {
+    if (a.includes(i)) return a;
+    const n = [...a, i];
+    if (n.length === data.parts.length) onDone();
+    return n;
+  });
+  const prompt = data.parts.filter((_, i) => added.includes(i)).map((p) => p[1]).join(" ");
+  return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("p", { style: { fontSize: 13, color: "#9A9A9A", marginBottom: 12 } }, data.intro), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexWrap: "wrap", gap: 8 } }, data.parts.map(([label], i) => /* @__PURE__ */ React.createElement("button", { key: label, type: "button", onClick: () => add(i), disabled: added.includes(i), style: { ...choiceBtn(added.includes(i), color), opacity: added.includes(i) ? 0.6 : 1 } }, added.includes(i) ? "✓ " : "+ ", label))), /* @__PURE__ */ React.createElement("div", { "aria-live": "polite", style: { marginTop: 14, minHeight: 84, padding: 14, borderRadius: 10, background: "rgba(0,0,0,0.25)", border: "1px dashed rgba(255,255,255,0.12)", fontSize: 13.5, lineHeight: 1.7, color: prompt ? "#EDEDED" : "#666" } }, prompt || "Your prompt builds here as you add ingredients."), added.length === data.parts.length && /* @__PURE__ */ React.createElement("p", { style: { marginTop: 10, fontSize: 13, color } }, data.done));
+}
+function Sorter({ data, color, onDone }) {
+  const [placed, setPlaced] = useState({});
+  const [note, setNote] = useState("");
+  const pick = (i, g) => {
+    const [, right, why] = data.items[i];
+    if (g !== right) {
+      setNote(`Not quite: ${why}`);
+      return;
+    }
+    setNote(`Right: ${why}`);
+    setPlaced((p) => {
+      const n = { ...p, [i]: g };
+      if (Object.keys(n).length === data.items.length) onDone();
+      return n;
+    });
+  };
+  return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("p", { style: { fontSize: 13, color: "#9A9A9A", marginBottom: 12 } }, data.intro, " ", /* @__PURE__ */ React.createElement("span", { style: { color } }, Object.keys(placed).length, "/", data.items.length, " sorted")), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gap: 8 } }, data.items.map(([text], i) => /* @__PURE__ */ React.createElement("div", { key: text, style: { display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap", padding: "10px 12px", borderRadius: 10, background: "rgba(255,255,255,0.025)", border: `1px solid ${placed[i] !== void 0 ? color + "55" : "rgba(255,255,255,0.08)"}` } }, /* @__PURE__ */ React.createElement("span", { style: { flex: "1 1 240px", fontSize: 13.5, color: "#E5E5E5" } }, text), placed[i] !== void 0 ? /* @__PURE__ */ React.createElement("span", { style: { fontSize: 12, color, fontWeight: 700 } }, "✓ ", data.groups[placed[i]]) : data.groups.map((g, gi) => /* @__PURE__ */ React.createElement("button", { key: g, type: "button", onClick: () => pick(i, gi), style: { ...choiceBtn(false, color), padding: "6px 10px", fontSize: 12 } }, g))))), /* @__PURE__ */ React.createElement("p", { "aria-live": "polite", style: { marginTop: 10, fontSize: 13, color: note.startsWith("Right") ? color : "#E8A87C", minHeight: 20 } }, note));
+}
+function Sequence({ data, color, onDone }) {
+  const [order, setOrder] = useState([]);
+  const [note, setNote] = useState("");
+  const shuffled = useMemo(() => data.steps.map((s, i) => [s, i]).sort((a, b) => (a[1] * 7 + 3) % data.steps.length - (b[1] * 7 + 3) % data.steps.length), [data]);
+  const tap = (i) => {
+    if (order.includes(i)) return;
+    if (i !== order.length) {
+      setNote(`Not yet: think about what has to happen first.`);
+      return;
+    }
+    const n = [...order, i];
+    setOrder(n);
+    setNote("");
+    if (n.length === data.steps.length) {
+      setNote(data.done);
+      onDone();
+    }
+  };
+  return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("p", { style: { fontSize: 13, color: "#9A9A9A", marginBottom: 12 } }, data.intro), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexWrap: "wrap", gap: 8 } }, shuffled.map(([s, i]) => /* @__PURE__ */ React.createElement("button", { key: s, type: "button", onClick: () => tap(i), disabled: order.includes(i), style: { ...choiceBtn(order.includes(i), color) } }, order.includes(i) ? `${order.indexOf(i) + 1}. ` : "", s))), /* @__PURE__ */ React.createElement("p", { "aria-live": "polite", style: { marginTop: 10, fontSize: 13, color: order.length === data.steps.length ? color : "#E8A87C", minHeight: 20 } }, note));
+}
+const ACTIVITIES = { flip: FlipCards, build: Builder, sort: Sorter, sequence: Sequence };
+function QuickCheck({ check, color, passed, onPass }) {
+  const [pick, setPick] = useState(passed ? check.answer : null);
+  const right = pick === check.answer;
+  return /* @__PURE__ */ React.createElement("div", { style: { marginTop: 22, padding: 18, borderRadius: 14, background: "rgba(255,255,255,0.025)", border: `1px solid ${right ? color : color + "30"}` } }, /* @__PURE__ */ React.createElement("p", { style: { fontSize: 10, letterSpacing: "0.14em", color, fontWeight: 700, margin: 0 } }, "QUICK CHECK · ANSWER TO UNLOCK THE NEXT LESSON"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 15, color: "#fff", margin: "8px 0 12px", lineHeight: 1.5, fontWeight: 600 } }, check.q), /* @__PURE__ */ React.createElement("div", { role: "radiogroup", "aria-label": check.q, style: { display: "grid", gap: 8 } }, check.options.map((o, i) => {
+    const chosen = pick === i;
+    const state = chosen ? i === check.answer ? color : "#E8A87C" : null;
+    return /* @__PURE__ */ React.createElement(
+      "button",
+      {
+        key: o,
+        type: "button",
+        role: "radio",
+        "aria-checked": chosen,
+        onClick: () => {
+          setPick(i);
+          if (i === check.answer) onPass();
+        },
+        style: { ...choiceBtn(chosen, state || color), borderColor: state || "rgba(255,255,255,0.1)" }
+      },
+      o
+    );
+  })), pick !== null && /* @__PURE__ */ React.createElement("p", { "aria-live": "polite", style: { marginTop: 12, fontSize: 13, lineHeight: 1.6, color: right ? color : "#E8A87C" } }, right ? `Correct. ${check.why}` : "Not quite. Have another look at the lesson and try again."));
+}
+function LessonExtras({ lessonId, color, passed, onPass }) {
+  const ex = EXTRAS[lessonId];
+  const [activityDone, setActivityDone] = useState(passed);
+  if (!ex) return null;
+  const Act = ex.activity && ACTIVITIES[ex.activity.type];
+  return /* @__PURE__ */ React.createElement("div", null, ex.figure && FIGURES[ex.figure](color), Act && /* @__PURE__ */ React.createElement("div", { style: { marginTop: 22, padding: 18, borderRadius: 14, background: "rgba(255,255,255,0.02)", border: `1px solid ${activityDone ? color + "66" : "rgba(255,255,255,0.08)"}` } }, /* @__PURE__ */ React.createElement("p", { style: { fontSize: 10, letterSpacing: "0.14em", color, fontWeight: 700, margin: "0 0 8px" } }, "TRY IT", activityDone ? " · DONE ✓" : ""), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 16, color: "#fff", margin: "0 0 4px", fontWeight: 700 } }, ex.activity.title), /* @__PURE__ */ React.createElement(Act, { data: ex.activity, color, onDone: () => setActivityDone(true) })), ex.check && /* @__PURE__ */ React.createElement(QuickCheck, { check: ex.check, color, passed, onPass }));
+}
+const EXTRAS = {
+  "1a": {
+    figure: "prediction",
+    activity: { type: "flip", title: "Meet the seven kinds of AI", intro: "Turn each card to see what it does and one way to use it.", cards: [
+      ["Text", "Chat assistants like Claude and ChatGPT. Draft emails, summarise reports, brainstorm."],
+      ["Image", "Pictures from a description. Product shots, social posts, presentation art."],
+      ["Video", "Short clips from text or a photo. Adverts, explainers, social shorts."],
+      ["Audio", "Natural voiceovers and music. Narrate lessons, podcast intros, jingles."],
+      ["Code", "Formulas, scripts and small apps, described in plain words."],
+      ["Agents", "AI that takes several steps on its own toward a goal, using tools."],
+      ["Automation", "AI wired into your apps so routine work happens by itself."]
+    ] },
+    check: { q: "What is an AI chat assistant actually doing when it writes an answer?", options: ["Looking the answer up in a database of facts", "Predicting the words most likely to make a good answer, based on patterns it learned", "Copying the closest web page it can find", "Thinking about the question the way a person does"], answer: 1, why: "It predicts from patterns. That is why your wording steers the answer, and why you still check facts." }
+  },
+  "1c": {
+    activity: { type: "sequence", title: "Put a first conversation in order", intro: "Tap the steps in the order you would do them.", steps: ["Say who you are and your situation", "Ask for one clear thing", "Read the answer and give feedback", "Save the version that works"], done: "That's the loop: context, one clear ask, feedback, save." },
+    check: { q: "The first answer is close but too formal. What is the best next move?", options: ["Start a new chat and ask the same thing again", "Accept it and edit it yourself", "Tell it what worked and what to change, for example: keep the structure, make it warmer", "Ask a different AI tool"], answer: 2, why: "Feedback in the same conversation keeps all the context and usually fixes it in one turn." }
+  },
+  "2a": {
+    figure: "ingredients",
+    activity: { type: "build", title: "Build a prompt, one ingredient at a time", intro: "Add each ingredient and watch a vague request become a usable one.", parts: [
+      ["Role", "You are an experienced events planner in Accra."],
+      ["Task", "Plan a two-hour product launch"],
+      ["Context", "for 40 guests at a small fashion brand, with a budget of GHS 15,000."],
+      ["Format", "Give a timeline table with times, activities and who is responsible,"],
+      ["Tone", "in a warm, professional voice,"],
+      ["Constraints", "and keep it to one page with no more than eight rows."]
+    ], done: "Same request, six ingredients: now the AI knows who to be, what to make, for whom, in what shape and within what limits." },
+    check: { q: "Which ingredient tells the AI what shape the answer should take, like a table, bullet points or a one-paragraph email?", options: ["Role", "Context", "Format", "Tone"], answer: 2, why: "Format shapes the output. Ask for a table and you get a table instead of an essay." }
+  },
+  "2d": {
+    check: { q: "You need AI's help with a decision but worry it will just agree with you. Which technique fits?", options: ["Prompt chaining", "Devil's advocate prompting", "Persona stacking", "Contextual memory refresh"], answer: 1, why: "Asking it to argue against your plan surfaces the weaknesses it would otherwise be too agreeable to mention." }
+  },
+  "3a": {
+    figure: "imageFormula",
+    activity: { type: "build", title: "Build an image prompt", intro: "Add each block of the formula and see the prompt sharpen.", parts: [
+      ["Subject", "A woven straw handbag"],
+      ["Style", "in a minimal editorial photography style,"],
+      ["Setting", "resting on a cream linen surface,"],
+      ["Lighting", "soft morning window light,"],
+      ["Mood", "calm and premium,"],
+      ["Technical specs", "4:5 aspect ratio, sharp focus, high detail."]
+    ], done: "Every block removes a guess. That's the difference between a random picture and a usable product shot." },
+    check: { q: "In the image formula, where does “soft morning window light” belong?", options: ["Subject", "Style", "Lighting", "Technical specs"], answer: 2, why: "Lighting changes the whole feel of an image, so it gets its own place in the prompt." }
+  },
+  "3b": {
+    check: { q: "Before you publish an AI image for a client, what should you always check?", options: ["The file size", "Hands, any text in the image, and logos", "That it was made with the newest model", "Nothing, if the prompt was detailed"], answer: 1, why: "Hands, lettering and logos are where image AI still slips, so check them every time." }
+  },
+  "4a": {
+    check: { q: "Which part of a video prompt does “slow push-in” describe?", options: ["Style", "Camera movement", "Lighting", "Pacing"], answer: 1, why: "Push-in, pan, tilt and orbit are camera moves. Naming one makes clips feel directed, not random." }
+  },
+  "5a": {
+    activity: { type: "sort", title: "Written for the eye, or for the ear?", intro: "Voice AI reads exactly what you write. Sort each line.", groups: ["For the ear", "For the eye"], items: [
+      ["“Here's the good news: it takes five minutes.”", 0, "short, spoken rhythm, easy to say aloud."],
+      ["“Refer to Table 3 (p. 14) for the full breakdown.”", 1, "brackets and page numbers make sense on paper, not out loud."],
+      ["“First, open the app. Then, tap the plus.”", 0, "clear steps with natural pauses."],
+      ["“Q3 rev. ↑ 12% YoY (see appx).”", 1, "abbreviations and symbols get read out awkwardly or not at all."]
+    ] },
+    check: { q: "When is it acceptable to clone someone's voice?", options: ["When the recording is public online", "When it's only for a demo", "Only your own voice, or with that person's clear written permission", "When you credit them in the description"], answer: 2, why: "A voice is personal. Use your own, or get written permission." }
+  },
+  "5b": {
+    check: { q: "Which of these belongs in a music prompt's formula?", options: ["Your file name", "Tempo, like 105 BPM", "The platform's price", "The video's length in pixels"], answer: 1, why: "Genre, mood, instruments, vocal style, tempo and theme: tempo sets the energy." }
+  },
+  "6a": {
+    check: { q: "You've got a spreadsheet formula from AI. What should you do before using it on your real data?", options: ["Use it straight away, AI code is always tested", "Test it on a copy of your data first", "Ask a second AI if it's right", "Delete your backup to save space"], answer: 1, why: "Always test on a copy. If something goes wrong, your real data is safe." }
+  },
+  "6b": {
+    check: { q: "AI summarised your sales table and says revenue rose 18%. You'll present that to your manager. What now?", options: ["Present it, AI is good at maths", "Check the number against the table yourself first", "Round it to 20% to be safe", "Ask the AI if it's sure"], answer: 1, why: "AI can miscount or misread a table. Check any number you will act on." }
+  },
+  "7a": {
+    figure: "automation",
+    activity: { type: "sequence", title: "Assemble an automation", intro: "A customer fills in your order form. Tap the steps in the order the automation runs.", steps: ["Trigger: a new form submission arrives", "AI step: read it and return the order as structured data", "Action: add a row to your sheet", "Action: send you a WhatsApp alert"], done: "Trigger, AI step, action. That shape runs almost every automation you'll build." },
+    check: { q: "Why ask the AI step for structured output, like JSON with named fields?", options: ["It looks more professional", "The next app can read each field reliably instead of guessing from a paragraph", "It makes the AI faster", "It's required by law"], answer: 1, why: "Apps need predictable fields. Structured output turns AI text into data the next step can use." }
+  },
+  "8a": {
+    figure: "agentLoop",
+    activity: { type: "sort", title: "Chatbot or agent?", intro: "Decide which one each task needs.", groups: ["Chatbot", "Agent"], items: [
+      ["Explain what a VAT invoice is", 0, "one question, one answer: a chatbot is enough."],
+      ["Find three venues, check prices and email the shortlist", 1, "several steps and tools toward a goal: that's an agent."],
+      ["Rewrite this paragraph to sound friendlier", 0, "a single transformation of your text."],
+      ["Watch my inbox and file every invoice into the right folder", 1, "ongoing action with tools: an agent's job."]
+    ] },
+    check: { q: "Which belongs in a good agent prompt but rarely in a chat prompt?", options: ["A polite greeting", "Guardrails: what it must never do without asking you", "A request for emojis", "Your favourite colour"], answer: 1, why: "Agents act, so they need limits: spending, sending and deleting should wait for your OK." }
+  },
+  "8b": {
+    figure: "rag",
+    check: { q: "What does RAG add to an AI assistant?", options: ["It makes the model bigger", "It lets the AI answer from your own documents, and show which ones", "It removes the need for prompts", "It makes answers longer"], answer: 1, why: "Retrieval finds the relevant passages in your files, and the AI answers from them: an open-book exam." }
+  },
+  "10a": {
+    figure: "verify",
+    check: { q: "An AI answer includes a confident statistic with a source name. What's the professional move?", options: ["Trust it, it named a source", "Check the statistic and the source yourself before using it", "Remove the source and keep the number", "Ask the AI to make it sound more confident"], answer: 1, why: "AI can invent convincing facts and sources. Verify anything you publish, send or act on." }
+  },
+  "10b": {
+    activity: { type: "sort", title: "Safe to paste, or never?", intro: "Apply the public notice board test to each item.", groups: ["Fine to paste", "Never paste"], items: [
+      ["A customer's full name, phone number and order history", 1, "personal data about someone else: anonymise it first."],
+      ["A blog post you've already published", 0, "it's public already."],
+      ["Your bank login or a one-time PIN", 1, "never share credentials with any tool."],
+      ["A sales table with names replaced by Customer A, B and C", 0, "anonymised data keeps the insight and drops the risk."]
+    ] },
+    check: { q: "What's the quickest test for whether something is safe to paste into AI?", options: ["Is it under 1,000 words?", "Would I pin it on a public notice board?", "Did I write it myself?", "Is it in English?"], answer: 1, why: "If you wouldn't pin it up in public, don't paste it." }
+  },
+  "10c": {
+    check: { q: "AI drafted a decision about which staff get a bonus. What should happen next?", options: ["Send it, the AI is neutral", "A person reviews it for fairness and makes the final call", "Ask the AI to pick again", "Share it so staff can complain"], answer: 1, why: "Decisions about people need a human in charge. AI can be biased in ways that are hard to see." }
+  },
+  "11a": {
+    check: { q: "What does “AI skills are additive” mean for your career?", options: ["You must leave your field to work in AI", "AI adds to the expertise you already have, making you more valuable in your own field", "Only programmers benefit", "You need a new degree first"], answer: 1, why: "A nurse, accountant or teacher who uses AI well is worth more in their own field." }
+  },
+  "11b": {
+    check: { q: "Which portfolio piece proves the most to an employer?", options: ["A list of AI tools you've heard of", "A case study: the problem, what you did and a result with a number", "A screenshot of a chat", "Your course enrolment email"], answer: 1, why: "A result with a number, like 'saved four hours a week', turns a claim into evidence." }
+  },
+  "11c": {
+    check: { q: "What's the practice-first rule?", options: ["Read every AI newsletter daily", "For every hour reading about AI, spend two using it", "Only use one AI tool", "Wait for tools to mature before trying them"], answer: 1, why: "Using AI builds the skill. Reading only builds the vocabulary." }
+  }
+};
 ReactDOM.createRoot(document.getElementById("root")).render(/* @__PURE__ */ React.createElement(App, null));
