@@ -221,8 +221,8 @@ export default function Home() {
                   <p className={`kicker ${p.featured ? "!text-white/60" : ""}`}>{p.visits}</p>
                   <h3 className="mt-5 font-serif text-5xl italic">{p.name}</h3>
                   <p className={`mt-2 ${p.featured ? "text-white/75" : "text-ink-mute"}`}>{p.for}</p>
-                  <p className="mt-8 flex items-baseline gap-2">
-                    <span className="text-[44px] font-medium leading-none tracking-tight tabular-nums">GH₵ {p.price.toLocaleString()}</span>
+                  <p className="mt-8 flex flex-wrap items-baseline gap-x-2 gap-y-1">
+                    <span className="whitespace-nowrap text-[44px] font-medium leading-none tracking-tight tabular-nums">GH₵ {p.price.toLocaleString()}</span>
                     <span className={p.featured ? "text-white/60" : "text-ink-mute"}>{p.per}</span>
                   </p>
                   <ul className={`mt-8 space-y-3 border-t pt-6 ${p.featured ? "border-white/15" : "border-line"}`}>

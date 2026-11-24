@@ -28,14 +28,15 @@ export function PlanBuilder() {
     <div className="builder grid overflow-hidden rounded-[32px] border border-line bg-white lg:grid-cols-[1.05fr_1fr]">
       {/* The garden, growing as you choose */}
       <div className="relative min-h-[300px] bg-[#EEF2EC] sm:min-h-[420px]" aria-hidden="true">
-        <svg viewBox="0 0 400 300" className="absolute inset-0 h-full w-full" preserveAspectRatio="xMidYMax slice">
+        <svg viewBox="0 0 400 480" className="absolute inset-0 h-full w-full" preserveAspectRatio="xMidYMax slice">
           <defs>
             <linearGradient id="sky" x1="0" x2="0" y1="0" y2="1">
               <stop offset="0" stopColor={sun === "shade" ? "#DDE4DE" : "#F4F1E6"} />
               <stop offset="1" stopColor="#EEF2EC" />
             </linearGradient>
           </defs>
-          <rect width="400" height="300" fill="url(#sky)" />
+          <rect width="400" height="480" fill="url(#sky)" />
+          <g transform="translate(-40 120) scale(1.2)">
           {/* sun */}
           <g className="g-sun" style={{ opacity: sun === "shade" ? 0.25 : 1, transform: `translateY(${sun === "full" ? 0 : 14}px)` }}>
             <circle cx="330" cy="56" r={sun === "full" ? 24 : 18} fill="#F2C14E" />
@@ -120,6 +121,7 @@ export function PlanBuilder() {
               <path d={space === "balcony" ? "M80 262 H380" : "M140 270 H390"} stroke="#5C8FB0" strokeWidth="3" strokeDasharray="2 8" strokeLinecap="round" fill="none" className="g-drip" />
             </g>
           )}
+          </g>
         </svg>
         <p className="absolute left-5 top-5 rounded-full bg-white/80 px-3 py-1.5 text-[13px] font-medium text-ink-soft backdrop-blur">
           {size.toLocaleString()} {unit} · {sun === "full" ? "full sun" : sun === "part" ? "part sun" : "mostly shade"}
