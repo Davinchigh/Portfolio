@@ -78,7 +78,7 @@ export function Stack() {
       id="stack"
       eyebrow="stack"
       title="tools i reach for"
-      intro="the languages and tools i reach for. hover or tab to see each one in its colours."
+      intro="everything here shows up in a project on this page. hover or tab to any of them to see it in its own colours."
       aside={
         <HandNote arrow="down-left" className="hidden -rotate-3 text-xl md:inline-flex">
           claude does a lot of heavy lifting
@@ -86,7 +86,7 @@ export function Stack() {
       }
     >
       <BrandGradients />
-      <div className="stagger grid gap-10 md:grid-cols-3">
+      <div className="stagger grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
         {stack.map((group) => (
           <div key={group.label}>
             <h3 className="eyebrow">{group.label}</h3>
@@ -96,7 +96,7 @@ export function Stack() {
                   <span
                     tabIndex={0}
                     style={{ "--brand": brandColor(tool.icon) } as React.CSSProperties}
-                    className="group relative flex h-14 w-14 items-center justify-center rounded-xl border bg-card text-muted-foreground transition-[color,transform,border-color] hover:-translate-y-0.5 active:scale-[0.97] hover:border-[var(--brand)] hover:text-[var(--brand)] focus-visible:text-[var(--brand)] motion-reduce:transition-none"
+                    className="tool-tile group relative flex h-14 w-14 items-center justify-center rounded-xl border bg-card"
                   >
                     <ToolIcon icon={tool.icon} name={tool.name} reveal />
                     <span className="sr-only">{tool.name}</span>

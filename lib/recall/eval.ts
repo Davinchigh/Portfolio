@@ -32,7 +32,7 @@ export const QUESTIONS: { question: string; expect: string[] }[] = [
   { question: "prompt engineering certification", expect: ["cert:udemy", "cert:alx-ghana", "role:coderaccoon", "cert:claude-academy-by-anthropic"] },
   { question: "does he speak German?", expect: ["cert:ambylon", "cert:ahk-german-industry-and-commerce-in-ghana"] },
   { question: "which design tools does he use?", expect: ["stack:sap-learning-and-design"] },
-  { question: "what languages and frameworks does he build with?", expect: ["stack:build"] },
+  { question: "what languages and frameworks does he build with?", expect: ["stack:languages-and-frontend"] },
   { question: "apps I can try right now", expect: ["build:masterclass", "build:promptmastery", "build:the-climb"] },
   { question: "fashion brand website", expect: ["side:lizab-house-of-fashion"] },
   { question: "gardening website he designed", expect: ["design:glee-garden"] },
