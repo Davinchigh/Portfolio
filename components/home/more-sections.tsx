@@ -1,6 +1,5 @@
 import Link from "next/link"
 import { CertificateViewer } from "@/components/home/certificate-viewer"
-import { CertGrid } from "@/components/home/cert-grid"
 import { ArrowUpRight } from "lucide-react"
 import { HandNote } from "@/components/site/hand-note"
 import { FadeImage } from "@/components/site/fade-image"
@@ -117,41 +116,68 @@ export function Stack() {
   )
 }
 
+function CertCard({ c }: { c: (typeof certifications)[number] }) {
+  return (
+    <li className="cert-card flex flex-col rounded-2xl border bg-card p-5">
+      <div className="flex items-start justify-between gap-4">
+        <h4 className="font-medium leading-snug">{c.issuer}</h4>
+        <span className="meta shrink-0 rounded-full border px-2 py-0.5">{c.year}</span>
+      </div>
+      {c.items.length === 1 ? (
+        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{c.items[0]}</p>
+      ) : (
+        <ul className="mt-3 flex flex-wrap gap-1.5">
+          {c.items.map((item) => (
+            <li key={item} className="rounded-full border bg-background/60 px-2.5 py-1 text-xs text-muted-foreground">
+              {item}
+            </li>
+          ))}
+        </ul>
+      )}
+      {c.doc && (
+        <div className="mt-auto pt-4">
+          <CertificateViewer doc={c.doc} issuer={c.issuer} />
+        </div>
+      )}
+    </li>
+  )
+}
+
 export function Certifications() {
+  const professional = certifications.filter((c) => c.group === "professional")
+  const other = certifications.filter((c) => c.group === "other")
+  const count = (list: typeof certifications) => list.reduce((n, c) => n + c.items.length, 0)
   return (
     <Section
       id="certifications"
       eyebrow="certifications"
       title="things i've been certified in"
       intro="most recent first. open any certificate to see the original, and verify it where the issuer allows."
-      revealBody={false}
     >
-      <CertGrid>
-        {certifications.map((c) => (
-          <li key={c.issuer} className="cert-row grid gap-3 border-t py-5 sm:grid-cols-[1fr_auto] sm:gap-8">
-            <div>
-              <h3 className="cert-issuer font-medium">{c.issuer}</h3>
-              {c.items.length === 1 ? (
-                <p className="mt-1 text-sm text-muted-foreground">{c.items[0]}</p>
-              ) : (
-                <ul className="mt-3 flex flex-wrap gap-2">
-                  {c.items.map((item) => (
-                    <li key={item} className="cert-chip rounded-full border bg-background/60 px-3 py-1 text-xs text-muted-foreground">
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              )}
-              {c.doc && (
-                <div className="mt-3">
-                  <CertificateViewer doc={c.doc} issuer={c.issuer} />
-                </div>
-              )}
-            </div>
-            <p className="cert-year meta sm:pt-1">{c.year}</p>
-          </li>
-        ))}
-      </CertGrid>
+      <div>
+        <div className="flex items-baseline justify-between gap-4">
+          <h3 className="text-xl">professional</h3>
+          <p className="meta">{count(professional)} certificates</p>
+        </div>
+        <div className="draw-line mt-3" aria-hidden="true" />
+        <ul className="stagger mt-6 grid gap-4 sm:grid-cols-2">
+          {professional.map((c) => (
+            <CertCard key={c.issuer} c={c} />
+          ))}
+        </ul>
+      </div>
+      <div className="mt-14">
+        <div className="flex items-baseline justify-between gap-4">
+          <h3 className="text-xl">other recognition</h3>
+          <p className="meta">languages, volunteering and appreciation</p>
+        </div>
+        <div className="draw-line mt-3" aria-hidden="true" />
+        <ul className="stagger mt-6 grid gap-4 sm:grid-cols-2">
+          {other.map((c) => (
+            <CertCard key={c.issuer} c={c} />
+          ))}
+        </ul>
+      </div>
     </Section>
   )
 }

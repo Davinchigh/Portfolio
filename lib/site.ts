@@ -474,9 +474,12 @@ export const stack: { label: string; tools: Tool[] }[] = [
 /** A certificate a recruiter can open: preview image (and `-thumb`), the original PDF and an online check where one exists. */
 export type CertificateDoc = { image: string; pdf?: string; verify?: string; label: string }
 
-export const certifications: { issuer: string; year: string; items: string[]; doc?: CertificateDoc }[] = [
+/** "professional": technical and industry certificates. "other": languages, appreciation and volunteer recognition. */
+export type CertGroup = "professional" | "other"
+
+export const certifications: { issuer: string; year: string; items: string[]; group: CertGroup; doc?: CertificateDoc }[] = [
   {
-    issuer: "Claude Academy by Anthropic",
+    issuer: "Claude Academy by Anthropic", group: "professional",
     year: "2026",
     items: [
       "Claude Code 101",
@@ -490,7 +493,7 @@ export const certifications: { issuer: string; year: string; items: string[]; do
     ],
   },
   {
-    issuer: "Brandenburg University of Applied Sciences",
+    issuer: "Brandenburg University of Applied Sciences", group: "professional",
     year: "2026",
     items: ["SAP S/4HANA Cloud End-to-End Business Processes (IEE2E)"],
     doc: {
@@ -501,7 +504,7 @@ export const certifications: { issuer: string; year: string; items: string[]; do
     },
   },
   {
-    issuer: "CodeRaccoon, Ambylon and Dicebridge Training",
+    issuer: "CodeRaccoon, Ambylon and Dicebridge Training", group: "professional",
     year: "2026",
     items: ["Professional Achievement: Mathematics Curriculum, Stages 1 to 12"],
     doc: {
@@ -511,7 +514,7 @@ export const certifications: { issuer: string; year: string; items: string[]; do
     },
   },
   {
-    issuer: "NextGen Youth Movement",
+    issuer: "NextGen Youth Movement", group: "other",
     year: "2026",
     items: ["Certificate of Appreciation, facilitator at Teens Conference 2026"],
     doc: {
@@ -521,7 +524,7 @@ export const certifications: { issuer: string; year: string; items: string[]; do
     },
   },
   {
-    issuer: "AHK, German Industry and Commerce in Ghana",
+    issuer: "AHK, German Industry and Commerce in Ghana", group: "professional",
     year: "2026",
     items: ["Intercultural Training for IT Professionals"],
     doc: {
@@ -530,10 +533,10 @@ export const certifications: { issuer: string; year: string; items: string[]; do
       pdf: "/certificates/ahk-intercultural.pdf",
     },
   },
-  { issuer: "Udemy", year: "2025", items: ["Prompt Engineering"] },
-  { issuer: "Ambylon", year: "2025", items: ["German A1 and A2"] },
+  { issuer: "Udemy", group: "professional", year: "2025", items: ["Prompt Engineering"] },
+  { issuer: "Ambylon", group: "other", year: "2025", items: ["German A1 and A2"] },
   {
-    issuer: "ALX Ghana",
+    issuer: "ALX Ghana", group: "professional",
     year: "2025",
     items: ["AI Starter Kit"],
     doc: {
@@ -542,7 +545,7 @@ export const certifications: { issuer: string; year: string; items: string[]; do
       verify: "https://savanna.alxafrica.com/certificates/sneTcR3yN8",
     },
   },
-  { issuer: "SoloLearn", year: "2022", items: ["Front-End Development Fundamentals"] },
+  { issuer: "SoloLearn", group: "professional", year: "2022", items: ["Front-End Development Fundamentals"] },
 ]
 
 // ---------- Stats (all countable from the lists above or the CV) ----------

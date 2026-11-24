@@ -8,7 +8,8 @@ import { Hero } from "@/components/home/hero"
 import { Lessons } from "@/components/home/lessons"
 import { Certifications, Designs, Stack, Ventures } from "@/components/home/more-sections"
 import { Stats } from "@/components/home/stats"
-import { CaseStudy, WorkCard } from "@/components/home/work"
+import { CaseStudy, MarqueeCard } from "@/components/home/work"
+import { Marquee } from "@/components/site/kinetic"
 import { Rail } from "@/components/site/route"
 import { Section } from "@/components/site/section"
 import { work } from "@/lib/site"
@@ -44,11 +45,14 @@ export default function Home() {
                 ))}
                 <div className="border-t pt-10">
                   <p className="eyebrow">more work</p>
-                  <ul className="stagger mt-6 grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-4">
-                    {work.slice(FEATURED).map((item) => (
-                      <WorkCard key={item.slug} item={item} />
-                    ))}
-                  </ul>
+                  <p className="mt-2 text-sm text-muted-foreground">hover to pause, open any one for the full story.</p>
+                  <div className="mt-4">
+                    <Marquee label="more work" seconds={70}>
+                      {work.slice(FEATURED).map((item) => (
+                        <MarqueeCard key={item.slug} item={item} />
+                      ))}
+                    </Marquee>
+                  </div>
                 </div>
               </Section>
             ),
