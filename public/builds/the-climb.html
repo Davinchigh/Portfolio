@@ -3,208 +3,120 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Climb, a four-week plan (preview build)</title>
+<title>The Climb, a personal training plan (preview build)</title>
 <link rel="stylesheet" href="vendor/fonts-climb.css">
+<script>try{var t=localStorage.getItem("bfb-climb-theme");if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
 <style>
   :root{
-    --bg:#FAFAF7; --card:#FFFFFF; --ink:#1D211C; --ink-soft:#6B7069;
-    --accent:#4A5D45; --accent-soft:#DCE3D9; --gold:#B9862F; --gold-soft:#F1E3C8;
-    --line:#E5E2D8; --radius:14px; --danger:#A24A3D;
+    --bg:#F7F6F1; --card:#FFFFFF; --card-2:#FBFAF6; --ink:#1B1F1A; --ink-soft:#626860; --line:#E4E1D6;
+    --accent:#3F5A3A; --accent-2:#6E8F5E; --accent-soft:#DFE7DA; --gold:#A97A26; --gold-soft:#F3E6CB;
+    --ring-a:#3F5A3A; --ring-b:#C08A2E; --ring-c:#8A6FB0; --danger:#A24A3D; --radius:18px;
+    --shadow:0 1px 2px rgba(27,31,26,.05), 0 14px 34px -22px rgba(27,31,26,.35);
   }
   [data-theme="dark"]{
-    --bg:#121309; --card:#1B1D15; --ink:#F2F1E8; --ink-soft:#9B9C8C;
-    --accent:#87A879; --accent-soft:#28311F; --gold:#D9A94E; --gold-soft:#332C15;
-    --line:#2B2C22;
+    --bg:#10120D; --card:#191C15; --card-2:#1E221A; --ink:#F1F0E6; --ink-soft:#A3A595; --line:#2B2F24;
+    --accent:#9BC08A; --accent-2:#7FA36E; --accent-soft:#25301F; --gold:#E0B25A; --gold-soft:#342B16;
+    --ring-a:#9BC08A; --ring-b:#E0B25A; --ring-c:#B69BDB; --danger:#E08C7D;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 18px 40px -24px rgba(0,0,0,.8);
   }
-  *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;}
-  body{background:var(--bg);color:var(--ink);font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;padding:32px 18px 80px;transition:background .3s,color .3s;}
-  .wrap{max-width:720px;margin:0 auto;}
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{background:var(--bg);color:var(--ink);font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased;transition:background .3s,color .3s}
+  button{font:inherit;color:inherit;cursor:pointer}
+  button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+  .wrap{max-width:860px;margin:0 auto;padding:0 18px 90px}
+  .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+  h1,h2,h3{font-family:'Fraunces',serif;font-weight:600;letter-spacing:-.01em;margin:0}
+  .muted{color:var(--ink-soft)}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow)}
+  .btn{border:0;border-radius:999px;padding:12px 20px;font-weight:600;background:var(--accent);color:var(--bg);transition:transform .15s,filter .2s}
+  .btn:hover{filter:brightness(1.07)} .btn:active{transform:scale(.97)}
+  .btn.ghost{background:transparent;border:1px solid var(--line);color:var(--ink)}
+  .btn.small{padding:8px 14px;font-size:13px}
+  .chip{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:9px 14px;font-size:14px;transition:border-color .2s,background .2s}
+  .chip[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);font-weight:600}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media (max-width:640px){.grid2{grid-template-columns:1fr}}
 
-  header{margin-bottom:28px;display:flex;justify-content:space-between;align-items:flex-start;gap:14px;}
-  .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:8px;}
-  h1{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(30px,6vw,42px);line-height:1.05;margin:0 0 8px;letter-spacing:-.01em;}
-  header p{color:var(--ink-soft);font-size:14.5px;line-height:1.55;margin:0;max-width:52ch;}
-  .theme-btn{flex-shrink:0;width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:var(--card);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--ink);transition:border-color .2s;}
-  .theme-btn:hover{border-color:var(--accent);}
-  .theme-btn svg{width:17px;height:17px;}
+  /* Top bar: always visible, with this week's progress */
+  .top{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 86%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+  .top-in{max-width:860px;margin:0 auto;padding:12px 18px;display:flex;align-items:center;gap:12px}
+  .brand{font-family:'Fraunces',serif;font-weight:600;font-size:20px;flex:1}
+  .tabs{display:flex;gap:4px;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:3px}
+  .tabs button{border:0;background:transparent;border-radius:999px;padding:7px 12px;font-size:13px;color:var(--ink-soft)}
+  .tabs button[aria-current="page"]{background:var(--accent);color:var(--bg);font-weight:600}
+  .icon-btn{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:var(--card);display:flex;align-items:center;justify-content:center}
+  .weekbar{height:3px;background:var(--line)} .weekbar span{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--gold));transition:width .6s ease}
+  @media (max-width:640px){.tabs button{padding:7px 9px;font-size:12px}.brand{font-size:17px}}
 
-  .banner{background:linear-gradient(135deg,var(--accent-soft),var(--card));border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;margin-bottom:24px;}
-  .banner .tag{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:6px;}
-  .banner .msg{font-family:'Fraunces',serif;font-size:16.5px;line-height:1.4;font-weight:500;}
-  .banner .sub{font-size:12.5px;color:var(--ink-soft);margin-top:8px;}
+  /* Onboarding */
+  .ob{max-width:640px;margin:40px auto 0}
+  .ob h1{font-size:clamp(30px,6vw,44px);line-height:1.05;margin:8px 0 10px}
+  .ob-step{margin-top:26px}
+  .ob-step h3{font-size:19px;margin-bottom:12px}
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .ob-progress{height:4px;border-radius:4px;background:var(--line);margin-top:22px;overflow:hidden} .ob-progress span{display:block;height:100%;background:var(--accent);transition:width .4s}
 
-  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;margin:0 0 32px;}
-  .stat{background:var(--card);padding:16px 14px;}
-  .stat .num{font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:500;}
-  .stat .lbl{font-size:11.5px;color:var(--ink-soft);margin-top:3px;}
+  /* Today */
+  .hello{margin:28px 0 18px}
+  .hello h1{font-size:clamp(28px,5vw,38px);line-height:1.08;margin-top:6px}
+  .rings{display:flex;gap:18px;align-items:center}
+  .ring-legend{display:grid;gap:8px;font-size:13px}
+  .ring-legend b{font-family:'IBM Plex Mono',monospace;font-size:13px}
+  .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:7px}
+  .week-strip{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:16px}
+  .day{border:1px solid var(--line);border-radius:12px;padding:8px 4px;text-align:center;font-size:12px;background:var(--card-2)}
+  .day b{display:block;font-size:15px;margin-top:2px}
+  .day.today{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+  .day.done{background:var(--accent-soft)} .day.rest{opacity:.6}
+  .ready-row{display:grid;grid-template-columns:110px 1fr 34px;align-items:center;gap:10px;margin:10px 0}
+  .ready-row input{width:100%;accent-color:var(--accent)}
+  .verdict{margin-top:12px;padding:12px 14px;border-radius:12px;background:var(--card-2);border:1px solid var(--line);font-size:14px}
+  .workout h2{font-size:24px;margin:4px 0}
+  .ex-list{list-style:none;padding:0;margin:14px 0 0;display:grid;gap:8px}
+  .ex-list li{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:12px;background:var(--card-2);border:1px solid var(--line);font-size:14px}
+  .ex-list .amt{margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--ink-soft);white-space:nowrap}
+  .pose{width:34px;height:34px;flex:none;color:var(--accent)}
+  .badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+  .badge{border:1px solid var(--line);border-radius:14px;padding:12px;text-align:center;font-size:12.5px;background:var(--card-2)}
+  .badge .medal{font-size:24px;filter:grayscale(1);opacity:.35}
+  .badge.got{border-color:var(--gold);background:var(--gold-soft)} .badge.got .medal{filter:none;opacity:1}
+  .heat{display:grid;grid-template-columns:repeat(12,1fr);gap:4px}
+  .heat i{aspect-ratio:1;border-radius:4px;background:var(--line)}
+  .heat i.l1{background:color-mix(in srgb,var(--accent) 45%,var(--line))} .heat i.l2{background:var(--accent)}
+  .section{margin-top:26px} .section-h{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
+  .section-h h2{font-size:20px}
+  .note{font-size:12.5px;line-height:1.6;color:var(--ink-soft);margin-top:30px;padding:14px;border-radius:12px;border:1px dashed var(--line)}
+  .lib-filters{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0}
+  .lib{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+  .lib .card{padding:14px;box-shadow:none}
+  .chart{width:100%;height:auto}
+  .log{display:flex;gap:8px;margin-bottom:12px} .log input{flex:1;padding:11px 14px;border-radius:999px;border:1px solid var(--line);background:var(--card-2);color:var(--ink);font:inherit}
 
-  .section-head{display:flex;align-items:baseline;justify-content:space-between;margin:44px 0 14px;}
-  .section-head h2{font-family:'Fraunces',serif;font-weight:600;font-size:19px;margin:0;}
-  .section-head span{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink-soft);}
-
-  .basecamps{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:22px;}
-  .basecamp{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:11px 8px;text-align:center;cursor:pointer;transition:border-color .2s,background .2s;}
-  .basecamp.active{border-color:var(--accent);background:var(--accent-soft);}
-  .basecamp .bc-num{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--ink-soft);}
-  .basecamp .bc-name{font-family:'Fraunces',serif;font-weight:600;font-size:13.5px;margin-top:2px;}
-  .basecamp .bc-frac{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--accent);margin-top:4px;}
-  .month-banner{background:var(--gold-soft);border:1px solid var(--gold);border-radius:var(--radius);padding:14px 16px;margin-bottom:22px;font-size:13.5px;line-height:1.6;}
-  .month-banner button{margin-top:8px;padding:8px 14px;border-radius:8px;border:none;background:var(--gold);color:#2A2205;font-weight:600;font-size:12.5px;cursor:pointer;}
-
-  .trail{position:relative;padding-left:28px;}
-  .trail::before{content:"";position:absolute;left:9px;top:6px;bottom:6px;width:2px;background:var(--line);border-radius:2px;}
-  .trail-fill{position:absolute;left:9px;bottom:6px;width:2px;background:var(--accent);border-radius:2px;transition:height .5s ease;}
-  .checkpoint{position:relative;display:flex;align-items:flex-start;gap:14px;padding:10px 0;cursor:pointer;}
-  .marker{position:absolute;left:-28px;top:12px;width:20px;height:20px;border-radius:50%;background:var(--card);border:2px solid var(--line);display:flex;align-items:center;justify-content:center;transition:all .25s ease;flex-shrink:0;}
-  .marker svg{width:10px;height:10px;opacity:0;transition:opacity .2s;}
-  .checkpoint.done .marker{background:var(--accent);border-color:var(--accent);}
-  .checkpoint.done .marker svg{opacity:1;}
-  .checkpoint.today .marker{border-color:var(--gold);box-shadow:0 0 0 4px var(--gold-soft);}
-  .cp-card{flex:1;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;transition:border-color .2s;}
-  .checkpoint:hover .cp-card{border-color:var(--accent);}
-  .checkpoint.today .cp-card{border-color:var(--gold);}
-  .cp-top{display:flex;justify-content:space-between;align-items:center;gap:10px;}
-  .cp-day{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);}
-  .cp-title{font-weight:600;font-size:15px;margin-top:2px;}
-  .cp-meta{font-size:12.5px;color:var(--ink-soft);margin-top:2px;}
-  .chevron{color:var(--ink-soft);font-size:13px;transition:transform .2s;flex-shrink:0;}
-  .checkpoint.open .chevron{transform:rotate(90deg);}
-  .cp-body{max-height:0;overflow:hidden;transition:max-height .4s ease;}
-  .checkpoint.open .cp-body{max-height:1200px;}
-  .cp-body-inner{padding-top:12px;border-top:1px solid var(--line);margin-top:12px;}
-  .guided-btn{width:100%;padding:10px;border-radius:9px;border:1px dashed var(--accent);background:transparent;color:var(--accent);font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;margin-bottom:12px;}
-  .ex-row{display:flex;align-items:center;gap:8px;padding:7px 0;font-size:13.5px;}
-  .ex-row input{width:16px;height:16px;accent-color:var(--accent);flex-shrink:0;}
-  .ex-name{flex:1;}
-  .ex-name.struck{color:var(--ink-soft);text-decoration:line-through;}
-  .ex-dose{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--ink-soft);white-space:nowrap;}
-  .icon-btn{flex-shrink:0;width:22px;height:22px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--ink-soft);font-size:11px;display:flex;align-items:center;justify-content:center;cursor:pointer;text-decoration:none;transition:border-color .2s,color .2s;}
-  .icon-btn:hover{border-color:var(--accent);color:var(--accent);}
-  .ex-tip{font-size:12px;line-height:1.6;color:var(--ink-soft);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin:0 0 6px 0;}
-  .ex-tip b{color:var(--ink);}
-  .mark-btn{margin-top:8px;width:100%;padding:10px;border-radius:9px;border:1px solid var(--accent);background:var(--accent);color:#fff;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:opacity .2s;}
-  .mark-btn.undo{background:transparent;color:var(--accent);}
-  .mark-btn:active{opacity:.8;}
-  .rest-note{font-size:13px;color:var(--ink-soft);line-height:1.6;padding-top:12px;border-top:1px solid var(--line);margin-top:12px;}
-
-  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px;}
-  .log-form{display:flex;gap:8px;margin-bottom:16px;}
-  .log-form input{flex:1;border:1px solid var(--line);border-radius:9px;padding:10px 12px;font-family:'IBM Plex Mono',monospace;font-size:14px;color:var(--ink);background:var(--bg);}
-  .log-form input:focus{outline:none;border-color:var(--accent);}
-  .log-form button{padding:10px 16px;border-radius:9px;border:none;background:var(--ink);color:var(--bg);font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;}
-  .empty-chart{text-align:center;padding:30px 10px;color:var(--ink-soft);font-size:13px;}
-  .chart-foot{display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink-soft);margin-top:6px;}
-
-  .about-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;}
-  .about-card h3{font-family:'Fraunces',serif;font-size:18px;margin:0 0 4px;font-weight:600;}
-  .about-card .lead{font-size:13px;color:var(--ink-soft);margin-bottom:18px;line-height:1.55;}
-  .field{margin-bottom:16px;}
-  .field label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;}
-  .field textarea, .field select{width:100%;border:1px solid var(--line);border-radius:9px;padding:10px 12px;font-family:'Inter',sans-serif;font-size:13.5px;color:var(--ink);background:var(--bg);resize:vertical;min-height:44px;}
-  .field textarea:focus,.field select:focus{outline:none;border-color:var(--accent);}
-  .about-save{padding:10px 18px;border-radius:9px;border:none;background:var(--accent);color:#fff;font-weight:600;font-size:13px;cursor:pointer;}
-  .about-summary{font-size:13.5px;line-height:1.7;}
-  .about-summary .q{font-family:'IBM Plex Mono',monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);margin-top:12px;}
-  .about-summary .a{color:var(--ink);margin-top:2px;}
-  .edit-link{font-size:12px;color:var(--accent);cursor:pointer;text-decoration:underline;margin-top:14px;display:inline-block;}
-
-  .why{font-size:13.5px;line-height:1.7;color:var(--ink-soft);}
-  .why b{color:var(--ink);}
-  footer{text-align:center;font-size:11.5px;color:var(--ink-soft);margin-top:50px;font-family:'IBM Plex Mono',monospace;}
-
-  /* Guided overlay */
-  .overlay{position:fixed;inset:0;background:rgba(10,11,7,.55);display:none;align-items:center;justify-content:center;padding:16px;z-index:50;}
-  .overlay.show{display:flex;}
-  .overlay-card{background:var(--card);border-radius:20px;max-width:420px;width:100%;padding:26px 22px;max-height:88vh;overflow-y:auto;}
-  .ov-close{float:right;background:none;border:none;color:var(--ink-soft);font-size:20px;cursor:pointer;line-height:1;}
-  .ov-eyebrow{font-family:'IBM Plex Mono',monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin-bottom:6px;}
-  .ov-title{font-family:'Fraunces',serif;font-size:21px;font-weight:600;margin-bottom:14px;}
-  .mood-grid{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;}
-  .mood-pill{padding:7px 13px;border-radius:20px;border:1px solid var(--line);background:var(--bg);font-size:12.5px;cursor:pointer;color:var(--ink);}
-  .mood-pill.active{border-color:var(--accent);background:var(--accent-soft);color:var(--accent);font-weight:600;}
-  .sound-row{display:flex;gap:8px;margin-bottom:18px;}
-  .sound-row input{flex:1;border:1px solid var(--line);border-radius:9px;padding:9px 11px;font-size:13px;background:var(--bg);color:var(--ink);}
-  .sound-row a.play-btn{flex-shrink:0;padding:9px 14px;border-radius:9px;background:var(--gold);color:#2A2205;font-weight:600;font-size:12.5px;text-decoration:none;display:flex;align-items:center;}
-  .begin-btn{width:100%;padding:13px;border-radius:11px;border:none;background:var(--accent);color:#fff;font-weight:700;font-size:14.5px;cursor:pointer;}
-  .step-progress{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink-soft);margin-bottom:10px;}
-  .step-sub{font-size:12.5px;color:var(--ink-soft);margin-bottom:4px;}
-  .step-label{font-family:'Fraunces',serif;font-size:22px;font-weight:600;margin-bottom:14px;}
-  .step-timer{font-family:'IBM Plex Mono',monospace;font-size:52px;font-weight:500;text-align:center;margin:18px 0;color:var(--accent);}
-  .step-timer.rest{color:var(--gold);}
-  .step-tip{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px 14px;font-size:12.5px;line-height:1.6;color:var(--ink-soft);margin-bottom:16px;}
-  .step-tip b{color:var(--ink);}
-  .step-yt{display:inline-block;font-size:12px;color:var(--accent);text-decoration:none;margin-bottom:16px;}
-  .step-controls{display:flex;gap:8px;}
-  .step-controls button{flex:1;padding:12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font-weight:600;font-size:13px;cursor:pointer;}
-  .step-controls button.primary{background:var(--accent);color:#fff;border:none;}
-  .step-controls button.danger-ghost{color:var(--danger);}
-  .manual-btn{width:100%;padding:16px;border-radius:12px;border:none;background:var(--accent);color:#fff;font-weight:700;font-size:15px;cursor:pointer;margin-bottom:10px;}
-  .done-icon{width:56px;height:56px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:26px;}
-
-  @media (prefers-reduced-motion: reduce){*{transition:none !important;}}
+  /* Player */
+  .player{position:fixed;inset:0;z-index:50;background:var(--bg);display:none;flex-direction:column}
+  .player.open{display:flex}
+  .player-top{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--line)}
+  .player-bar{height:4px;background:var(--line)} .player-bar span{display:block;height:100%;background:var(--accent);transition:width .4s}
+  .player-main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;gap:10px}
+  .player-main .pose{width:120px;height:120px}
+  .player-name{font-family:'Fraunces',serif;font-size:clamp(28px,6vw,46px);font-weight:600}
+  .big{font-family:'IBM Plex Mono',monospace;font-size:clamp(64px,16vw,120px);line-height:1;font-weight:500;font-variant-numeric:tabular-nums}
+  .phase{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
+  .cue{max-width:46ch;color:var(--ink-soft);line-height:1.55}
+  .player-ctrl{display:flex;gap:10px;justify-content:center;padding:18px;border-top:1px solid var(--line)}
+  .feel{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
 <body>
-<div class="wrap">
-
-  <header>
-    <div>
-      <div class="eyebrow" id="planFor">Personal plan</div>
-      <h1>The Climb</h1>
-      <p>A four-week ascent, built around the hill you already walk home. Tap into any workout for a guided timer, form videos, and your own soundtrack.</p>
-    </div>
-    <button class="theme-btn" id="themeBtn" title="Toggle dark mode">
-      <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></svg>
-    </button>
-  </header>
-
-  <div class="banner" id="dailyBanner">
-    <div class="tag">Today</div>
-    <div class="msg" id="dailyMsg">—</div>
-    <div class="sub" id="dailySub" style="display:none;"></div>
-  </div>
-
-  <div class="stats">
-    <div class="stat"><div class="num" id="statStreak">0</div><div class="lbl">day streak</div></div>
-    <div class="stat"><div class="num" id="statWeek">0/7</div><div class="lbl">this week</div></div>
-    <div class="stat"><div class="num" id="statChange">—</div><div class="lbl">since start</div></div>
-  </div>
-
-  <div class="section-head"><h2>A little about you</h2><span id="aboutStatus"></span></div>
-  <div class="about-card" id="aboutCard"></div>
-
-  <div class="section-head"><h2>The month</h2><span id="weekRange">—</span></div>
-  <div class="basecamps" id="basecamps"></div>
-  <div id="monthBannerSlot"></div>
-
-  <div class="trail" id="trail"><div class="trail-fill" id="trailFill" style="height:0%"></div></div>
-
-  <div class="section-head"><h2>Weight log</h2><span>private · saved to this device</span></div>
-  <div class="card">
-    <div class="log-form"><input type="number" step="0.1" id="weightInput" placeholder="Today's weight (kg)"><button id="logBtn">Log</button></div>
-    <div class="chart-wrap" id="chartWrap"><div class="empty-chart">No entries yet, log today's weight to start the line.</div></div>
-  </div>
-
-  <div class="section-head"><h2>Why this works</h2></div>
-  <div class="card why">
-    <p><b>The hill walk is your cardio base</b>: already daily, already consistent. Everything else builds on top of it.</p>
-    <p><b>Strength days create "afterburn" (EPOC)</b>: after a real resistance or circuit session, your body keeps burning extra calories for hours to recover, including while you sleep. That's the honest version of "burning fat overnight", earned in the 20 minutes before, not magic on its own.</p>
-    <p><b>Four weeks, gently progressive</b>: each week asks slightly more than the last. Rest days are built in on purpose, not as an afterthought.</p>
-    <p><b>Every exercise has an optional form video and a guided timer.</b> Use them if they help, skip them if you already know the move, the ⓘ shows a quick cue, the ▶ opens a form video.</p>
-  </div>
-
-  <footer>logged privately on this device · no data leaves your phone</footer>
-</div>
-
-<div class="overlay" id="overlay">
-  <div class="overlay-card" id="overlayCard"></div>
-</div>
-
+<div id="app"></div>
+<div class="player" id="player" role="dialog" aria-modal="true" aria-label="Workout"></div>
 <script>
 (function(){
-
-const VISITOR_NAME = (() => {
+/* ======================= DATA ======================= */
+const KEY = "bfb-climb-v2", OLD_KEY = "bfb-climb-preview-v1", THEME_KEY = "bfb-climb-theme";
+const NAME = (() => {
   const clean = (v) => (v || "").replace(/[^\p{L}\p{M} .-]/gu, "").replace(/\s+/g, " ").trim().slice(0, 30);
   try {
     const fromLink = clean(new URLSearchParams(location.hash.slice(1)).get("name"));
@@ -213,640 +125,403 @@ const VISITOR_NAME = (() => {
   } catch (e) { return ""; }
 })();
 
-  const STORAGE_KEY = "bfb-climb-preview-v1";
-  if (VISITOR_NAME) { const el = document.getElementById("planFor"); if (el) el.textContent = "Personal plan for " + VISITOR_NAME; }
-  // Outside Claude there is no window.storage: keep everything in this browser's localStorage instead.
-  if (!window.storage) {
-    window.storage = {
-      get: async (k) => { const v = localStorage.getItem(k); return v === null ? null : { value: v }; },
-      set: async (k, v) => { localStorage.setItem(k, v); return { key: k, value: v }; },
-      delete: async (k) => { localStorage.removeItem(k); return { key: k, deleted: true }; },
-    };
+// Simple line drawings for each movement pattern (illustrative, not anatomical).
+const POSES = {
+  squat: '<circle cx="24" cy="8" r="4"/><path d="M24 12v12l-8 6v10M24 24l8 6v10M16 18h16"/>',
+  hinge: '<circle cx="14" cy="12" r="4"/><path d="M17 15l14 6v18M31 21l4 18M17 15l-1 12"/>',
+  push: '<circle cx="9" cy="20" r="4"/><path d="M13 22l26 6M18 23v10M39 28l3 10M13 22l-2 12"/>',
+  pull: '<circle cx="24" cy="12" r="4"/><path d="M24 16v14l-6 10M24 30l6 10M24 20l-10-12M24 20l10-12M10 6h28"/>',
+  core: '<circle cx="9" cy="26" r="4"/><path d="M13 28h26M17 28v8M39 28v8"/>',
+  cardio: '<circle cx="26" cy="7" r="4"/><path d="M26 11l-4 12 8 6-4 12M22 23l-8 4M26 15l10 4M30 29l8 2"/>',
+  mobility: '<circle cx="24" cy="8" r="4"/><path d="M24 12v16M24 18l-14-6M24 18l14-6M24 28l-8 12M24 28l8 12"/>',
+  lunge: '<circle cx="22" cy="7" r="4"/><path d="M22 11v14M22 25l-10 4v10M22 25l10 2 2 12M14 17h16"/>',
+};
+const pose = (p, cls = "pose") => `<svg class="${cls}" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${POSES[p] || POSES.core}</svg>`;
+
+// Exercise library. kind: reps or time. eq: equipment needed. lvl: 1 easier, 3 harder. low: low impact.
+const EX = [
+  ["march","Marching in place","cardio","time",[],1,1,"Lift knees to hip height, swing your arms, breathe steadily."],
+  ["jacks","Jumping jacks","cardio","time",[],1,0,"Land softly on the balls of your feet. Step side to side instead if you need low impact."],
+  ["stepjacks","Step jacks","cardio","time",[],1,1,"Step one foot out while raising your arms, then switch. All the rhythm, none of the jumping."],
+  ["climbers","Mountain climbers","cardio","time",[],2,0,"Hips level with shoulders, drive knees in with control rather than speed."],
+  ["burpee","Burpees","cardio","reps",[],3,0,"Step back instead of jumping if you need to. Control the way down."],
+  ["skaters","Skater steps","cardio","time",[],2,1,"Step wide side to side, sweep the back leg behind, land soft."],
+  ["squat","Bodyweight squat","squat","reps",[],1,1,"Sit back as if into a chair, knees tracking over toes, chest up."],
+  ["gobsquat","Goblet squat","squat","reps",["dumbbells"],2,1,"Hold the dumbbell at your chest, elbows inside the knees at the bottom."],
+  ["jumpsquat","Squat jump","squat","reps",[],3,0,"Land quietly with soft knees, then sink straight into the next squat."],
+  ["lunge","Reverse lunge","lunge","reps",[],1,1,"Step back, lower until both knees bend to about 90°, front knee over ankle."],
+  ["dblunge","Dumbbell split squat","lunge","reps",["dumbbells"],2,1,"Stay tall, lower straight down, drive through the front heel."],
+  ["bridge","Glute bridge","hinge","reps",[],1,1,"Drive through your heels, squeeze glutes at the top, don't overarch."],
+  ["rdl","Dumbbell Romanian deadlift","hinge","reps",["dumbbells"],2,1,"Soft knees, push hips back, keep the weights close to your legs."],
+  ["bandpull","Band pull-apart","pull","reps",["band"],1,1,"Arms straight, squeeze shoulder blades together, control the return."],
+  ["dbrow","Dumbbell row","pull","reps",["dumbbells"],2,1,"Flat back, pull the elbow to your hip, pause, lower slowly."],
+  ["bandrow","Band row","pull","reps",["band"],1,1,"Anchor the band, pull to your ribs, squeeze, return slowly."],
+  ["superman","Superman hold","pull","time",[],1,1,"Lift arms and legs a little, neck long, squeeze your back and glutes."],
+  ["inclinepush","Incline push-up","push","reps",[],1,1,"Hands on a table or wall, body in one straight line."],
+  ["pushup","Push-up","push","reps",[],2,1,"Hands under shoulders, elbows at 45°, lower your chest to a fist's height."],
+  ["dbpress","Dumbbell shoulder press","push","reps",["dumbbells"],2,1,"Ribs down, press straight up, lower to ear height."],
+  ["plank","Plank","core","time",[],1,1,"Elbows under shoulders, squeeze glutes, breathe."],
+  ["deadbug","Dead bug","core","reps",[],1,1,"Lower back stays pressed down as you extend opposite arm and leg."],
+  ["sideplank","Side plank","core","time",[],2,1,"Stack your feet or drop the bottom knee. Hips up, body straight."],
+  ["birddog","Bird dog","core","reps",[],1,1,"Reach long through opposite hand and foot, keep the hips square."],
+  ["catcow","Cat to cow","mobility","time",[],1,1,"Move slowly with your breath through the whole spine."],
+  ["worldsgreatest","World's greatest stretch","mobility","time",[],1,1,"Lunge, hand down, rotate the other arm to the sky. Swap sides halfway."],
+  ["hipflexor","Kneeling hip flexor stretch","mobility","time",[],1,1,"Tuck the pelvis under and squeeze the back glute. Swap sides halfway."],
+  ["childpose","Child's pose","mobility","time",[],1,1,"Sink the hips back, arms long, slow breaths."],
+].map(([id,name,pattern,kind,eq,lvl,low,cue]) => ({id,name,pattern,kind,eq,lvl,low:!!low,cue}));
+const byId = Object.fromEntries(EX.map(e => [e.id, e]));
+
+const GOALS = { strength:"Get stronger", fat:"Lose fat", fitness:"Build fitness", move:"Move better" };
+const LEVELS = { 1:"New to training", 2:"Some experience", 3:"Train regularly" };
+const BADGES = [
+  ["first","First workout","Finish your first session","🥾"],
+  ["three","Three in a week","Hit three workouts in one week","🔥"],
+  ["streak7","Seven-day streak","Train or recover seven days running","⛰️"],
+  ["week","Basecamp","Complete a full week of your plan","🏕️"],
+  ["ten","Ten sessions","Ten workouts done","🎯"],
+  ["honest","Honest feedback","Rate how five workouts felt","🧭"],
+  ["summit","Summit","Finish all four weeks","🏔️"],
+];
+const QUOTES = ["Small and consistent beats big and occasional.","You don't need to feel ready. Start, and readiness follows.","Rest days count. Recovery is where strength is built.","Nobody regrets a workout once it's done.","Today just needs today's session. Nothing more."];
+
+/* ======================= STATE ======================= */
+const today = () => { const d = new Date(); d.setHours(0,0,0,0); return d; };
+const iso = (d) => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+const addDays = (d, n) => { const x = new Date(d); x.setDate(x.getDate()+n); return x; };
+const mondayOf = (d) => addDays(d, -((d.getDay()+6)%7));
+
+let state = load();
+function load(){
+  let s = null;
+  try { s = JSON.parse(localStorage.getItem(KEY) || "null"); } catch(e){}
+  if (!s) {
+    s = { profile:null, start:null, intensity:1, history:[], readiness:{}, weights:[], voice:true, feelings:0 };
+    // Keep weight entries from the earlier version of the app.
+    try { const old = JSON.parse(localStorage.getItem(OLD_KEY) || "null"); if (old && Array.isArray(old.weights)) s.weights = old.weights; } catch(e){}
   }
-  const BASECAMP_NAMES = ["Trailhead","Ridgeline","Ascent","Summit"];
-  const SUN_ICON = '<circle cx="12" cy="12" r="4.5"/><path d="M12 2.5v2M12 19.5v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M2.5 12h2M19.5 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/>';
-  const MOON_ICON = '<path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z"/>';
+  return s;
+}
+function save(){ try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e){} }
 
-  const MOODS = [
-    {key:"afrobeats", label:"Afrobeats", query:"afrobeats workout mix"},
-    {key:"hiphop", label:"Hip-Hop", query:"hip hop workout mix"},
-    {key:"rnb", label:"R&B / Soul", query:"rnb soul workout mix"},
-    {key:"gospel", label:"Gospel", query:"gospel workout mix"},
-    {key:"amapiano", label:"Amapiano", query:"amapiano workout mix"},
-    {key:"pop", label:"Pop", query:"pop workout mix"}
-  ];
+/* ======================= PLAN ======================= */
+// Which movement patterns each session trains, by days per week.
+const SPLITS = {
+  2: [["squat","push","hinge","pull","core"],["lunge","pull","hinge","push","core","cardio"]],
+  3: [["squat","push","pull","core"],["hinge","lunge","pull","core"],["cardio","squat","push","cardio","core"]],
+  4: [["squat","push","core"],["hinge","pull","core"],["cardio","lunge","cardio","core"],["squat","pull","push","hinge"]],
+  5: [["squat","push","core"],["hinge","pull","core"],["cardio","lunge","cardio","core"],["mobility","core","mobility"],["squat","pull","push","hinge"]],
+};
+const DAYS_FOR = { 2:[0,3], 3:[0,2,4], 4:[0,1,3,5], 5:[0,1,2,4,5] };
 
-  const MESSAGES = [
-    {t:"Every rep today is a deposit into the life you're building.", tone:"cheer"},
-    {t:"You don't have to feel ready. Just start, tired you is still capable.", tone:"gentle"},
-    {t:"Strong isn't a size. It's being able to show up for the people you love, for years to come.", tone:"cheer"},
-    {t:"Put on the song that makes your shoulders drop and your chin lift. Then begin.", tone:"cheer"},
-    {t:"Twenty minutes now buys more good years with the people who matter.", tone:"straight"},
-    {t:"You're not doing this to shrink. You're doing this to last.", tone:"straight"},
-    {t:"Future you is already proud you didn't skip today.", tone:"cheer"},
-    {t:"Small and consistent beats big and occasional. Today just needs 20 minutes.", tone:"straight"},
-    {t:"This body carries you toward every future you're dreaming of. Take care of it today.", tone:"gentle"},
-    {t:"The people who love you don't need you perfect. They need you here, strong, and around.", tone:"gentle"},
-    {t:"One more checkpoint on the trail. That's all today is asking.", tone:"straight"},
-    {t:"Tired is allowed. Quitting isn't the plan today.", tone:"gentle"},
-    {t:"Play the song. Do the set. Let the rest sort itself out.", tone:"cheer"},
-    {t:"You started something days ago, walking up that hill. Don't stop now.", tone:"cheer"},
-    {t:"This is for the version of you that dances at every celebration ahead, unbothered.", tone:"cheer"},
-    {t:"Show up for five minutes. Momentum will handle the rest.", tone:"gentle"},
-    {t:"Every gathering, every wedding, every late night with people you love, this is what fuels you to be there fully.", tone:"cheer"},
-    {t:"You're building something today that no one else can see yet. Keep going.", tone:"cheer"},
-    {t:"The best soundtrack for today is whatever gets your feet moving. Press play.", tone:"cheer"},
-    {t:"Nobody regrets a workout once it's done. Not once.", tone:"straight"},
-    {t:"You get to choose who you're becoming, one ordinary weekday at a time.", tone:"straight"},
-    {t:"This isn't about looking a certain way. It's about having the energy for the life you actually want.", tone:"gentle"},
-    {t:"The hill you walk every evening is already proof you don't quit. Bring that here.", tone:"cheer"},
-    {t:"Today's effort is tomorrow's ease.", tone:"straight"},
-    {t:"However tired 5pm made you, this is 20 minutes, not a marathon.", tone:"gentle"},
-    {t:"The people you're building this future with are worth the discipline today.", tone:"cheer"},
-    {t:"You don't need motivation. You need today's checkbox. Go get it.", tone:"straight"},
-    {t:"Someday this will be the season you look back on and say, that's when it started.", tone:"cheer"},
-    {t:"Strength you build today shows up later, at every table, every dance floor, every long walk ahead.", tone:"cheer"},
-    {t:"Rest days count too. If today's one of them, rest like you mean it.", tone:"gentle"}
-  ];
-  const TONE_MAP = {"Cheer me on":"cheer", "Gently remind me":"gentle", "Just tell me straight":"straight", "A mix":"any"};
+function pick(pattern, p, seed){
+  const ok = EX.filter(e => e.pattern === pattern && e.lvl <= p.level + (pattern === "mobility" ? 0 : 0) && e.eq.every(q => p.equipment.includes(q)) && (!p.lowImpact || e.low));
+  if (!ok.length) return EX.find(e => e.pattern === pattern) || EX[0];
+  // Prefer the hardest suitable option, rotating through a few for variety.
+  const sorted = ok.sort((a,b) => b.lvl - a.lvl);
+  return sorted[seed % Math.min(sorted.length, 2)];
+}
 
-  const TIP_LIBRARY = [
-    ["burpee", "Full body, cardio", "Keep it low-impact if it suits you better, step back instead of jumping, control the way down."],
-    ["mountain climber", "Core, shoulders, cardio", "Keep hips low and steady, drive knees in with control, not speed."],
-    ["jump lunge", "Glutes, quads, power", "Land soft, knee tracking over ankle, slow this one down if your knees complain."],
-    ["lunge", "Glutes, quads, balance", "Step with control, front knee stacked over your ankle, chest tall."],
-    ["hip thrust", "Glutes, hamstrings", "Drive through your heels, squeeze your glutes hard at the top."],
-    ["glute bridge", "Glutes, hamstrings, core", "Squeeze your glutes at the top, don't overarch your lower back to get there."],
-    ["squat", "Quads, glutes, hamstrings", "Sit back like there's a chair behind you, knees tracking over your toes, chest up."],
-    ["push-up", "Chest, shoulders, triceps, core", "Straight line from head to knees or heels, lower with control, quality over depth."],
-    ["superman", "Lower back, glutes, shoulders", "Lift chest and legs together, hold briefly, stay controlled, don't yank."],
-    ["side plank", "Obliques, core, shoulders", "Stack your hips, lift through the waist, don't let your hips sag toward the floor."],
-    ["plank", "Core, shoulders", "Ribs pulled down, don't let your hips sag or pike up."],
-    ["bicycle crunch", "Abs, obliques", "Slow beats fast here, rotate from the ribs, elbow toward the opposite knee."],
-    ["leg raise", "Lower abs, hip flexors", "Only lower as far as you can keep your lower back flat on the floor."],
-    ["jumping jack", "Full body, cardio", "Land soft on the balls of your feet, keep a steady rhythm."],
-    ["high knee", "Hip flexors, cardio", "Drive your knees up, land light, keep your chest tall."],
-    ["warm-up", "Full body", "Light movement to raise your heart rate, marching, arm circles, easy squats."],
-    ["warm up", "Full body", "Light movement to raise your heart rate, marching, arm circles, easy squats."],
-    ["cool-down", "Full body", "Hold each stretch 20–30 seconds, breathe slowly, don't bounce."],
-    ["cool down", "Full body", "Hold each stretch 20–30 seconds, breathe slowly, don't bounce."],
-    ["walk", "Cardio, legs", "A pace where talking is a little harder than easy is the sweet spot."],
-    ["climber", "Core, shoulders, cardio", "Keep hips low and steady, drive knees in with control, not speed."]
-  ];
-  function getTip(name){
-    const n = name.toLowerCase();
-    for(const [k,target,cue] of TIP_LIBRARY){ if(n.includes(k)) return {target,cue}; }
-    return {target:"Full body", cue:"Move with control, quality over speed."};
+/** Builds one session for a given week (0-3) and day of the plan, scaled by goal, level, time, intensity and readiness. */
+function buildSession(weekIdx, slot, readiness){
+  const p = state.profile;
+  const patterns = SPLITS[p.days][slot % SPLITS[p.days].length];
+  const style = { strength:{kind:"reps", work:40, rest:45, reps:10}, fat:{kind:"time", work:40, rest:20, reps:12}, fitness:{kind:"time", work:35, rest:25, reps:12}, move:{kind:"time", work:45, rest:15, reps:8} }[p.goal];
+  const mode = readiness || "full";
+  if (mode === "recovery") {
+    return { title:"Recovery flow", mode, warm:[], rounds:1, rest:10, items:["catcow","worldsgreatest","hipflexor","birddog","childpose"].map(id => ({ ex:byId[id], amount:45, unit:"s" })) };
   }
-  function ytLink(name){
-    const clean = name.replace(/\(.*?\)/g,"").replace(/\/side|\/leg/gi,"").trim();
-    return "https://www.youtube.com/results?search_query=" + encodeURIComponent(clean + " proper form tutorial");
-  }
-  function moodLink(query){ return "https://www.youtube.com/results?search_query=" + encodeURIComponent(query); }
-
-  function parseDose(name, d){
-    let m;
-    if(m = d.match(/^(\d+)\s*×\s*(\d+)s\/side$/i)) return {mode:"timed", sets:+m[1]*2, work:+m[2], rest:10, perSide:true};
-    if(m = d.match(/^(\d+)\s*×\s*(\d+)\/leg$/i)) return {mode:"reps", sets:+m[1], reps:+m[2], rest:20, perLeg:true};
-    if(m = d.match(/^(\d+)\s*×\s*(\d+)s$/i)) return {mode:"timed", sets:+m[1], work:+m[2], rest:15};
-    if(m = d.match(/^(\d+)\s*×\s*(\d+)$/i)) return {mode:"reps", sets:+m[1], reps:+m[2], rest:20};
-    if(m = d.match(/^(\d+)\s*min$/i)) return {mode:"duration", minutes:+m[1]};
-    if(m = d.match(/^(\d+)\s*rounds?$/i)){
-      const moves = name.split("→").map(s=>s.trim()).filter(Boolean);
-      return {mode:"circuit", rounds:+m[1], moves: moves.length ? moves : [name]};
-    }
-    return {mode:"reps", sets:1, reps:null, rest:0};
-  }
-
-  function buildSteps(exercises){
-    const steps = [];
-    exercises.forEach(ex=>{
-      const parsed = parseDose(ex.n, ex.d);
-      const tip = getTip(ex.n);
-      if(parsed.mode === "circuit"){
-        for(let r=0;r<parsed.rounds;r++){
-          parsed.moves.forEach((mv,mi)=>{
-            steps.push({type:"work", seconds:30, label:mv, sub:"Round "+(r+1)+" of "+parsed.rounds, exName:mv, tip:getTip(mv)});
-            const last = (r===parsed.rounds-1 && mi===parsed.moves.length-1);
-            if(!last) steps.push({type:"transition", seconds:8, label:"Get ready", sub:"Next: "+parsed.moves[(mi+1)%parsed.moves.length]});
-          });
-          if(r < parsed.rounds-1) steps.push({type:"rest", seconds:45, label:"Rest", sub:"Before round "+(r+2)});
-        }
-      } else if(parsed.mode === "timed"){
-        for(let s=0;s<parsed.sets;s++){
-          const sideTag = parsed.perSide ? (s%2===0 ? ", right side" : ", left side") : "";
-          steps.push({type:"work", seconds:parsed.work, label:ex.n+sideTag, sub:"Set "+(s+1)+" of "+parsed.sets, exName:ex.n, tip});
-          if(s < parsed.sets-1) steps.push({type:"rest", seconds:parsed.rest, label:"Rest", sub:"Next: "+ex.n});
-        }
-      } else if(parsed.mode === "reps" && parsed.reps){
-        for(let s=0;s<parsed.sets;s++){
-          const legTag = parsed.perLeg ? " per leg" : "";
-          steps.push({type:"manual", label:ex.n, sub:"Set "+(s+1)+" of "+parsed.sets+", "+parsed.reps+legTag+" reps", exName:ex.n, tip});
-          if(s < parsed.sets-1) steps.push({type:"rest", seconds:parsed.rest, label:"Rest", sub:"Next: "+ex.n});
-        }
-      } else if(parsed.mode === "duration"){
-        steps.push({type:"work", seconds:parsed.minutes*60, label:ex.n, sub:"", exName:ex.n, tip});
-      } else {
-        steps.push({type:"manual", label:ex.n, sub:ex.d, exName:ex.n, tip});
-      }
-    });
-    return steps;
-  }
-
-  const WEEKS = [
-    [
-      { day:"Monday", title:"Full-Body Strength", meta:"25 min · foundation", type:"workout", exercises:[
-        {n:"Bodyweight squats", d:"3 × 15"},{n:"Knee push-ups", d:"3 × 10"},{n:"Glute bridges", d:"3 × 15"},
-        {n:"Supermans", d:"3 × 12"},{n:"Plank hold", d:"3 × 30s"},{n:"Cool-down stretch", d:"3 min"}]},
-      { day:"Tuesday", title:"Active Recovery", meta:"hill walk + mobility", type:"rest",
-        note:"Just the hill walk home, plus 10 minutes of easy stretching for hips, hamstrings and shoulders. No extra training, this is where yesterday's work turns into results." },
-      { day:"Wednesday", title:"Fat-Burn Circuit", meta:"20 min · low-impact friendly", type:"workout", exercises:[
-        {n:"Jumping jacks (or step-touch)", d:"4 × 40s"},{n:"Bodyweight squats", d:"4 × 40s"},
-        {n:"Mountain climbers (or marching)", d:"4 × 40s"},{n:"High knees (or marching)", d:"4 × 40s"},{n:"Cool-down stretch", d:"3 min"}]},
-      { day:"Thursday", title:"Full-Body Strength", meta:"25 min · progression", type:"workout", exercises:[
-        {n:"Reverse lunges", d:"3 × 10/leg"},{n:"Push-ups", d:"3 × 10"},{n:"Glute bridge march", d:"3 × 12"},
-        {n:"Side plank", d:"2 × 20s/side"},{n:"Bicycle crunches", d:"3 × 15"},{n:"Cool-down stretch", d:"3 min"}]},
-      { day:"Friday", title:"Steady Cardio + Core", meta:"20 min", type:"workout", exercises:[
-        {n:"Brisk extra walk (or stairs)", d:"15 min"},{n:"Plank", d:"3 × 30s"},{n:"Bicycle crunches", d:"3 × 15"},{n:"Leg raises", d:"3 × 12"}]},
-      { day:"Saturday", title:"Long Combo Session", meta:"30 min · weekend energy", type:"workout", exercises:[
-        {n:"Warm-up", d:"5 min"},{n:"Squats → push-ups → lunges → plank → jacks", d:"3 rounds"},
-        {n:"Extra walk or dance cardio", d:"10 min"},{n:"Cool-down stretch", d:"5 min"}]},
-      { day:"Sunday", title:"Rest & Reset", meta:"recovery day", type:"rest",
-        note:"Full rest, or 15 minutes of gentle yoga if you want to move. Prep meals for the week, hydrate, and log your weight below." }
-    ],
-    [
-      { day:"Monday", title:"Full-Body Strength", meta:"27 min · build", type:"workout", exercises:[
-        {n:"Bodyweight squats", d:"3 × 18"},{n:"Push-ups (knee or full)", d:"3 × 12"},{n:"Single-leg glute bridge", d:"3 × 10/leg"},
-        {n:"Superman with hold", d:"3 × 12"},{n:"Plank hold", d:"3 × 40s"},{n:"Cool-down stretch", d:"3 min"}]},
-      { day:"Tuesday", title:"Active Recovery", meta:"hill walk + mobility", type:"rest",
-        note:"Hill walk, plus 12 minutes of stretching and 5 minutes of slow breathing. Let your legs actually recover." },
-      { day:"Wednesday", title:"Fat-Burn Circuit", meta:"22 min · 5 rounds", type:"workout", exercises:[
-        {n:"Jumping jacks (or step-touch)", d:"5 × 40s"},{n:"Bodyweight squats", d:"5 × 40s"},
-        {n:"Mountain climbers (or marching)", d:"5 × 40s"},{n:"Low-impact burpee step", d:"5 × 40s"},{n:"Cool-down stretch", d:"3 min"}]},
-      { day:"Thursday", title:"Full-Body Strength", meta:"27 min · build", type:"workout", exercises:[
-        {n:"Walking lunges", d:"3 × 12/leg"},{n:"Push-ups", d:"3 × 12"},{n:"Hip thrusts", d:"3 × 15"},
-        {n:"Side plank", d:"2 × 25s/side"},{n:"Bicycle crunches", d:"3 × 20"},{n:"Cool-down stretch", d:"3 min"}]},
-      { day:"Friday", title:"Steady Cardio + Core", meta:"22 min", type:"workout", exercises:[
-        {n:"Brisk extra walk (or stairs)", d:"18 min"},{n:"Plank", d:"3 × 35s"},{n:"Bicycle crunches", d:"3 × 20"},{n:"Leg raises", d:"3 × 15"}]},
-      { day:"Saturday", title:"Long Combo Session", meta:"32 min", type:"workout", exercises:[
-        {n:"Warm-up", d:"5 min"},{n:"Squats → push-ups → lunges → plank → jacks", d:"4 rounds"},
-        {n:"Extra walk or dance cardio", d:"12 min"},{n:"Cool-down stretch", d:"5 min"}]},
-      { day:"Sunday", title:"Rest & Reset", meta:"recovery day", type:"rest",
-        note:"Rest or 15–20 minutes of yoga. Journal one line on how the week actually felt. Log your weight below." }
-    ],
-    [
-      { day:"Monday", title:"Full-Body Strength", meta:"28 min · ascent", type:"workout", exercises:[
-        {n:"Pulse squats", d:"3 × 15"},{n:"Push-ups", d:"4 × 10"},{n:"Glute bridge march", d:"3 × 15"},
-        {n:"Superman pulses", d:"3 × 15"},{n:"Plank hold", d:"3 × 45s"},{n:"Side plank", d:"2 × 20s/side"}]},
-      { day:"Tuesday", title:"Active Recovery", meta:"hill walk + mobility flow", type:"rest",
-        note:"Hill walk, plus a 15-minute mobility flow, slow, controlled movement through hips, spine and shoulders." },
-      { day:"Wednesday", title:"Fat-Burn Circuit", meta:"24 min · 5 rounds", type:"workout", exercises:[
-        {n:"Jumping jacks", d:"5 × 45s"},{n:"Squats", d:"5 × 45s"},{n:"Mountain climbers", d:"5 × 45s"},
-        {n:"Reverse lunge pulses", d:"5 × 45s"},{n:"Cool-down stretch", d:"3 min"}]},
-      { day:"Thursday", title:"Full-Body Strength", meta:"28 min · ascent", type:"workout", exercises:[
-        {n:"Fast alternating lunges", d:"3 × 10/leg"},{n:"Hands-elevated push-ups", d:"3 × 12"},{n:"Single-leg hip thrust", d:"3 × 10/leg"},
-        {n:"Side plank with reach", d:"2 × 30s/side"},{n:"Bicycle crunches", d:"4 × 20"}]},
-      { day:"Friday", title:"Steady Cardio + Core", meta:"24 min · intervals", type:"workout", exercises:[
-        {n:"Walk: 1 min fast / 1 min easy", d:"20 min"},{n:"Plank", d:"4 × 30s"},{n:"Side plank", d:"4 × 20s/side"},{n:"Bicycle crunches", d:"4 × 20"}]},
-      { day:"Saturday", title:"Long Combo Session", meta:"34 min", type:"workout", exercises:[
-        {n:"Warm-up", d:"5 min"},{n:"Squats → push-ups → jump lunges → plank → mountain climbers", d:"4 rounds"},
-        {n:"Extra walk or dance cardio", d:"15 min"},{n:"Cool-down stretch", d:"5 min"}]},
-      { day:"Sunday", title:"Rest & Reset", meta:"recovery day", type:"rest",
-        note:"Rest, or 20 minutes of yoga. Take a look back at where you started three weeks ago. Log your weight below." }
-    ],
-    [
-      { day:"Monday", title:"Full-Body Strength", meta:"30 min · summit", type:"workout", exercises:[
-        {n:"Squat with overhead press (bottles)", d:"4 × 15"},{n:"Push-ups", d:"4 × 12"},{n:"Single-leg glute bridge", d:"3 × 12/leg"},
-        {n:"Superman hold", d:"3 × 30s"},{n:"Plank hold", d:"3 × 60s"}]},
-      { day:"Tuesday", title:"Active Recovery", meta:"hill walk + yin stretch", type:"rest",
-        note:"Hill walk, plus 15 minutes of slow, held stretches. Your body has earned an easy day." },
-      { day:"Wednesday", title:"Fat-Burn Circuit", meta:"26 min · 6 rounds", type:"workout", exercises:[
-        {n:"Jumping jacks", d:"6 × 45s"},{n:"Squats", d:"6 × 45s"},{n:"Mountain climbers", d:"6 × 45s"},
-        {n:"Reverse lunge pulses", d:"6 × 45s"},{n:"Plank finisher", d:"1 × 60s"}]},
-      { day:"Thursday", title:"Full-Body Strength", meta:"30 min · summit", type:"workout", exercises:[
-        {n:"Lunge pulses", d:"4 × 12/leg"},{n:"Push-ups", d:"4 × 12"},{n:"Hip thrusts", d:"4 × 15"},
-        {n:"Side plank", d:"3 × 30s/side"},{n:"Bicycle crunches", d:"4 × 25"}]},
-      { day:"Friday", title:"Steady Cardio + Core", meta:"25 min", type:"workout", exercises:[
-        {n:"Steady brisk walk", d:"20 min"},{n:"Plank → side plank → bicycle crunches → leg raises → supermans", d:"3 rounds"}]},
-      { day:"Saturday", title:"Summit Day", meta:"38 min · challenge", type:"workout", exercises:[
-        {n:"Warm-up", d:"5 min"},{n:"Squats → push-ups → lunges → plank → jacks → mountain climbers", d:"5 rounds"},
-        {n:"Cardio of choice (dance, walk or stairs)", d:"15 min"},{n:"Extended cool-down", d:"8 min"}]},
-      { day:"Sunday", title:"Summit Reflection", meta:"reset day", type:"rest",
-        note:"Full rest. Look back at the whole month, what changed, what you're proud of, what to carry into the next one. Log your weight and, if you like, start a fresh month below." }
-    ]
-  ];
-
-  let state = { theme:"light", checkins:{}, weights:[], profile:{}, lastMood:"afrobeats", lastCustomSound:"" };
-  let selectedWeekIndex = 0;
-  let audioCtx = null;
-  let openDates = new Set();
-
-  function beep(freq, dur){
-    try{
-      if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
-      osc.frequency.value = freq; osc.type = "sine";
-      gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur/1000);
-      osc.connect(gain); gain.connect(audioCtx.destination);
-      osc.start(); osc.stop(audioCtx.currentTime + dur/1000);
-    }catch(e){}
-  }
-
-  function todayISO(d=new Date()){ return d.toISOString().slice(0,10); }
-  function mondayOf(dateObj){ const d = new Date(dateObj); const day = d.getDay(); const diff = (day===0?-6:1)-day; d.setDate(d.getDate()+diff); d.setHours(0,0,0,0); return d; }
-  function addDays(dateObj, n){ const d = new Date(dateObj); d.setDate(d.getDate()+n); return d; }
-  function dayIndexOfYear(d=new Date()){ const start = new Date(d.getFullYear(),0,0); return Math.floor((d-start)/86400000); }
-
-  async function load(){
-    try{ const res = await window.storage.get(STORAGE_KEY, false); if(res && res.value){ state = JSON.parse(res.value); } }catch(e){}
-    if(!state.checkins) state.checkins = {};
-    if(!state.weights) state.weights = [];
-    if(!state.profile) state.profile = {};
-    if(!state.theme) state.theme = "light";
-    if(!state.lastMood) state.lastMood = "afrobeats";
-    if(state.lastCustomSound === undefined) state.lastCustomSound = "";
-    if(!state.profile.startDate){ state.profile.startDate = todayISO(); await save(); }
-  }
-  async function save(){ try{ await window.storage.set(STORAGE_KEY, JSON.stringify(state), false); }catch(e){ console.error("save failed", e); } }
-
-  function applyTheme(){
-    document.documentElement.setAttribute("data-theme", state.theme);
-    document.getElementById("themeIcon").innerHTML = state.theme === "dark" ? SUN_ICON : MOON_ICON;
-  }
-  document.getElementById("themeBtn").addEventListener("click", async ()=>{
-    state.theme = state.theme === "dark" ? "light" : "dark";
-    applyTheme(); await save(); renderChart();
+  const roundsBase = p.minutes <= 15 ? 2 : p.minutes <= 25 ? 3 : 4;
+  let rounds = Math.min(roundsBase + (weekIdx >= 2 ? 1 : 0), 5);
+  const scale = state.intensity * (1 + weekIdx * 0.08) * (mode === "lighter" ? 0.8 : 1) * (p.level === 1 ? 0.85 : p.level === 3 ? 1.15 : 1);
+  if (mode === "lighter") rounds = Math.max(1, rounds - 1);
+  const items = patterns.map((pat, i) => {
+    const ex = p.goal === "move" && pat !== "core" && i % 2 ? pick("mobility", p, slot + i) : pick(pat, p, slot + weekIdx + i);
+    if (ex.kind === "reps") return { ex, amount: Math.max(5, Math.round(style.reps * scale)), unit:"reps" };
+    return { ex, amount: Math.max(20, Math.round((style.work * scale) / 5) * 5), unit:"s" };
   });
+  const warm = ["march","catcow","worldsgreatest"].map(id => ({ ex:byId[id], amount:40, unit:"s" }));
+  const names = { strength:"Strength", fat:"Burn", fitness:"Engine", move:"Mobility & core" };
+  return { title:`${names[p.goal]} · ${patterns.map(x => x[0].toUpperCase()+x.slice(1)).filter((v,i,a)=>a.indexOf(v)===i).slice(0,3).join(", ")}`, mode, warm, rounds, rest: style.rest, items };
+}
 
-  function renderBanner(){
-    const tone = TONE_MAP[state.profile.coachStyle] || "any";
-    const pool = (tone === "any") ? MESSAGES : MESSAGES.filter(m=>m.tone===tone);
-    const list = pool.length ? pool : MESSAGES;
-    const idx = dayIndexOfYear() % list.length;
-    document.getElementById("dailyMsg").textContent = list[idx].t;
-    const p = state.profile;
-    const sub = document.getElementById("dailySub");
-    if(p.filled && p.soundtrack && p.soundtrack.trim()){
-      sub.style.display = "block"; sub.textContent = "Your soundtrack: " + p.soundtrack.trim();
-    } else { sub.style.display = "none"; }
-  }
+function planWeek(){ const s = new Date(state.start); return Math.max(0, Math.floor((today() - mondayOf(s)) / 864e5 / 7)); }
+function slotForDate(d){ const days = DAYS_FOR[state.profile.days]; return days.indexOf((d.getDay()+6)%7); }
+function minutesOf(sess){ const per = sess.items.reduce((n,it) => n + (it.unit === "s" ? it.amount : it.amount*3) + sess.rest, 0); return Math.round((sess.warm.length*40 + per*sess.rounds)/60); }
 
-  function escapeHTML(s){ return (s||"").replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+/* ======================= STATS ======================= */
+const doneOn = (d) => state.history.some(h => h.date === iso(d));
+function weekStats(){
+  const mon = mondayOf(today());
+  const days = [...Array(7)].map((_,i) => addDays(mon, i));
+  const sessions = state.history.filter(h => h.date >= iso(mon) && h.date <= iso(addDays(mon,6)));
+  const minutes = sessions.reduce((n,h) => n + (h.minutes||0), 0);
+  return { days, sessions:sessions.length, minutes, target: state.profile.days, minTarget: state.profile.days * state.profile.minutes };
+}
+function streak(){ let n = 0, d = today(); if (!doneOn(d) && !state.readiness[iso(d)]) d = addDays(d,-1); while (doneOn(d) || (state.readiness[iso(d)] && state.readiness[iso(d)].rested)) { n++; d = addDays(d,-1); } return n; }
+function earned(){
+  const got = new Set(); const h = state.history;
+  if (h.length) got.add("first"); if (h.length >= 10) got.add("ten"); if ((state.feelings||0) >= 5) got.add("honest");
+  if (streak() >= 7) got.add("streak7");
+  const byWeek = {}; h.forEach(x => { const k = iso(mondayOf(new Date(x.date+"T00:00"))); byWeek[k] = (byWeek[k]||0)+1; });
+  if (Object.values(byWeek).some(n => n >= 3)) got.add("three");
+  if (Object.values(byWeek).some(n => n >= state.profile.days)) got.add("week");
+  if (Object.keys(byWeek).filter(k => byWeek[k] >= state.profile.days).length >= 4) got.add("summit");
+  return got;
+}
 
-  function renderAbout(){
-    const card = document.getElementById("aboutCard");
-    const status = document.getElementById("aboutStatus");
-    const p = state.profile;
-    if(p.filled && !p.editing){
-      status.textContent = "saved";
-      const rows = [
-        ["The real goal under the goal", p.goal],
-        ["What 'strong' has felt like before", p.feltStrong],
-        ["What's derailed you before", p.obstacle],
-        ["What your body needs me to know", p.bodyCare],
-        ["How you like to be pushed", p.coachStyle],
-        ["Your soundtrack", p.soundtrack]
-      ].filter(r=>r[1] && String(r[1]).trim());
-      card.innerHTML = '<h3>Your page</h3><p class="lead">This is here for you, edit it any time.</p><div class="about-summary">'
-        + rows.map(r=>'<div class="q">'+r[0]+'</div><div class="a">'+escapeHTML(r[1])+'</div>').join("")
-        + '</div><span class="edit-link" id="editAbout">edit this</span>';
-      document.getElementById("editAbout").addEventListener("click", ()=>{ state.profile.editing = true; renderAbout(); });
-    } else {
-      status.textContent = p.filled ? "editing" : "not started";
-      card.innerHTML =
-        '<h3>A little about you</h3>'
-        + '<p class="lead">Six questions, coach to client, not a fitness form. Answer what you feel like; skip the rest.</p>'
-        + '<div class="field"><label>Underneath "lose weight," what\'s the real goal, more energy, confidence, a health scare, a moment you\'re working toward?</label>'
-        + '<textarea id="f_goal" placeholder="Whatever comes to mind">'+escapeHTML(p.goal)+'</textarea></div>'
-        + '<div class="field"><label>Think of a time you felt strong in your body before. What did that actually feel like, not look like?</label>'
-        + '<textarea id="f_feltStrong" placeholder="A feeling, not a photo">'+escapeHTML(p.feltStrong)+'</textarea></div>'
-        + '<div class="field"><label>What\'s usually made something like this fizzle out before?</label>'
-        + '<textarea id="f_obstacle" placeholder="Honest answer helps me plan around it">'+escapeHTML(p.obstacle)+'</textarea></div>'
-        + '<div class="field"><label>Anything I should train around, not through, old injuries, aches, harder days?</label>'
-        + '<textarea id="f_bodyCare" placeholder="Totally optional, but tell me if there\'s something">'+escapeHTML(p.bodyCare)+'</textarea></div>'
-        + '<div class="field"><label>How do you like to be pushed?</label><select id="f_coachStyle">'
-        + '<option value="">Choose one</option>'
-        + ['Cheer me on','Gently remind me','Just tell me straight','A mix'].map(o=>'<option '+(p.coachStyle===o?'selected':'')+'>'+o+'</option>').join('')
-        + '</select></div>'
-        + '<div class="field"><label>What song or artist gets you moving, even a little?</label>'
-        + '<textarea id="f_soundtrack" placeholder="No wrong answers">'+escapeHTML(p.soundtrack)+'</textarea></div>'
-        + '<button class="about-save" id="saveAbout">Save</button>';
-      document.getElementById("saveAbout").addEventListener("click", async ()=>{
-        state.profile.goal = document.getElementById("f_goal").value;
-        state.profile.feltStrong = document.getElementById("f_feltStrong").value;
-        state.profile.obstacle = document.getElementById("f_obstacle").value;
-        state.profile.bodyCare = document.getElementById("f_bodyCare").value;
-        state.profile.coachStyle = document.getElementById("f_coachStyle").value;
-        state.profile.soundtrack = document.getElementById("f_soundtrack").value;
-        state.profile.filled = true; state.profile.editing = false;
-        await save(); renderAbout(); renderBanner();
-      });
-    }
-  }
+/* ======================= VIEW ======================= */
+let view = "today";
+const app = document.getElementById("app");
+const esc = (s) => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 
-  function weekDoneCount(weekMonday){ let c=0; for(let i=0;i<7;i++){ const key=todayISO(addDays(weekMonday,i)); if(state.checkins[key] && state.checkins[key].done) c++; } return c; }
-  function currentWeekIndex(){
-    const startMonday = mondayOf(new Date(state.profile.startDate));
-    const nowMonday = mondayOf(new Date());
-    let diff = Math.round((nowMonday - startMonday)/(7*86400000));
-    return Math.max(0, Math.min(3, diff));
-  }
-  function renderBasecamps(){
-    const box = document.getElementById("basecamps"); box.innerHTML = "";
-    const startMonday = mondayOf(new Date(state.profile.startDate));
-    const rawDiff = Math.round((mondayOf(new Date()) - startMonday)/(7*86400000));
-    for(let w=0; w<4; w++){
-      const wMonday = addDays(startMonday, w*7);
-      const done = weekDoneCount(wMonday);
-      const el = document.createElement("div");
-      el.className = "basecamp" + (w===selectedWeekIndex ? " active" : "");
-      el.innerHTML = '<div class="bc-num">Week '+(w+1)+'</div><div class="bc-name">'+BASECAMP_NAMES[w]+'</div><div class="bc-frac">'+done+'/7</div>';
-      el.addEventListener("click", ()=>{ selectedWeekIndex = w; renderAll(false); });
-      box.appendChild(el);
-    }
-    const slot = document.getElementById("monthBannerSlot");
-    if(rawDiff >= 4){
-      slot.innerHTML = '<div class="month-banner">You\'ve reached the summit, the four weeks are complete. You can keep repeating Summit week, or start a fresh month (your logs and weight history stay exactly as they are).<br><button id="restartMonth">Start a new month</button></div>';
-      document.getElementById("restartMonth").addEventListener("click", async ()=>{
-        state.profile.startDate = todayISO(); selectedWeekIndex = 0; await save(); renderAll(true);
-      });
-    } else { slot.innerHTML = ""; }
-  }
+function ring(r, pct, color, w = 10){
+  const c = 2*Math.PI*r, off = c*(1-Math.min(1,pct));
+  return `<circle cx="60" cy="60" r="${r}" fill="none" stroke="var(--line)" stroke-width="${w}"/><circle cx="60" cy="60" r="${r}" fill="none" stroke="${color}" stroke-width="${w}" stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${off}" transform="rotate(-90 60 60)" style="transition:stroke-dashoffset .8s ease"/>`;
+}
 
-  const trail = document.getElementById("trail");
-  const trailFill = document.getElementById("trailFill");
-  const weekRangeEl = document.getElementById("weekRange");
-  function fmtRange(mondayDate){ const end = addDays(mondayDate,6); const opts={month:"short",day:"numeric"}; return mondayDate.toLocaleDateString("en-US",opts)+" – "+end.toLocaleDateString("en-US",opts); }
+function topBar(){
+  const ws = state.profile ? weekStats() : null;
+  return `<div class="top"><div class="top-in">
+    <div class="brand">The Climb</div>
+    ${state.profile ? `<nav class="tabs" aria-label="Sections">${[["today","Today"],["plan","Plan"],["progress","Progress"],["library","Moves"]].map(([k,l]) => `<button data-view="${k}" ${view===k?'aria-current="page"':''}>${l}</button>`).join("")}</nav>` : ""}
+    <button class="icon-btn" id="themeBtn" aria-label="Switch light or dark mode">${document.documentElement.dataset.theme === "dark" ? "☀" : "☾"}</button>
+  </div>${ws ? `<div class="weekbar" role="progressbar" aria-label="This week's workouts" aria-valuemin="0" aria-valuemax="${ws.target}" aria-valuenow="${ws.sessions}"><span style="width:${Math.min(100, ws.sessions/ws.target*100)}%"></span></div>` : ""}</div>`;
+}
 
-  async function markDone(dateKey, value){
-    if(!state.checkins[dateKey]) state.checkins[dateKey] = {done:false, exercises:{}};
-    state.checkins[dateKey].done = value;
-    await save(); renderAll(false);
-  }
-
-  function renderTrail(){
-    trail.querySelectorAll(".checkpoint").forEach(n=>n.remove());
-    const startMonday = mondayOf(new Date(state.profile.startDate));
-    const weekMonday = addDays(startMonday, selectedWeekIndex*7);
-    const plan = WEEKS[selectedWeekIndex];
-    const todayStr = todayISO();
-    let doneCount = 0;
-
-    plan.forEach((item, idx)=>{
-      const dateKey = todayISO(addDays(weekMonday, idx));
-      const cp = state.checkins[dateKey] || {done:false, exercises:{}};
-      const isToday = dateKey === todayStr;
-      if(cp.done) doneCount++;
-
-      const el = document.createElement("div");
-      el.className = "checkpoint" + (cp.done?" done":"") + (isToday?" today":"") + (openDates.has(dateKey)?" open":"");
-      const marker = '<div class="marker"><svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>';
-
-      let bodyHTML = "";
-      if(item.type === "workout"){
-        const exHTML = item.exercises.map((ex,exi)=>{
-          const checked = cp.exercises && cp.exercises[exi] ? "checked" : "";
-          const struck = cp.exercises && cp.exercises[exi] ? "struck" : "";
-          const tip = getTip(ex.n);
-          return '<div class="ex-row"><input type="checkbox" data-idx="'+exi+'" '+checked+'>'
-            + '<span class="ex-name '+struck+'">'+ex.n+'</span><span class="ex-dose">'+ex.d+'</span>'
-            + '<button type="button" class="icon-btn tip-toggle" data-exi="'+exi+'" title="Tip">i</button>'
-            + '<a class="icon-btn yt-link" href="'+ytLink(ex.n)+'" target="_blank" rel="noopener" title="Watch form on YouTube">&#9654;</a></div>'
-            + '<div class="ex-tip" data-tip-for="'+exi+'" style="display:none;"><b>'+tip.target+'</b>: '+tip.cue+'</div>';
-        }).join("");
-        bodyHTML = '<div class="cp-body-inner"><button type="button" class="guided-btn" data-action="guided">&#9654; Start guided workout</button>'
-          + exHTML
-          + '<button class="mark-btn '+(cp.done?'undo':'')+'" data-action="toggle-done">'+(cp.done ? "Mark as not done" : "Mark day complete")+'</button></div>';
-      } else {
-        bodyHTML = '<div class="cp-body-inner"><div class="rest-note">'+item.note+'</div>'
-          + '<button class="mark-btn '+(cp.done?'undo':'')+'" data-action="toggle-done">'+(cp.done ? "Mark as not done" : "Mark day complete")+'</button></div>';
-      }
-
-      el.innerHTML = marker + '<div class="cp-card"><div class="cp-top"><div>'
-          + '<div class="cp-day">'+item.day+(isToday ? " · today" : "")+'</div>'
-          + '<div class="cp-title">'+item.title+'</div><div class="cp-meta">'+item.meta+'</div>'
-          + '</div><div class="chevron">›</div></div>'
-          + '<div class="cp-body"><div class="cp-body-content">'+bodyHTML+'</div></div></div>';
-
-      el.addEventListener("click", (e)=>{
-        if(e.target.closest("input[type=checkbox]") || e.target.closest("[data-action]") || e.target.closest(".yt-link")) return;
-        if(openDates.has(dateKey)) openDates.delete(dateKey); else openDates.add(dateKey);
-        el.classList.toggle("open");
-      });
-      el.querySelectorAll("input[type=checkbox]").forEach(cb=>{
-        cb.addEventListener("click", async (e)=>{
-          e.stopPropagation();
-          const exi = cb.dataset.idx;
-          if(!state.checkins[dateKey]) state.checkins[dateKey] = {done:false, exercises:{}};
-          if(!state.checkins[dateKey].exercises) state.checkins[dateKey].exercises = {};
-          state.checkins[dateKey].exercises[exi] = cb.checked;
-          await save();
-          renderTrail();
-        });
-      });
-      el.querySelectorAll(".tip-toggle").forEach(btn=>{
-        btn.addEventListener("click", (e)=>{
-          e.stopPropagation();
-          const exi = btn.dataset.exi;
-          const tipEl = el.querySelector('.ex-tip[data-tip-for="'+exi+'"]');
-          if(tipEl) tipEl.style.display = tipEl.style.display === "none" ? "block" : "none";
-        });
-      });
-      const btn = el.querySelector('[data-action="toggle-done"]');
-      if(btn) btn.addEventListener("click", async (e)=>{ e.stopPropagation(); await markDone(dateKey, !cp.done); });
-      const guidedBtn = el.querySelector('[data-action="guided"]');
-      if(guidedBtn) guidedBtn.addEventListener("click", (e)=>{ e.stopPropagation(); openGuided(item, dateKey); });
-
-      trail.appendChild(el);
-    });
-
-    trailFill.style.height = (doneCount/7*100) + "%";
-    weekRangeEl.textContent = fmtRange(weekMonday);
-  }
-
-  function computeStreak(){
-    let streak = 0; let d = new Date();
-    while(true){ const key = todayISO(d); const cp = state.checkins[key]; if(cp && cp.done){ streak++; d.setDate(d.getDate()-1); } else break; }
-    return streak;
-  }
-  function renderStats(){
-    const startMonday = mondayOf(new Date(state.profile.startDate));
-    const weekMonday = addDays(startMonday, selectedWeekIndex*7);
-    document.getElementById("statWeek").textContent = weekDoneCount(weekMonday) + "/7";
-    document.getElementById("statStreak").textContent = computeStreak();
-    const w = state.weights.slice().sort((a,b)=>a.date.localeCompare(b.date));
-    const changeEl = document.getElementById("statChange");
-    if(w.length >= 2){ const diff = (w[w.length-1].kg - w[0].kg).toFixed(1); changeEl.textContent = (diff > 0 ? "+" : "") + diff + "kg"; }
-    else { changeEl.textContent = "—"; }
-  }
-  function renderChart(){
-    const wrap = document.getElementById("chartWrap");
-    const w = state.weights.slice().sort((a,b)=>a.date.localeCompare(b.date));
-    if(w.length === 0){ wrap.innerHTML = '<div class="empty-chart">No entries yet, log today\'s weight to start the line.</div>'; return; }
-    if(w.length === 1){ wrap.innerHTML = '<div class="empty-chart">One entry logged ('+w[0].kg+'kg on '+w[0].date+'). Log again in a few days to see your line.</div>'; return; }
-    const vals = w.map(p=>p.kg); const min = Math.min(...vals), max = Math.max(...vals);
-    const pad = (max-min) < 1 ? 1 : (max-min)*0.15; const yMin = min-pad, yMax = max+pad;
-    const W=640,H=160,M=8;
-    const pts = w.map((p,i)=>{ const x=M+(i/(w.length-1))*(W-2*M); const y=H-M-((p.kg-yMin)/(yMax-yMin))*(H-2*M); return [x,y]; });
-    const accentColor = state.theme === "dark" ? "#87A879" : "#4A5D45";
-    const linePath = pts.map((p,i)=>(i===0?"M":"L")+p[0].toFixed(1)+","+p[1].toFixed(1)).join(" ");
-    const areaPath = linePath + " L"+pts[pts.length-1][0].toFixed(1)+","+(H-M)+" L"+pts[0][0].toFixed(1)+","+(H-M)+" Z";
-    const dots = pts.map(p=>'<circle cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="3.5" fill="'+accentColor+'" stroke="var(--bg)" stroke-width="1.5"/>').join("");
-    wrap.innerHTML = '<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:150px;overflow:visible;">'
-      + '<defs><linearGradient id="fillGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="'+accentColor+'" stop-opacity="0.18"/><stop offset="100%" stop-color="'+accentColor+'" stop-opacity="0"/></linearGradient></defs>'
-      + '<path d="'+areaPath+'" fill="url(#fillGrad)"/><path d="'+linePath+'" fill="none" stroke="'+accentColor+'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'+dots+'</svg>'
-      + '<div class="chart-foot"><span>'+w[0].date+'</span><span>'+w[w.length-1].kg+'kg latest</span><span>'+w[w.length-1].date+'</span></div>';
-  }
-
-  document.getElementById("logBtn").addEventListener("click", async ()=>{
-    const input = document.getElementById("weightInput"); const val = parseFloat(input.value);
-    if(!val || val <= 0){ input.focus(); return; }
-    const today = todayISO();
-    state.weights = state.weights.filter(w=>w.date !== today);
-    state.weights.push({date:today, kg:val});
-    await save(); input.value = ""; renderChart(); renderStats();
+let ob = { step:0, goal:null, level:null, days:null, minutes:null, equipment:[], lowImpact:false };
+function renderOnboarding(){
+  const steps = [
+    ["What are you climbing toward?", "goal", Object.entries(GOALS)],
+    ["Where are you starting from?", "level", Object.entries(LEVELS)],
+    ["How many days a week can you train?", "days", [[2,"2 days"],[3,"3 days"],[4,"4 days"],[5,"5 days"]]],
+    ["How long per session?", "minutes", [[15,"15 minutes"],[25,"25 minutes"],[40,"40 minutes"]]],
+    ["What do you have at home?", "equipment", [["dumbbells","Dumbbells"],["band","Resistance band"]]],
+  ];
+  const [q, key, opts] = steps[Math.min(ob.step, steps.length-1)];
+  const multi = key === "equipment";
+  app.innerHTML = topBar() + `<div class="wrap"><div class="ob">
+    <p class="eyebrow">Your plan, built in a minute${NAME ? ` · for ${esc(NAME)}` : ""}</p>
+    <h1>Let's build a plan that fits your life.</h1>
+    <p class="muted">Five quick questions. Your answers stay on this device and shape every workout: the moves, the volume and how it progresses over four weeks.</p>
+    <div class="ob-progress" aria-hidden="true"><span style="width:${(ob.step/steps.length)*100}%"></span></div>
+    <div class="ob-step"><h3>${q}</h3><div class="chips" role="group" aria-label="${esc(q)}">
+      ${opts.map(([v,l]) => { const on = multi ? ob.equipment.includes(v) : String(ob[key]) === String(v); return `<button class="chip" data-k="${key}" data-v="${v}" aria-pressed="${on}">${l}</button>`; }).join("")}
+      ${multi ? `<button class="chip" data-k="equipment" data-v="none" aria-pressed="${!ob.equipment.length}">Nothing, bodyweight only</button>` : ""}
+    </div>
+    ${multi ? `<label style="display:flex;gap:10px;align-items:center;margin-top:16px;font-size:14px"><input type="checkbox" id="lowImpact" ${ob.lowImpact?"checked":""}> Keep it low impact (no jumping), kinder to knees and neighbours</label>
+      <div style="margin-top:22px"><button class="btn" id="buildPlan">Build my plan</button></div>` : ""}
+    </div>
+    ${ob.step ? `<button class="btn ghost small" id="obBack" style="margin-top:18px">← Back</button>` : ""}
+    <p class="note">This app suggests general exercise for healthy adults. It is not medical advice. If you have an injury, a health condition, are pregnant or are new to exercise after a long break, check with a doctor first, and stop any move that causes pain.</p>
+  </div></div>`;
+  app.querySelectorAll("[data-k]").forEach(b => b.onclick = () => {
+    const k = b.dataset.k, v = b.dataset.v;
+    if (k === "equipment") { if (v === "none") ob.equipment = []; else ob.equipment = ob.equipment.includes(v) ? ob.equipment.filter(x => x !== v) : [...ob.equipment, v]; return renderOnboarding(); }
+    ob[k] = isNaN(+v) ? v : +v; ob.step++; renderOnboarding();
   });
-  document.getElementById("weightInput").addEventListener("keydown", (e)=>{ if(e.key === "Enter") document.getElementById("logBtn").click(); });
+  const back = document.getElementById("obBack"); if (back) back.onclick = () => { ob.step--; renderOnboarding(); };
+  const lo = document.getElementById("lowImpact"); if (lo) lo.onchange = () => { ob.lowImpact = lo.checked; };
+  const go = document.getElementById("buildPlan"); if (go) go.onclick = () => {
+    state.profile = { goal:ob.goal, level:ob.level, days:ob.days, minutes:ob.minutes, equipment:ob.equipment, lowImpact:ob.lowImpact };
+    state.start = iso(today()); state.intensity = 1; save(); view = "today"; render(); window.scrollTo(0,0);
+  };
+  bindTop();
+}
 
-  // ---------- Guided workout overlay ----------
-  const overlay = document.getElementById("overlay");
-  const overlayCard = document.getElementById("overlayCard");
-  let guidedSteps = [], guidedIndex = 0, guidedRemaining = 0, guidedTimerId = null, guidedPaused = false, guidedDateKey = null;
+function readinessCard(){
+  const r = state.readiness[iso(today())];
+  const v = r || { sleep:3, sore:3, energy:3 };
+  return `<div class="card"><div class="section-h"><h2>How are you today?</h2><span class="muted" style="font-size:12px">sets today's session</span></div>
+    ${[["sleep","Sleep","poor","great"],["energy","Energy","flat","buzzing"],["sore","Soreness","none","very"]].map(([k,l,a,b]) => `<div class="ready-row"><label for="r-${k}">${l} <span class="muted" style="font-size:11px">(${a} → ${b})</span></label><input type="range" min="1" max="5" step="1" id="r-${k}" value="${v[k]}"><b id="rv-${k}">${v[k]}</b></div>`).join("")}
+    <button class="btn small" id="saveReady">${r ? "Update" : "Check in"}</button>
+    ${r ? `<div class="verdict"><b>${r.mode === "full" ? "Green light: full session." : r.mode === "lighter" ? "Lighter today: one round less, shorter sets." : "Recovery day: a gentle mobility flow."}</b> <span class="muted">${r.mode === "recovery" ? "Low sleep, low energy or high soreness: recovering well is training too." : r.mode === "lighter" ? "You're a bit run down. Showing up lighter still counts." : "You're well rested. Go get it."}</span></div>` : ""}
+  </div>`;
+}
 
-  function openGuided(item, dateKey){
-    guidedDateKey = dateKey;
-    guidedSteps = buildSteps(item.exercises);
-    guidedIndex = -1;
-    renderGuidedIntro(item);
-    overlay.classList.add("show");
+function todaySession(){
+  const slot = slotForDate(today());
+  const r = state.readiness[iso(today())];
+  if (slot < 0) return null;
+  return buildSession(Math.min(planWeek(), 3), slot, r ? r.mode : "full");
+}
+
+function sessionList(s){
+  return `<ul class="ex-list">${(s.warm.length ? [`<li style="background:transparent;border-style:dashed">${pose("mobility")}<span>Warm-up: ${s.warm.map(w=>w.ex.name.toLowerCase()).join(", ")}</span><span class="amt">${s.warm.length*40}s</span></li>`] : []).concat(s.items.map(it => `<li>${pose(it.ex.pattern)}<span>${esc(it.ex.name)}</span><span class="amt">${it.amount}${it.unit === "s" ? "s" : " reps"}</span></li>`)).join("")}</ul>
+    <p class="muted" style="font-size:13px;margin:12px 0 0">${s.rounds} round${s.rounds>1?"s":""} · ${s.rest}s rest between moves · about ${minutesOf(s)} min</p>`;
+}
+
+function renderToday(){
+  const p = state.profile, ws = weekStats(), s = todaySession(), done = doneOn(today()), st = streak();
+  const badges = earned();
+  const hour = new Date().getHours();
+  app.innerHTML = topBar() + `<div class="wrap">
+    <div class="hello"><p class="eyebrow">Week ${Math.min(planWeek()+1, 4)} of 4 · ${GOALS[p.goal]}</p><h1>${hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening"}${NAME ? `, ${esc(NAME)}` : ""}.</h1><p class="muted">${QUOTES[today().getDate() % QUOTES.length]}</p></div>
+    <div class="grid2">
+      <div class="card"><div class="rings">
+        <svg width="120" height="120" viewBox="0 0 120 120" role="img" aria-label="This week: ${ws.sessions} of ${ws.target} workouts, ${ws.minutes} of ${ws.minTarget} minutes, ${st} day streak">${ring(52, ws.sessions/ws.target, "var(--ring-a)")}${ring(38, ws.minutes/ws.minTarget, "var(--ring-b)")}${ring(24, Math.min(st,7)/7, "var(--ring-c)")}</svg>
+        <div class="ring-legend"><div><span class="dot" style="background:var(--ring-a)"></span>Workouts <b>${ws.sessions}/${ws.target}</b></div><div><span class="dot" style="background:var(--ring-b)"></span>Minutes <b>${ws.minutes}/${ws.minTarget}</b></div><div><span class="dot" style="background:var(--ring-c)"></span>Streak <b>${st} day${st===1?"":"s"}</b></div></div>
+      </div>
+      <div class="week-strip" aria-label="This week">${ws.days.map(d => { const sl = slotForDate(d); const isT = iso(d) === iso(today()); return `<div class="day ${isT?"today":""} ${doneOn(d)?"done":""} ${sl<0?"rest":""}">${"MTWTFSS"[(d.getDay()+6)%7]}<b>${d.getDate()}</b>${doneOn(d)?"✓":sl<0?"rest":"·"}</div>`; }).join("")}</div></div>
+      ${readinessCard()}
+    </div>
+    <div class="card workout section">
+      ${s ? `<p class="eyebrow">${done ? "Done today ✓" : "Today's session"}${s.mode !== "full" ? ` · ${s.mode}` : ""}</p><h2>${esc(s.title)}</h2>${sessionList(s)}
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px"><button class="btn" id="start">${done ? "Train again" : "Start workout"}</button>
+        <label style="display:flex;align-items:center;gap:8px;font-size:13px" class="muted"><input type="checkbox" id="voice" ${state.voice?"checked":""}> Spoken cues</label></div>`
+      : `<p class="eyebrow">Rest day</p><h2>Recover on purpose.</h2><p class="muted">Walk, stretch, sleep well. Rest days are when your body adapts to the training.</p><button class="btn ghost" id="startRecovery" style="margin-top:12px">Do a 6-minute mobility flow</button>`}
+    </div>
+    <div class="section"><div class="section-h"><h2>Achievements</h2><span class="muted" style="font-size:12px">${badges.size} of ${BADGES.length}</span></div>
+      <div class="badges">${BADGES.map(([k,t,d,m]) => `<div class="badge ${badges.has(k)?"got":""}"><div class="medal" aria-hidden="true">${m}</div><b>${t}</b><div class="muted" style="margin-top:3px">${d}</div></div>`).join("")}</div></div>
+    <p class="note">General exercise guidance for healthy adults, not medical advice. Stop any move that hurts, and check with a doctor if you have a condition or injury. Everything you log stays on this device.</p>
+  </div>`;
+  bindTop();
+  ["sleep","energy","sore"].forEach(k => { const el = document.getElementById("r-"+k); el.oninput = () => document.getElementById("rv-"+k).textContent = el.value; });
+  document.getElementById("saveReady").onclick = () => {
+    const v = { sleep:+document.getElementById("r-sleep").value, energy:+document.getElementById("r-energy").value, sore:+document.getElementById("r-sore").value };
+    const score = v.sleep + v.energy + (6 - v.sore); // 3 to 15
+    v.mode = score >= 10 ? "full" : score >= 7 ? "lighter" : "recovery";
+    state.readiness[iso(today())] = v; save(); renderToday();
+  };
+  const start = document.getElementById("start"); if (start) start.onclick = () => openPlayer(s);
+  const rec = document.getElementById("startRecovery"); if (rec) rec.onclick = () => openPlayer(buildSession(0, 0, "recovery"));
+  const voice = document.getElementById("voice"); if (voice) voice.onchange = () => { state.voice = voice.checked; save(); };
+}
+
+function renderPlan(){
+  const p = state.profile, wk = planWeek();
+  const names = ["Trailhead","Ridgeline","Ascent","Summit"];
+  app.innerHTML = topBar() + `<div class="wrap"><div class="hello"><p class="eyebrow">Your four weeks</p><h1>The plan</h1><p class="muted">${LEVELS[p.level]} · ${p.days} days a week · ${p.minutes} minutes · ${p.equipment.length ? p.equipment.join(" and ") : "bodyweight"}${p.lowImpact ? " · low impact" : ""}. Each week adds a little: more rounds, longer sets or more reps. How workouts feel adjusts it further.</p></div>
+    ${[0,1,2,3].map(w => `<div class="card section" ${w===Math.min(wk,3)?'style="border-color:var(--accent)"':""}><div class="section-h"><h2>Week ${w+1} · ${names[w]}</h2>${w===Math.min(wk,3)?'<span class="eyebrow">this week</span>':""}</div>
+      <div class="grid2">${DAYS_FOR[p.days].map((dayIdx, slot) => { const s = buildSession(w, slot, "full"); return `<div><p class="muted" style="font-size:12px;margin:0 0 4px">${"Monday Tuesday Wednesday Thursday Friday Saturday Sunday".split(" ")[dayIdx]} · ${minutesOf(s)} min</p><b style="font-size:14px">${esc(s.title)}</b><div class="muted" style="font-size:13px;margin-top:4px">${s.items.map(i=>`${i.ex.name} ${i.amount}${i.unit==="s"?"s":"×"}`).join(" · ")} · ${s.rounds} rounds</div></div>`; }).join("")}</div></div>`).join("")}
+    <div class="section" style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn ghost" id="rebuild">Change my answers</button><button class="btn ghost" id="export">Download my data</button></div>
+  </div>`;
+  bindTop();
+  document.getElementById("rebuild").onclick = () => { ob = { step:0, goal:null, level:null, days:null, minutes:null, equipment:[], lowImpact:false }; state.profile = null; save(); render(); };
+  document.getElementById("export").onclick = () => { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([JSON.stringify(state,null,2)],{type:"application/json"})); a.download = "the-climb-data.json"; a.click(); };
+}
+
+function chart(points){
+  if (points.length < 2) return `<p class="muted">Log your weight on two different days to see the line.</p>`;
+  const W = 640, H = 200, pad = 30, xs = points.map((_,i)=>i), ys = points.map(p=>p.kg);
+  const min = Math.min(...ys) - 1, max = Math.max(...ys) + 1;
+  const X = i => pad + i*(W-2*pad)/(points.length-1), Y = v => H - pad - (v-min)*(H-2*pad)/(max-min);
+  const d = points.map((p,i)=>`${i?"L":"M"}${X(i).toFixed(1)} ${Y(p.kg).toFixed(1)}`).join(" ");
+  const change = (ys[ys.length-1]-ys[0]).toFixed(1);
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Weight from ${ys[0]} kg to ${ys[ys.length-1]} kg over ${points.length} entries"><path d="${d} L${X(points.length-1)} ${H-pad} L${pad} ${H-pad}Z" fill="var(--accent-soft)"/><path d="${d}" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linejoin="round"/>${points.map((p,i)=>`<circle cx="${X(i)}" cy="${Y(p.kg)}" r="3.5" fill="var(--accent)"/>`).join("")}<text x="${pad}" y="18" fill="var(--ink-soft)" font-size="12">${change > 0 ? "+" : ""}${change} kg since ${points[0].date}</text></svg>`;
+}
+
+function renderProgress(){
+  const weeks = 12, start = addDays(mondayOf(today()), -7*(weeks-1));
+  const cells = [...Array(weeks*7)].map((_,i) => { const d = addDays(start, Math.floor(i%weeks)*7 + Math.floor(i/weeks)); const n = state.history.filter(h=>h.date===iso(d)).length; return d > today() ? '<i style="opacity:.3"></i>' : `<i class="${n>1?"l2":n?"l1":""}" title="${iso(d)}"></i>`; }).join("");
+  const total = state.history.length, mins = state.history.reduce((n,h)=>n+(h.minutes||0),0);
+  const pts = state.weights.slice().sort((a,b)=>a.date.localeCompare(b.date));
+  app.innerHTML = topBar() + `<div class="wrap"><div class="hello"><p class="eyebrow">Progress</p><h1>Every checkpoint counts.</h1></div>
+    <div class="grid2"><div class="card"><p class="eyebrow">All time</p><h2 style="font-size:40px;margin-top:6px">${total}</h2><p class="muted">workouts · ${mins} minutes · best streak so far ${streak()} days</p></div>
+      <div class="card"><p class="eyebrow">Last 12 weeks</p><div class="heat" style="margin-top:12px" role="img" aria-label="Training calendar for the last twelve weeks">${cells}</div><p class="muted" style="font-size:12px;margin-top:8px">Each square is a day; darker means you trained.</p></div></div>
+    <div class="card section"><div class="section-h"><h2>Weight log</h2><span class="muted" style="font-size:12px">private · this device</span></div>
+      <div class="log"><input type="number" step="0.1" min="20" max="400" id="kg" placeholder="Today's weight (kg)" aria-label="Today's weight in kilograms"><button class="btn small" id="logKg">Log</button></div>${chart(pts)}</div>
+    <div class="card section"><div class="section-h"><h2>Recent workouts</h2></div>${state.history.length ? `<ul class="ex-list">${state.history.slice(-8).reverse().map(h=>`<li>${pose("cardio")}<span>${esc(h.title)}</span><span class="amt">${h.date} · ${h.minutes} min · felt ${h.felt||"–"}</span></li>`).join("")}</ul>` : `<p class="muted">Your finished workouts will show here.</p>`}</div>
+  </div>`;
+  bindTop();
+  document.getElementById("logKg").onclick = () => { const v = parseFloat(document.getElementById("kg").value); if (!(v > 20 && v < 400)) return; const t = iso(today()); state.weights = state.weights.filter(w=>w.date!==t).concat({date:t, kg:v}); save(); renderProgress(); };
+}
+
+let libFilter = "all";
+function renderLibrary(){
+  const pats = ["all","squat","lunge","hinge","push","pull","core","cardio","mobility"];
+  const list = EX.filter(e => libFilter === "all" || e.pattern === libFilter);
+  app.innerHTML = topBar() + `<div class="wrap"><div class="hello"><p class="eyebrow">Moves</p><h1>The exercise library</h1><p class="muted">Every move in your plan, with the one cue that matters most. Bodyweight, dumbbell and band options, and low-impact choices are marked.</p></div>
+    <div class="lib-filters" role="group" aria-label="Filter by movement">${pats.map(p=>`<button class="chip" data-f="${p}" aria-pressed="${libFilter===p}">${p}</button>`).join("")}</div>
+    <div class="lib">${list.map(e=>`<div class="card"><div style="display:flex;gap:12px;align-items:center">${pose(e.pattern)}<div><b>${esc(e.name)}</b><div class="muted" style="font-size:12px">${e.pattern} · ${e.eq.length?e.eq.join(", "):"no equipment"}${e.low?" · low impact":""}</div></div></div><p style="font-size:13.5px;line-height:1.55;margin:10px 0 0">${esc(e.cue)}</p></div>`).join("")}</div>
+  </div>`;
+  bindTop();
+  app.querySelectorAll("[data-f]").forEach(b => b.onclick = () => { libFilter = b.dataset.f; renderLibrary(); });
+}
+
+function bindTop(){
+  app.querySelectorAll("[data-view]").forEach(b => b.onclick = () => { view = b.dataset.view; render(); window.scrollTo(0,0); });
+  const t = document.getElementById("themeBtn");
+  if (t) t.onclick = () => { const d = document.documentElement.dataset.theme === "dark" ? "light" : "dark"; document.documentElement.dataset.theme = d; try { localStorage.setItem(THEME_KEY, d); } catch(e){} render(); };
+}
+
+function render(){
+  if (!state.profile) return renderOnboarding();
+  ({ today:renderToday, plan:renderPlan, progress:renderProgress, library:renderLibrary })[view]();
+}
+
+/* ======================= PLAYER ======================= */
+let audioCtx, wakeLock = null, timer = null;
+function beep(freq, dur){ try { audioCtx = audioCtx || new (window.AudioContext||window.webkitAudioContext)(); const o = audioCtx.createOscillator(), g = audioCtx.createGain(); o.frequency.value = freq; g.gain.setValueAtTime(0.15, audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur/1000); o.connect(g); g.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime + dur/1000); } catch(e){} }
+function say(text){ if (!state.voice || !("speechSynthesis" in window)) return; try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text); u.rate = 1.02; speechSynthesis.speak(u); } catch(e){} }
+
+function stepsOf(s){
+  const steps = [];
+  s.warm.forEach(w => steps.push({ type:"work", ex:w.ex, amount:w.amount, unit:"s", label:"Warm-up" }));
+  for (let r = 0; r < s.rounds; r++) s.items.forEach((it, i) => {
+    steps.push({ type:"work", ex:it.ex, amount:it.amount, unit:it.unit, label:`Round ${r+1} of ${s.rounds}` });
+    if (!(r === s.rounds-1 && i === s.items.length-1)) steps.push({ type:"rest", amount:s.rest, unit:"s", label:"Rest" });
+  });
+  return steps;
+}
+
+function openPlayer(s){
+  const el = document.getElementById("player"), steps = stepsOf(s);
+  let i = 0, left = 0, paused = false, startedAt = Date.now();
+  if ("wakeLock" in navigator) navigator.wakeLock.request("screen").then(l => wakeLock = l).catch(()=>{});
+  el.classList.add("open"); document.body.style.overflow = "hidden";
+  const nextWork = (from) => steps.slice(from).find(x => x.type === "work");
+  function show(){
+    const st = steps[i]; const nx = nextWork(i+1);
+    el.innerHTML = `<div class="player-top"><button class="btn ghost small" id="pClose">✕ End</button><div style="flex:1" class="muted">${esc(s.title)}</div><span class="eyebrow">${i+1}/${steps.length}</span></div>
+      <div class="player-bar"><span style="width:${(i/steps.length)*100}%"></span></div>
+      <div class="player-main" aria-live="polite">
+        <div class="phase">${st.label}</div>
+        ${st.type === "work" ? pose(st.ex.pattern) : ""}
+        <div class="player-name">${st.type === "work" ? esc(st.ex.name) : "Breathe"}</div>
+        ${st.unit === "reps" ? `<div class="big">${st.amount}<span style="font-size:.3em"> reps</span></div><button class="btn" id="pDone">Done</button>` : `<div class="big" id="pTime">${left}</div>`}
+        <p class="cue">${st.type === "work" ? esc(st.ex.cue) : nx ? `Next: ${esc(nx.ex.name)}${nx.unit==="reps" ? ` × ${nx.amount}` : ` for ${nx.amount}s`}` : "Last one done after this."}</p>
+      </div>
+      <div class="player-ctrl"><button class="btn ghost" id="pBack">← Back</button>${st.unit === "s" ? `<button class="btn" id="pPause">${paused ? "Resume" : "Pause"}</button>` : ""}<button class="btn ghost" id="pSkip">Skip →</button></div>`;
+    document.getElementById("pClose").onclick = close;
+    document.getElementById("pSkip").onclick = () => go(i+1);
+    document.getElementById("pBack").onclick = () => go(Math.max(0,i-1));
+    const done = document.getElementById("pDone"); if (done) done.onclick = () => go(i+1);
+    const pause = document.getElementById("pPause"); if (pause) pause.onclick = () => { paused = !paused; show(); };
+    (document.getElementById("pDone") || document.getElementById("pPause")).focus();
   }
-  function closeGuided(){
-    overlay.classList.remove("show");
-    if(guidedTimerId){ clearInterval(guidedTimerId); guidedTimerId = null; }
-  }
-
-  function renderGuidedIntro(item){
-    const moodPills = MOODS.map(m=>'<div class="mood-pill '+(state.lastMood===m.key?'active':'')+'" data-mood="'+m.key+'">'+m.label+'</div>').join("");
-    overlayCard.innerHTML =
-      '<button class="ov-close" id="ovClose">&times;</button>'
-      + '<div class="ov-eyebrow">'+item.day+'</div>'
-      + '<div class="ov-title">'+item.title+'</div>'
-      + '<p style="font-size:13px;color:var(--ink-soft);margin-bottom:14px;">Pick a soundtrack, press play in a new tab, then begin whenever you\'re ready.</p>'
-      + '<div class="mood-grid" id="moodGrid">'+moodPills+'</div>'
-      + '<div class="sound-row"><input id="customSound" placeholder="Or type a song / artist" value="'+escapeHTML(state.lastCustomSound || state.profile.soundtrack || "")+'">'
-      + '<a class="play-btn" id="playSound" href="#" target="_blank" rel="noopener">&#9654; Play</a></div>'
-      + '<button class="begin-btn" id="beginBtn">Begin workout</button>';
-
-    document.getElementById("ovClose").addEventListener("click", closeGuided);
-    overlayCard.querySelectorAll(".mood-pill").forEach(p=>{
-      p.addEventListener("click", async ()=>{
-        state.lastMood = p.dataset.mood;
-        overlayCard.querySelectorAll(".mood-pill").forEach(x=>x.classList.remove("active"));
-        p.classList.add("active");
-        await save();
-      });
-    });
-    function currentSoundQuery(){
-      const custom = document.getElementById("customSound").value.trim();
-      if(custom) return custom;
-      const mood = MOODS.find(m=>m.key===state.lastMood) || MOODS[0];
-      return mood.query;
-    }
-    document.getElementById("playSound").addEventListener("click", async (e)=>{
-      e.currentTarget.href = moodLink(currentSoundQuery());
-      state.lastCustomSound = document.getElementById("customSound").value.trim();
-      await save();
-    });
-    document.getElementById("beginBtn").addEventListener("click", async ()=>{
-      state.lastCustomSound = document.getElementById("customSound").value.trim();
-      await save();
-      guidedIndex = 0;
-      runGuidedStep();
-    });
-  }
-
-  function runGuidedStep(){
-    if(guidedTimerId){ clearInterval(guidedTimerId); guidedTimerId = null; }
-    if(guidedIndex >= guidedSteps.length){ renderGuidedDone(); return; }
-    const step = guidedSteps[guidedIndex];
-    guidedPaused = false;
-
-    if(step.type === "manual"){
-      overlayCard.innerHTML =
-        '<button class="ov-close" id="ovClose">&times;</button>'
-        + '<div class="step-progress">Step '+(guidedIndex+1)+' of '+guidedSteps.length+'</div>'
-        + '<div class="step-sub">'+step.sub+'</div>'
-        + '<div class="step-label">'+step.label+'</div>'
-        + '<div class="step-tip"><b>'+step.tip.target+'</b>: '+step.tip.cue+'</div>'
-        + '<a class="step-yt" href="'+ytLink(step.exName||step.label)+'" target="_blank" rel="noopener">&#9654; Watch proper form</a>'
-        + '<button class="manual-btn" id="manualDone">Done, next</button>'
-        + '<div class="step-controls"><button id="skipStep">Skip</button><button class="danger-ghost" id="exitStep">Exit</button></div>';
-      document.getElementById("ovClose").addEventListener("click", closeGuided);
-      document.getElementById("exitStep").addEventListener("click", closeGuided);
-      document.getElementById("skipStep").addEventListener("click", ()=>{ guidedIndex++; runGuidedStep(); });
-      document.getElementById("manualDone").addEventListener("click", ()=>{ beep(880,150); guidedIndex++; runGuidedStep(); });
-      return;
-    }
-
-    guidedRemaining = step.seconds;
-    const isRest = step.type === "rest" || step.type === "transition";
-    overlayCard.innerHTML =
-      '<button class="ov-close" id="ovClose">&times;</button>'
-      + '<div class="step-progress">Step '+(guidedIndex+1)+' of '+guidedSteps.length+'</div>'
-      + '<div class="step-sub">'+step.sub+'</div>'
-      + '<div class="step-label">'+step.label+'</div>'
-      + '<div class="step-timer '+(isRest?"rest":"")+'" id="stepTimer">'+fmtTime(guidedRemaining)+'</div>'
-      + (step.tip ? '<div class="step-tip"><b>'+step.tip.target+'</b>: '+step.tip.cue+'</div>' : '')
-      + (step.exName ? '<a class="step-yt" href="'+ytLink(step.exName)+'" target="_blank" rel="noopener">&#9654; Watch proper form</a>' : '')
-      + '<div class="step-controls"><button id="pauseStep">Pause</button><button id="skipStep">Skip</button><button class="danger-ghost" id="exitStep">Exit</button></div>';
-
-    document.getElementById("ovClose").addEventListener("click", closeGuided);
-    document.getElementById("exitStep").addEventListener("click", closeGuided);
-    document.getElementById("skipStep").addEventListener("click", ()=>{ guidedIndex++; runGuidedStep(); });
-    const pauseBtn = document.getElementById("pauseStep");
-    pauseBtn.addEventListener("click", ()=>{ guidedPaused = !guidedPaused; pauseBtn.textContent = guidedPaused ? "Resume" : "Pause"; });
-
-    guidedTimerId = setInterval(()=>{
-      if(guidedPaused) return;
-      guidedRemaining--;
-      const tEl = document.getElementById("stepTimer");
-      if(tEl) tEl.textContent = fmtTime(guidedRemaining);
-      if(guidedRemaining <= 3 && guidedRemaining > 0) beep(660,90);
-      if(guidedRemaining <= 0){
-        clearInterval(guidedTimerId); guidedTimerId = null;
-        beep(880,180);
-        guidedIndex++;
-        runGuidedStep();
-      }
+  function go(n){
+    clearInterval(timer);
+    if (n >= steps.length) return finish();
+    i = n; const st = steps[i]; left = st.amount; paused = false;
+    say(st.type === "work" ? `${st.ex.name}. ${st.unit === "reps" ? st.amount + " reps" : st.amount + " seconds"}` : `Rest. ${nextWork(i+1) ? "Next, " + nextWork(i+1).ex.name : ""}`);
+    show();
+    if (st.unit === "s") timer = setInterval(() => {
+      if (paused) return;
+      left--; const t = document.getElementById("pTime"); if (t) t.textContent = left;
+      if (left <= 3 && left > 0) beep(660, 120);
+      if (left <= 0) { beep(990, 300); go(i+1); }
     }, 1000);
   }
-
-  function fmtTime(sec){ const s = Math.max(0,sec); const m = Math.floor(s/60); const r = s%60; return m+":"+(r<10?"0":"")+r; }
-
-  function renderGuidedDone(){
-    overlayCard.innerHTML =
-      '<button class="ov-close" id="ovClose">&times;</button>'
-      + '<div class="done-icon">&#10003;</div>'
-      + '<div class="ov-title" style="text-align:center;">Nice work.</div>'
-      + '<p style="font-size:13px;color:var(--ink-soft);text-align:center;margin-bottom:18px;">That\'s the whole session.</p>'
-      + '<button class="begin-btn" id="markComplete">Mark today complete</button>'
-      + '<button class="step-controls" style="margin-top:10px;width:100%;border:1px solid var(--line);border-radius:10px;padding:10px;background:var(--bg);color:var(--ink);font-weight:600;font-size:13px;" id="justClose">Close</button>';
-    document.getElementById("ovClose").addEventListener("click", closeGuided);
-    document.getElementById("justClose").addEventListener("click", closeGuided);
-    document.getElementById("markComplete").addEventListener("click", async ()=>{ await markDone(guidedDateKey, true); closeGuided(); });
+  function finish(){
+    clearInterval(timer);
+    const minutes = Math.max(1, Math.round((Date.now() - startedAt) / 60000));
+    el.innerHTML = `<div class="player-main"><div class="phase">Session complete</div><div class="player-name">Checkpoint reached.</div><p class="cue">${minutes} minute${minutes===1?"":"s"}. How did that feel? Your answer tunes the next workout.</p>
+      <div class="feel">${[["easy","Too easy"],["right","About right"],["hard","Too hard"]].map(([k,l])=>`<button class="btn ${k==="right"?"":"ghost"}" data-feel="${k}">${l}</button>`).join("")}</div></div>`;
+    say("Session complete. How did that feel?");
+    el.querySelectorAll("[data-feel]").forEach(b => b.onclick = () => {
+      const f = b.dataset.feel;
+      state.intensity = Math.min(1.3, Math.max(0.7, state.intensity + (f === "easy" ? 0.08 : f === "hard" ? -0.08 : 0)));
+      state.feelings = (state.feelings||0) + 1;
+      state.history.push({ date: iso(today()), title: s.title, minutes, felt: f === "easy" ? "easy" : f === "hard" ? "hard" : "right" });
+      save(); close();
+    });
   }
+  function close(){ clearInterval(timer); try { speechSynthesis.cancel(); } catch(e){} if (wakeLock) wakeLock.release().catch(()=>{}); el.classList.remove("open"); document.body.style.overflow = ""; render(); }
+  el.onkeydown = (e) => { if (e.key === "Escape") close(); };
+  go(0);
+}
 
-  function renderAll(resetWeekSelection){
-    if(resetWeekSelection) selectedWeekIndex = currentWeekIndex();
-    applyTheme(); renderBanner(); renderAbout(); renderBasecamps(); renderTrail(); renderStats(); renderChart();
-  }
-
-  (async function init(){
-    await load();
-    selectedWeekIndex = currentWeekIndex();
-    renderAll(false);
-  })();
+render();
 })();
 </script>
 </body>
