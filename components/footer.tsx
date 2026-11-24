@@ -1,10 +1,12 @@
 import Link from "next/link"
 import { Clock } from "@/components/site/clock"
+import { SignOff } from "@/components/site/sign-off"
 import { person, socials } from "@/lib/site"
 
 export default function Footer() {
   return (
-    <footer className="border-t">
+    <footer className="overflow-hidden border-t">
+      <SignOff />
       <div className="wrap flex flex-col gap-6 py-10 sm:flex-row sm:items-center sm:justify-between">
         <p className="meta">
           {person.name}, {person.location}, <Clock />

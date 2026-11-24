@@ -23,7 +23,20 @@ function BuildCard({ build, index }: { build: (typeof builds)[number]; index: nu
   const href = who ? `${build.href}#name=${encodeURIComponent(who)}` : build.href
 
   return (
-    <Tilt as="li" className="flex flex-col rounded-2xl border bg-card p-6">
+    <Tilt as="li" className="build-card flex flex-col overflow-hidden rounded-2xl border bg-card">
+      <div className="border-b bg-muted/40">
+        <div className="flex items-center gap-1.5 px-3 py-2" aria-hidden="true">
+          <i className="h-2 w-2 rounded-full bg-[#ff5f57]" />
+          <i className="h-2 w-2 rounded-full bg-[#febc2e]" />
+          <i className="h-2 w-2 rounded-full bg-[#28c840]" />
+          <span className="ml-2 truncate font-mono text-[10px] text-subtle">{build.href.replace("/builds/", "")}</span>
+        </div>
+        <div className="build-screen">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={`/images/builds/${build.slug}.webp`} alt={`${build.title}, the app's opening screen`} loading="lazy" />
+        </div>
+      </div>
+      <div className="flex flex-1 flex-col p-6">
       <p className="meta">0{index + 1}</p>
       <h3 className="mt-2 text-xl">{build.title}</h3>
       <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{build.line}</p>
@@ -77,6 +90,7 @@ function BuildCard({ build, index }: { build: (typeof builds)[number]; index: nu
           </form>
         )}
       </div>
+      </div>
     </Tilt>
   )
 }
@@ -94,7 +108,7 @@ export function Builds() {
         </HandNote>
       }
     >
-      <ul className="stagger grid gap-5 md:grid-cols-3">
+      <ul className="deal grid gap-5 md:grid-cols-3">
         {builds.map((b, i) => (
           <BuildCard key={b.slug} build={b} index={i} />
         ))}

@@ -1,0 +1,40 @@
+"use client"
+
+import { useEffect, useRef, type CSSProperties } from "react"
+import { LogoMark } from "@/components/site/logo"
+
+/** The page's last word: a big "let's build." that rises letter by letter when the footer comes into view. */
+export function SignOff() {
+  const ref = useRef<HTMLParagraphElement>(null)
+  const word = "let's build"
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
+    if (el.getBoundingClientRect().top < window.innerHeight) return
+    el.dataset.state = "waiting"
+    const io = new IntersectionObserver(([e]) => {
+      if (!e.isIntersecting) return
+      el.dataset.state = "in"
+      io.disconnect()
+    }, { threshold: 0.35 })
+    io.observe(el)
+    return () => io.disconnect()
+  }, [])
+
+  return (
+    <div className="wrap pt-16">
+      <div className="flex items-center gap-3">
+        <LogoMark className="h-7 w-7" />
+        <p className="meta">thanks for walking the road.</p>
+      </div>
+      <p ref={ref} className="sign-off mt-6" aria-label="let's build.">
+        {[...word, "."].map((ch, i) => (
+          <span key={i} aria-hidden="true" className={ch === "." ? "sign-dot" : undefined} style={{ "--i": i } as CSSProperties}>
+            {ch === " " ? " " : ch}
+          </span>
+        ))}
+      </p>
+    </div>
+  )
+}

@@ -55,7 +55,7 @@ export function CaseStudy({ item, index, headingLevel = "h3" }: { item: WorkItem
       </div>
 
       <div className="md:col-span-7">
-        <Tilt max={4} className={`shot ${item.slug === "zero" ? "bg-[#060608]" : ""}`}>
+        <Tilt max={4} className={`shot ${item.contain || item.slug === "zero" ? "" : "parallax"} ${item.slug === "zero" ? "bg-[#060608]" : ""}`}>
           <ThemedShot
             light={item.image}
             dark={item.imageDark}
@@ -92,6 +92,25 @@ export function WorkCard({ item }: { item: WorkItem }) {
           <ArrowRight className="ml-1.5 inline h-4 w-4 align-[-2px] text-muted-foreground transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
         </h3>
         <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{item.hook}</p>
+      </Link>
+    </li>
+  )
+}
+
+/** A card in the sliding "more work" strip. */
+export function MarqueeCard({ item }: { item: WorkItem }) {
+  return (
+    <li className="marquee-card">
+      <Link href={`/projects#${item.slug}`} className="group block">
+        <div className={`shot ${item.slug === "zero" ? "bg-[#060608]" : ""}`}>
+          <ThemedShot light={item.image} dark={item.imageDark} alt={item.imageAlt} label={item.title} switchable={false} className={`aspect-[16/10] w-full ${shotClass(item)}`} />
+        </div>
+        <p className="meta mt-4">{item.org}</p>
+        <h3 className="mt-1 text-lg group-hover:underline group-hover:underline-offset-4">
+          {item.title}
+          <ArrowRight className="ml-1.5 inline h-4 w-4 align-[-2px] text-muted-foreground transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
+        </h3>
+        <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-muted-foreground">{item.hook}</p>
       </Link>
     </li>
   )

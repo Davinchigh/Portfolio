@@ -30,7 +30,9 @@ export function Section({
             {eyebrow}
           </p>
           <h2 id={`${id}-title`} className="mt-3 text-3xl sm:text-[2.6rem] sm:leading-[1.05]">
-            {title}
+            <span className="mask-line">
+              <span>{title}</span>
+            </span>
           </h2>
           {intro && <p className="mt-3 max-w-xl text-muted-foreground">{intro}</p>}
         </div>

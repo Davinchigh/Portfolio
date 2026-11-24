@@ -18,12 +18,15 @@ export function ThemedShot({
   alt,
   className = "",
   label,
+  switchable = true,
 }: {
   light: string
   dark?: string
   alt: string
   className?: string
   label: string
+  /** Off inside links, where a button can't live: the image then just follows the site theme. */
+  switchable?: boolean
 }) {
   const { resolvedTheme } = useTheme()
   const [pick, setPick] = useState<Variant | null>(null)
@@ -42,6 +45,7 @@ export function ThemedShot({
     <div className="tshot relative" data-show={mounted ? shown : undefined}>
       <FadeImage src={light} alt={shown === "light" ? alt : ""} aria-hidden={shown !== "light"} loading="lazy" className={`tshot-light ${className}`} />
       <FadeImage src={dark} alt={shown === "dark" ? alt : ""} aria-hidden={shown !== "dark"} loading="lazy" className={`tshot-dark absolute inset-0 h-full ${className}`} />
+      {switchable && (
       <div
         role="group"
         aria-label={`${label}: show the light or dark version`}
@@ -68,6 +72,7 @@ export function ThemedShot({
           )
         })}
       </div>
+      )}
     </div>
   )
 }
