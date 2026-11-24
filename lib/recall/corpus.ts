@@ -1,4 +1,4 @@
-import { builds, certifications, designs, lessons, person, roles, stack, ventures, work } from "@/lib/site"
+import { builds, certifications, designs, lessons, person, road, roles, stack, ventures, work } from "@/lib/site"
 import type { Doc } from "./search"
 
 const MONTHS = ["january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"]
@@ -26,6 +26,14 @@ export function corpus(): Doc[] {
       href: "/#contact",
     },
   ]
+
+  docs.push({
+    id: "road",
+    kind: "education and the road so far",
+    title: "education and the road so far",
+    text: `Benedict studied statistics with computer science at the University of Ghana, Legon, starting in 2022. ${road.map((r) => `${r.year}, ${r.place}: ${r.line}.`).join(" ")}`,
+    href: "/",
+  })
 
   for (const r of roles) {
     docs.push({
