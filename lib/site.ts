@@ -397,16 +397,48 @@ export const ventures = [
 export type Tool = { name: string; icon: string }
 export const stack: { label: string; tools: Tool[] }[] = [
   {
-    label: "build",
+    label: "languages and frontend",
     tools: [
       { name: "Python", icon: "python" },
       { name: "TypeScript", icon: "typescript" },
       { name: "JavaScript", icon: "javascript" },
       { name: "Java", icon: "java" },
-      { name: "Next.js", icon: "nextjs" },
+      { name: "HTML", icon: "html" },
+      { name: "CSS", icon: "css" },
       { name: "React", icon: "react" },
-      { name: "SQL", icon: "mysql" },
+      { name: "Next.js", icon: "nextjs" },
+      { name: "Tailwind CSS", icon: "tailwind" },
+      { name: "Three.js", icon: "threejs" },
+      { name: "Vite", icon: "vite" },
+    ],
+  },
+  {
+    label: "backend and data",
+    tools: [
+      { name: "Node.js", icon: "nodejs" },
+      { name: "FastAPI", icon: "fastapi" },
+      { name: "PostgreSQL", icon: "postgresql" },
+      { name: "MySQL", icon: "mysql" },
+      { name: "SQLite", icon: "sqlite" },
       { name: "MongoDB", icon: "mongodb" },
+      { name: "Prisma", icon: "prisma" },
+      { name: "Supabase", icon: "supabase" },
+      { name: "Neon", icon: "neon" },
+      { name: "Zod", icon: "zod" },
+    ],
+  },
+  {
+    label: "testing and shipping",
+    tools: [
+      { name: "Vitest", icon: "vitest" },
+      { name: "Playwright", icon: "playwright" },
+      { name: "Git", icon: "git" },
+      { name: "GitHub", icon: "github" },
+      { name: "GitHub Actions", icon: "githubactions" },
+      { name: "Docker", icon: "docker" },
+      { name: "Vercel", icon: "vercel" },
+      { name: "Netlify", icon: "netlify" },
+      { name: "Railway", icon: "railway" },
     ],
   },
   {
@@ -414,10 +446,12 @@ export const stack: { label: string; tools: Tool[] }[] = [
     tools: [
       { name: "Claude", icon: "claude" },
       { name: "Claude Code", icon: "claudecode" },
+      { name: "Anthropic API", icon: "anthropic" },
       { name: "MCP", icon: "mcp" },
       { name: "ChatGPT", icon: "openai" },
       { name: "Gemini", icon: "gemini" },
       { name: "n8n", icon: "n8n" },
+      { name: "LiveKit", icon: "livekit" },
       { name: "v0", icon: "v0" },
       { name: "GitHub Copilot", icon: "copilot" },
       { name: "Perplexity", icon: "perplexity" },
@@ -431,7 +465,6 @@ export const stack: { label: string; tools: Tool[] }[] = [
       { name: "Figma", icon: "figma" },
       { name: "Excel", icon: "excel" },
       { name: "Odoo", icon: "odoo" },
-      { name: "Git", icon: "git" },
     ],
   },
 ]
