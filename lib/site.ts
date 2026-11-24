@@ -149,6 +149,22 @@ export const work: Work[] = [
     links: [{ label: "code", href: "https://github.com/Davinchigh/shoptally" }],
   },
   {
+    slug: "studyflow",
+    org: "personal project, full stack",
+    title: "StudyFlow",
+    hook: "a study planner that turns deadlines and a class timetable into a week you can actually get through.",
+    problem: "a task list shows what is due but not whether the week is manageable, and students lose track of how much work is left against how much they have really done.",
+    role: "built a react app with a lazy-loaded three.js background on a fastapi api. it imports .ics timetables, plans study sessions before each test, runs a focus timer and takes plain-language changes such as 'move sql practice to monday', with undo.",
+    outcome: "live for testers: every browser gets a private workspace stored as its own postgres schema on neon, with optional sign-in through neon auth to open a plan on any device. progress keeps planned effort and recorded focus time apart.",
+    tags: ["react", "three.js", "fastapi", "postgres", "neon auth", "docker"],
+    image: "/images/studyflow.webp",
+    imageAlt: "StudyFlow's Now view: the next class, an overdue statistics problem set with planned and studied time, a 25 minute focus timer, and a summary of overdue, due today and studied this week",
+    links: [
+      { label: "open the app", href: "https://studyflow-kappa-ashen.vercel.app" },
+      { label: "code", href: "https://github.com/Davinchigh/studyflow" },
+    ],
+  },
+  {
     slug: "ai-test-case-generator",
     org: "personal project, ai product",
     title: "AI Test Case Generator",
