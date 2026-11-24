@@ -1,6 +1,6 @@
 import Link from "next/link"
 import { ArrowRight, ArrowUpRight } from "lucide-react"
-import { FadeImage } from "@/components/site/fade-image"
+import { ThemedShot } from "@/components/site/themed-shot"
 import { Tilt } from "@/components/site/motion"
 import type { Work as WorkItem } from "@/lib/site"
 
@@ -56,11 +56,12 @@ export function CaseStudy({ item, index, headingLevel = "h3" }: { item: WorkItem
 
       <div className="md:col-span-7">
         <Tilt max={4} className={`shot ${item.slug === "zero" ? "bg-[#060608]" : ""}`}>
-          <FadeImage
-            src={item.image}
+          <ThemedShot
+            light={item.image}
+            dark={item.imageDark}
             alt={item.imageAlt}
-            loading="lazy"
-            className={`aspect-[16/10] w-full ${item.contain ? "bg-white object-contain p-3" : item.slug === "zero" ? "object-contain" : "object-cover object-top"}`}
+            label={item.title}
+            className={`aspect-[16/10] w-full ${shotClass(item)}`}
           />
         </Tilt>
       </div>
@@ -77,10 +78,11 @@ export function WorkCard({ item }: { item: WorkItem }) {
     <li>
       <Link href={`/projects#${item.slug}`} className="group block">
         <Tilt max={4} className={`shot ${item.slug === "zero" ? "bg-[#060608]" : ""}`}>
-          <FadeImage
-            src={item.image}
+          <ThemedShot
+            light={item.image}
+            dark={item.imageDark}
             alt={item.imageAlt}
-            loading="lazy"
+            label={item.title}
             className={`aspect-[16/10] w-full transition-transform duration-200 group-hover:scale-[1.02] motion-reduce:transition-none ${shotClass(item)}`}
           />
         </Tilt>

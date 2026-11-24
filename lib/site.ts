@@ -129,12 +129,28 @@ export type Work = {
   outcome: string
   tags: string[]
   image: string
+  /** The app's dark-mode screen, when it has one. Shown in dark mode, with a switch to compare. */
+  imageDark?: string
   imageAlt: string
   contain?: boolean
   links: { label: string; href: string }[]
 }
 
 export const work: Work[] = [
+  {
+    slug: "cravebox",
+    org: "client project, bakery ordering site",
+    title: "CraveBox",
+    hook: "an ordering site for an accra bakery, where you design your cake in live 3d before you pay for it.",
+    problem: "a custom cake is hard to describe in a message. size, tiers, colour and price take rounds of back and forth before anyone starts baking, and company orders need their own pricing.",
+    role: "built it end to end in next.js and postgres: a menu with options, basket and checkout with delivery zones and time slots, a cake builder in react three fiber with tiers, finishes, toppings and a cut-a-slice view, and a staff order book with email, whatsapp and sms replies.",
+    outcome: "live for the bakery. every price, option and discount is recalculated on the server, payments are wired to paystack for momo, cards and bank transfer, companies verify a work email for 10 to 15% off, and an optional claude assistant answers only from the menu.",
+    tags: ["next.js", "react three fiber", "postgres", "paystack", "claude api", "netlify"],
+    image: "/images/cravebox.webp",
+    imageDark: "/images/cravebox-dark.webp",
+    imageAlt: "CraveBox cake builder: a two-tier white cake with pearl borders and berries in a 3D view, beside controls for shape, tiers, width and height",
+    links: [{ label: "visit the bakery", href: "https://cravebox-sxfx.netlify.app" }],
+  },
   {
     slug: "shoptally",
     org: "personal project, full stack",
@@ -257,6 +273,19 @@ export const work: Work[] = [
     imageAlt: "Inventory window listing stationery products with stock levels and low stock rows highlighted",
     contain: true,
     links: [{ label: "code", href: "https://github.com/Davinchigh/java-inventory-system" }],
+  },
+  {
+    slug: "lizab-house-of-fashion",
+    org: "family business, brand and website",
+    title: "Lizab House of Fashion",
+    hook: "the brand and a three.js website for my mom's fashion house, where a silk scarf carries you through the collection.",
+    problem: "a tailor's best work lives in photos on a phone. customers had no way to browse pieces, check stock or book a fitting without calling.",
+    role: "designed the brand and built the site in next.js with a three.js silk scarf, a shop with live stock from supabase, a staff studio, and esi: an ai sales assistant that answers by chat through n8n and by voice through livekit and gemini live.",
+    outcome: "live as a preview with sample pieces while her real photos come in. every channel shares one back office, so a phone order shows up in the studio straight away.",
+    tags: ["next.js", "three.js", "supabase", "n8n", "voice ai", "branding"],
+    image: "/images/lizab.webp",
+    imageAlt: "Lizab House of Fashion home page: a model in a black blazer holding a gold silk scarf in front of the word LIZAB in large gold letters",
+    links: [{ label: "visit the site", href: "https://lizab-house-of-fashion.vercel.app" }],
   },
   {
     slug: "zero",
