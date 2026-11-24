@@ -6,6 +6,7 @@ import "@fontsource-variable/caveat"
 import "./globals.css"
 import Navbar from "@/components/navbar"
 import Footer from "@/components/footer"
+import { Guide } from "@/components/site/guide"
 import { ThemeProvider } from "@/components/theme-provider"
 import { VisitorProvider } from "@/lib/visitor"
 
@@ -47,6 +48,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <Navbar />
           <div id="main">{children}</div>
           <Footer />
+          <Guide />
           </VisitorProvider>
         </ThemeProvider>
       </body>
