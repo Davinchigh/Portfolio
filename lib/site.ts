@@ -187,7 +187,7 @@ export const work: Work[] = [
     hook: "paste code, a bug report or a requirement and get a structured test plan back.",
     problem: "writing test plans by hand is slow, so edge cases, security checks and regression tests are the first things to get skipped.",
     role: "built a next.js app on the vercel ai sdk with eight workflows, from 'bug to tests' to code review. each has its own prompt, and the model's answer must pass a zod schema before anyone sees it.",
-    outcome: "returns prioritised unit, integration, edge, negative and security cases with test code for vitest, jest, pytest, junit, playwright or cypress, downloadable as a file named for your framework or copied as markdown. plans are saved to postgres through prisma with sign-in and history, and the export and api code have their own tests.",
+    outcome: "returns prioritised unit, integration, edge, negative and security cases with test code for vitest, jest, pytest, junit, playwright or cypress, downloadable as a file named for your framework or copied as markdown, with a coverage map that shows which kinds of test are missing and a checklist that tracks which cases you have written. plans are saved to postgres through prisma with sign-in and history, and the export and api code have their own tests.",
     tags: ["next.js", "vercel ai sdk", "zod", "prisma", "postgres", "vitest"],
     image: "/images/ai-test-case-generator.webp",
     imageAlt: "AI Test Case Generator: a discount function pasted in on the left; on the right its finished plan, with a priority bar, a download button for generated.test.ts, tabs for unit, integration, edge, negative and security cases, and the first four unit cases",
