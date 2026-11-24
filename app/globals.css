@@ -643,3 +643,13 @@ html:not(.dark) h1, html:not(.dark) h2 { color: hsl(24 18% 7%); }
   .reveal[data-reveal="in"] .deal > * { animation: none; }
   .parallax img { animation: none !important; }
 }
+
+/* ---------- Work wheel: projects on a rolling 3D wheel ---------- */
+.wheel-stage { perspective: 1700px; perspective-origin: 50% 50%; }
+.wheel-ring { --r: 620px; position: relative; width: 100%; aspect-ratio: 16 / 10; transform-style: preserve-3d; transform: translateZ(calc(var(--r) * -1)) rotateX(var(--turn)); }
+.wheel-card { position: absolute; inset: 0; transform: rotateX(calc(var(--i) * var(--step) * -1)) translateZ(var(--r)); backface-visibility: hidden; transition: opacity 450ms ease, filter 450ms ease; opacity: 0.22; filter: saturate(0.4) brightness(0.85) blur(1px); pointer-events: none; }
+.wheel-card[data-active] { opacity: 1; filter: none; pointer-events: auto; }
+.wheel-card .shot { box-shadow: 0 30px 80px -30px hsl(0 0% 0% / 0.55); }
+.wheel-copy { animation: swap-in 520ms cubic-bezier(0.2, 0.7, 0.1, 1) backwards; }
+.wheel-dot[aria-current] { box-shadow: 0 0 0 3px hsl(var(--route) / 0.15); }
+@media (max-height: 860px) { .wheel-detail { display: none; } }
