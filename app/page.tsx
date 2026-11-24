@@ -1,9 +1,11 @@
-import { ArrowUpRight, Droplets, Flower2, Leaf, Recycle, Sun, Trees } from "lucide-react"
+import { ArrowUpRight, Check, Droplets, Flower2, Leaf, Recycle, Sun, Trees } from "lucide-react"
 import { Header } from "@/components/header"
 import { Logo, Mark } from "@/components/logo"
 import { Motion } from "@/components/motion"
 import { Planner } from "@/components/planner"
 import { VisitForm } from "@/components/visit-form"
+import { PlanBuilder } from "@/components/plan-builder"
+import { audiences, plans, projects, promises } from "@/lib/business"
 import { extras, steps, values } from "@/lib/content"
 
 const extraIcons = [Droplets, Trees, Recycle, Leaf, Flower2, Sun]
@@ -66,7 +68,7 @@ export default function Home() {
           </h1>
           <div className="mt-10 grid gap-8 md:grid-cols-[1.1fr_1fr] md:items-end">
             <p data-reveal style={{ "--d": "350ms" } as React.CSSProperties} className="max-w-md text-lg leading-relaxed text-ink-soft">
-              Landscape design, lawn care and planting for homes in Accra. One team, from the first sketch to the weekly trim.
+              Garden design and monthly garden care for homes, balconies, businesses and estates in Accra. One team, from the first sketch to the weekly trim.
             </p>
             <div data-reveal style={{ "--d": "450ms" } as React.CSSProperties} className="flex flex-wrap gap-3 md:justify-end">
               <a href="#visit" className="btn-dark">
@@ -119,6 +121,25 @@ export default function Home() {
           </p>
         </section>
 
+        {/* WHO IT'S FOR */}
+        <section aria-labelledby="who-title" className="wrap pb-28 sm:pb-36">
+          <div className="flex flex-wrap items-end justify-between gap-6">
+            <h2 id="who-title" className="display reveal-lines max-w-3xl text-[clamp(2.4rem,5vw,4.25rem)]">
+              <span className="line"><span>Who we garden for</span></span>
+            </h2>
+            <p data-reveal className="max-w-xs text-ink-mute">Four kinds of client, one way of working: visit first, fixed price, then steady care.</p>
+          </div>
+          <ul className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {audiences.map((a, k) => (
+              <li key={a.id} data-reveal style={{ "--d": `${k * 80}ms` } as React.CSSProperties} className="group rounded-[28px] border border-line bg-white p-7 transition-[transform,box-shadow] duration-500 ease-out hover:-translate-y-1 hover:shadow-[0_30px_60px_-40px_rgba(17,22,19,0.5)]">
+                <p className="font-serif text-5xl italic text-green">0{k + 1}</p>
+                <h3 className="mt-8 text-2xl font-medium leading-tight">{a.title}</h3>
+                <p className="mt-3 leading-relaxed text-ink-mute">{a.body}</p>
+              </li>
+            ))}
+          </ul>
+        </section>
+
         {/* SERVICES: cards stack as you scroll */}
         <section id="services" aria-labelledby="services-title" className="bg-paper py-24 sm:py-32">
           <div className="wrap">
@@ -169,6 +190,72 @@ export default function Home() {
           </div>
         </section>
 
+        {/* BUILD YOUR PLAN */}
+        <section id="build" aria-labelledby="build-title" className="wrap py-28 sm:py-36">
+          <div className="mb-12 flex flex-wrap items-end justify-between gap-6">
+            <h2 id="build-title" className="display reveal-lines text-[clamp(2.4rem,5vw,4.25rem)]">
+              <span className="line"><span>Build your garden,</span></span>
+              <span className="line"><span style={{ "--d": "120ms" } as React.CSSProperties}><span className="serif-i text-green">see your plan.</span></span></span>
+            </h2>
+            <p data-reveal className="max-w-xs text-ink-mute">Tell us about your space and watch it grow. You get the plan that fits and a rough monthly price.</p>
+          </div>
+          <div data-reveal>
+            <PlanBuilder />
+          </div>
+        </section>
+
+        {/* PLANS */}
+        <section id="plans" aria-labelledby="plans-title" className="bg-paper py-28 sm:py-36">
+          <div className="wrap">
+            <div className="flex flex-wrap items-end justify-between gap-6">
+              <h2 id="plans-title" className="display reveal-lines max-w-3xl text-[clamp(2.4rem,5.6vw,4.75rem)]">
+                <span className="line"><span>Care plans,</span></span>
+                <span className="line"><span style={{ "--d": "120ms" } as React.CSSProperties}><span className="serif-i text-green">month to month.</span></span></span>
+              </h2>
+              <p data-reveal className="max-w-xs text-ink-mute">One monthly price for steady care. No contract: pause or stop with a message.</p>
+            </div>
+            <ul className="mt-14 grid gap-5 lg:grid-cols-3">
+              {plans.map((p, k) => (
+                <li key={p.id} data-reveal style={{ "--d": `${k * 100}ms` } as React.CSSProperties} className={`relative flex flex-col rounded-[32px] p-8 sm:p-10 ${p.featured ? "bg-green-deep text-white shadow-[0_40px_80px_-40px_rgba(20,51,38,0.7)]" : "border border-line bg-white"}`}>
+                  {p.featured && <span className="absolute right-6 top-6 rounded-full bg-white/15 px-3 py-1 text-[12px] uppercase tracking-[0.14em]">Most homes</span>}
+                  <p className={`kicker ${p.featured ? "!text-white/60" : ""}`}>{p.visits}</p>
+                  <h3 className="mt-5 font-serif text-5xl italic">{p.name}</h3>
+                  <p className={`mt-2 ${p.featured ? "text-white/75" : "text-ink-mute"}`}>{p.for}</p>
+                  <p className="mt-8 flex items-baseline gap-2">
+                    <span className="text-[44px] font-medium leading-none tracking-tight tabular-nums">GH₵ {p.price.toLocaleString()}</span>
+                    <span className={p.featured ? "text-white/60" : "text-ink-mute"}>{p.per}</span>
+                  </p>
+                  <ul className={`mt-8 space-y-3 border-t pt-6 ${p.featured ? "border-white/15" : "border-line"}`}>
+                    {p.includes.map((it) => (
+                      <li key={it} className="flex gap-3 text-[15px] leading-snug">
+                        <Check className={`mt-0.5 h-4 w-4 shrink-0 ${p.featured ? "text-white" : "text-green"}`} aria-hidden="true" />
+                        {it}
+                      </li>
+                    ))}
+                  </ul>
+                  <a href="#visit" className={`btn mt-10 ${p.featured ? "bg-white text-ink hover:bg-sage" : "btn-dark"}`}>Start with a free visit</a>
+                </li>
+              ))}
+            </ul>
+            <div className="mt-16 grid gap-10 lg:grid-cols-[1fr_2fr]">
+              <div>
+                <p className="kicker" data-reveal>One-off projects</p>
+                <p data-reveal className="mt-4 max-w-sm text-lg leading-relaxed text-ink-soft">Fixed quotes after the free visit. Typical ranges, so you know roughly where you stand:</p>
+              </div>
+              <ul className="divide-y divide-line border-y border-line">
+                {projects.map((pr) => (
+                  <li key={pr.name} data-reveal className="grid grid-cols-[1fr_auto] items-baseline gap-4 py-5 sm:grid-cols-[1fr_1fr_auto]">
+                    <span className="text-xl font-medium tracking-tight">{pr.name}</span>
+                    <span className="hidden text-ink-mute sm:block">{pr.note}</span>
+                    <span className="font-serif text-2xl italic text-green tabular-nums">{pr.range}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <p className="mt-8 text-sm text-ink-mute">Concept prices for a business plan, in Ghana cedis. Not a quote.</p>
+          </div>
+        </section>
+
         {/* PARALLAX BAND */}
         <section aria-label="A garden we love" className="relative h-[80vh] min-h-[520px] overflow-hidden">
           <img data-parallax src="/img/landscape.webp" alt="" aria-hidden="true" className="absolute inset-0 h-full w-full object-cover will-change-transform" style={{ transform: "scale(1.15)" }} />
@@ -200,6 +287,15 @@ export default function Home() {
               ))}
             </ol>
           </div>
+
+          <ul className="mt-20 grid gap-x-10 gap-y-2 border-t border-line pt-10 sm:grid-cols-2 lg:grid-cols-4">
+            {promises.map((p, k) => (
+              <li key={p.title} data-reveal style={{ "--d": `${k * 80}ms` } as React.CSSProperties} className="py-4">
+                <h3 className="text-lg font-medium">{p.title}</h3>
+                <p className="mt-2 text-[15px] leading-relaxed text-ink-mute">{p.body}</p>
+              </li>
+            ))}
+          </ul>
         </section>
 
         {/* ABOUT */}
@@ -270,7 +366,7 @@ export default function Home() {
           {[
             ["Services", ["Landscaping", "Lawn care", "Garden design", "Planting", "Installations"]],
             ["Care", ["Irrigation", "Tree & shrub care", "Organic gardening", "Seasonal clean-ups", "Mulching"]],
-            ["Explore", ["Process", "Planting guide", "About", "Book a visit"]],
+            ["Explore", ["Build your plan", "Care plans", "Process", "Planting guide", "Book a visit"]],
           ].map(([h, items]) => (
             <div key={h as string}>
               <h2 className="kicker">{h as string}</h2>
@@ -286,7 +382,7 @@ export default function Home() {
           Glee Garden
         </p>
         <p className="mt-8 max-w-[34em] border-t border-line pt-6 text-sm leading-relaxed text-ink-mute">
-          © 2026 Glee Garden. A concept brand, logo and website designed by Benedict Frimpong Boateng. Photos are AI-generated and the gardener is fictional.
+          © 2026 Glee Garden. A concept brand, logo and website designed by Benedict Frimpong Boateng. Photos are AI-generated, the gardener is fictional, and prices are indicative concept prices.
         </p>
       </footer>
     </div>

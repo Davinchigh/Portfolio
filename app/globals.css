@@ -74,3 +74,19 @@
   .marquee { animation: none; }
 }
 @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+
+/* ---------- Plan builder ---------- */
+.chip { display: inline-flex; min-height: 44px; align-items: center; border-radius: 999px; border: 1px solid #E3E5E1; padding: 0 16px; font-size: 15px; color: #3C4540; transition: background-color 250ms ease, color 250ms ease, border-color 250ms ease, transform 200ms ease; }
+.chip:hover { border-color: #1F4D3A; color: #111613; }
+.chip:active { transform: scale(0.97); }
+.chip[aria-pressed="true"] { background: #1F4D3A; border-color: #1F4D3A; color: #fff; }
+.chip:focus-visible { outline: 2px solid #1F4D3A; outline-offset: 2px; }
+.range { -webkit-appearance: none; appearance: none; height: 6px; border-radius: 6px; background: #E9EEE9; }
+.range::-webkit-slider-thumb { -webkit-appearance: none; width: 26px; height: 26px; border-radius: 50%; background: #1F4D3A; border: 4px solid #fff; box-shadow: 0 2px 10px rgba(17, 22, 19, 0.3); cursor: grab; }
+.range::-moz-range-thumb { width: 22px; height: 22px; border-radius: 50%; background: #1F4D3A; border: 4px solid #fff; cursor: grab; }
+.builder svg .g-grow { transform-box: fill-box; transform-origin: 50% 100%; animation: g-grow 700ms cubic-bezier(0.16, 1, 0.3, 1) both; }
+.builder svg .g-ground, .builder svg .g-sun { transition: fill 600ms ease, opacity 600ms ease, transform 600ms ease; }
+.builder svg .g-drip { animation: g-drip 1.2s linear infinite; }
+@keyframes g-grow { from { transform: scale(0.2, 0); opacity: 0; } }
+@keyframes g-drip { to { stroke-dashoffset: -20; } }
+@media (prefers-reduced-motion: reduce) { .builder svg .g-grow, .builder svg .g-drip { animation: none; } }

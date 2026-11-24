@@ -5,7 +5,8 @@ import { Logo } from "@/components/logo"
 
 const links = [
   ["Services", "#services"],
-  ["Process", "#process"],
+  ["Build a plan", "#build"],
+  ["Plans", "#plans"],
   ["Guide", "#guide"],
   ["About", "#about"],
 ]
