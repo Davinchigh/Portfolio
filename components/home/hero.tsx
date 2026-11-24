@@ -5,7 +5,7 @@ import { Clock } from "@/components/site/clock"
 import { HeroDeck } from "@/components/home/hero-deck"
 import { HandNote } from "@/components/site/hand-note"
 import { Stop } from "@/components/site/route"
-import { person, proof, road } from "@/lib/site"
+import { coreSkills, person, proof, road } from "@/lib/site"
 import { useVisitor } from "@/lib/visitor"
 
 function Status() {
@@ -131,6 +131,16 @@ export function Hero() {
                 </li>
               ))}
             </ul>
+            <div className="mt-8">
+              <h2 className="eyebrow">core skills</h2>
+              <ul className="mt-3 flex flex-wrap gap-2">
+                {coreSkills.map((skill) => (
+                  <li key={skill} className="rounded-full border bg-card px-3 py-1.5 text-xs text-muted-foreground">
+                    {skill}
+                  </li>
+                ))}
+              </ul>
+            </div>
             <div className="mt-10 flex flex-wrap items-center gap-3">
               <a href="#work" className="pill-button">
                 see the work <ArrowDown className="h-4 w-4" aria-hidden="true" />

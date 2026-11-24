@@ -117,6 +117,10 @@ export const roles: Role[] = [
   },
 ]
 
+// ---------- Education ----------
+
+export const degree = { school: "University of Ghana, Legon", detail: "BSc Statistics with Computer Science", dates: "2022 to 2026" }
+
 // ---------- Selected work ----------
 
 export type Work = {
@@ -546,7 +550,6 @@ export const certifications: { issuer: string; year: string; items: string[]; gr
       verify: "https://savanna.alxafrica.com/certificates/sneTcR3yN8",
     },
   },
-  { issuer: "SoloLearn", group: "professional", year: "2022", items: ["Front-End Development Fundamentals"] },
 ]
 
 // ---------- Stats (all countable from the lists above or the CV) ----------
@@ -589,6 +592,18 @@ export const road = [
   { year: "2025", place: "alx", line: "finished the ai starter kit with a grade of 100" },
   { year: "2025", place: "coderaccoon", line: "sap consultant, course builder, tester, then team lead" },
   { year: "now", place: "accra", line: "building with claude and looking for the next stop" },
+]
+
+/** For recruiters: the skills to scan for, each backed by a project on the page. */
+export const coreSkills = [
+  "LLM apps with Claude and the Anthropic API",
+  "Retrieval and evaluation (RAG)",
+  "Workflow automation and agents (n8n, MCP)",
+  "TypeScript, React and Next.js",
+  "Python and FastAPI",
+  "PostgreSQL and SQL",
+  "Testing with Vitest and Playwright",
+  "SAP S/4HANA Cloud",
 ]
 
 /** For recruiters: what you get, backed by the work further down the page. */
