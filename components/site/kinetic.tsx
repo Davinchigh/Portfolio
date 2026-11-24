@@ -93,7 +93,7 @@ export function ReadAlong({ text, className = "" }: { text: string; className?: 
  * An endless strip of cards that drifts sideways on its own and can be moved by hand:
  * drag it with a mouse, swipe it on touch, scroll it sideways with a trackpad or shift + wheel,
  * or use the arrow buttons and keys. Hovering slows the drift to a stop but never locks the strip.
- * Two copies make the loop seamless; the second is hidden from assistive tech.
+ * Two copies make the loop seamless; the second is clickable but hidden from assistive tech and Tab.
  */
 export function Marquee({ children, seconds = 60, label }: { children: ReactNode; seconds?: number; label: string }) {
   const root = useRef<HTMLDivElement>(null)
@@ -157,6 +157,10 @@ export function Marquee({ children, seconds = 60, label }: { children: ReactNode
       }
     })
     io.observe(el)
+
+    // The copy is there to make the loop seamless. It stays clickable (it is what's on screen half the time)
+    // but is skipped by Tab and hidden from assistive tech.
+    tr.querySelectorAll<HTMLElement>("[data-clone] a, [data-clone] button").forEach((n) => (n.tabIndex = -1))
 
     const card = () => (tr.querySelector("li") as HTMLElement | null)?.offsetWidth ?? 320
     nudge.current = (dir: number) => {
@@ -270,7 +274,7 @@ export function Marquee({ children, seconds = 60, label }: { children: ReactNode
       <div ref={root} className="marquee" role="region" aria-roledescription="carousel" aria-label={`${label}. drag, swipe or use the arrow keys to move through it`}>
         <div ref={track} className="marquee-track">
           <ul className="marquee-run">{children}</ul>
-          <ul className="marquee-run" aria-hidden="true" inert>
+          <ul className="marquee-run" aria-hidden="true" data-clone="">
             {children}
           </ul>
         </div>
