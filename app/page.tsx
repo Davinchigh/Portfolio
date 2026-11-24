@@ -43,8 +43,8 @@ export default function Home() {
             <Link href="/rooms/" className="btn-ink">
               How to get a room <span aria-hidden="true">→</span>
             </Link>
-            <Link href="/hall/" className="btn-ghost">
-              Read the story
+            <Link href="/walk/" className="btn-ghost">
+              Walk through the hall <span aria-hidden="true">↓</span>
             </Link>
           </div>
         </div>

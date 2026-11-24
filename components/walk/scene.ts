@@ -6,8 +6,8 @@ import * as THREE from "three"
  * Time of day moves from dusk to night as you go, and the windows light up: "Light in darkness".
  */
 
-const CLAY = 0xefebe3
-const CLAY_DARK = 0xd9d3c7
+const CLAY = 0xf6f3ee
+const CLAY_DARK = 0xe4dfd6
 const LAMP = 0xf2c879
 
 export type WalkScene = {
@@ -21,9 +21,9 @@ export type WalkScene = {
 const PATH: { at: [number, number, number]; look: [number, number, number]; stop?: number }[] = [
   { at: [0, 2.2, 56], look: [0, 5, 18], stop: 0 },
   { at: [0, 1.7, 30], look: [0, 2, 10] },
-  { at: [2.6, 1.6, 17.5], look: [0, 1.6, 13], stop: 1 },
+  { at: [1.4, 1.7, 18.6], look: [0, 1.9, 12.4], stop: 1 },
   { at: [7, 1.7, 7], look: [16, 1.6, 2] },
-  { at: [14.2, 1.6, 2.4], look: [21, 1.0, 1.6], stop: 2 },
+  { at: [13.4, 1.7, 1.8], look: [21, 1.0, 1.4], stop: 2 },
   { at: [7, 1.8, 3], look: [-2, 2, -6] },
   { at: [-3, 1.8, 5.5], look: [0, 2.4, -9], stop: 3 },
   { at: [-11, 1.7, -3], look: [-24, 1.6, -3] },
@@ -37,18 +37,19 @@ export function createWalkScene(canvas: HTMLCanvasElement, opts: { small: boolea
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, opts.small ? 1.5 : 1.75))
   renderer.outputColorSpace = THREE.SRGBColorSpace
   renderer.toneMapping = THREE.ACESFilmicToneMapping
+  renderer.toneMappingExposure = 1.25
   renderer.shadowMap.enabled = !opts.small
   renderer.shadowMap.type = THREE.PCFSoftShadowMap
 
   const scene = new THREE.Scene()
-  const dusk = new THREE.Color(0xe9dfcf)
+  const dusk = new THREE.Color(0xf1ece3)
   const night = new THREE.Color(0x141821)
   scene.background = dusk.clone()
   scene.fog = new THREE.Fog(dusk.clone(), 40, 140)
 
   const camera = new THREE.PerspectiveCamera(55, 1, 0.1, 400)
 
-  const hemi = new THREE.HemisphereLight(0xfff6e8, 0x8a8170, 1.1)
+  const hemi = new THREE.HemisphereLight(0xffffff, 0xb9b0a0, 1.35)
   scene.add(hemi)
   const sun = new THREE.DirectionalLight(0xffe2b8, 1.6)
   sun.position.set(-30, 40, 25)
@@ -59,7 +60,7 @@ export function createWalkScene(canvas: HTMLCanvasElement, opts: { small: boolea
 
   const clay = new THREE.MeshStandardMaterial({ color: CLAY, roughness: 0.92 })
   const clayDark = new THREE.MeshStandardMaterial({ color: CLAY_DARK, roughness: 0.95 })
-  const glass = new THREE.MeshStandardMaterial({ color: 0x3a3f48, roughness: 0.4, metalness: 0.1 })
+  const glass = new THREE.MeshStandardMaterial({ color: 0x8d97a3, roughness: 0.25, metalness: 0.2 })
   const lit = new THREE.MeshStandardMaterial({ color: LAMP, emissive: LAMP, emissiveIntensity: 0 })
   const wood = new THREE.MeshStandardMaterial({ color: 0xc9a77a, roughness: 0.8 })
   const fabric = new THREE.MeshStandardMaterial({ color: 0xb9b2a6, roughness: 1 })
@@ -145,8 +146,10 @@ export function createWalkScene(canvas: HTMLCanvasElement, opts: { small: boolea
   scene.add(litMesh)
 
   // Stop 1: a stone plinth with a small lamp, just inside the way in.
-  box(1.6, 1.1, 0.5, clayDark, 0, 0.55, 13)
-  box(1.2, 0.5, 0.06, wood, 0, 1.25, 13.26)
+  box(3.2, 0.5, 1.6, clayDark, 0, 0.25, 12.6)
+  box(1.4, 2.8, 0.45, clay, 0, 1.9, 12.4)
+  box(1.0, 0.7, 0.04, wood, 0, 2.2, 12.65)
+  box(0.9, 0.05, 0.05, lit, 0, 1.55, 12.66, false)
   const plinthLamp = new THREE.PointLight(LAMP, 0, 6, 1.6)
   plinthLamp.position.set(0, 2.2, 14)
   scene.add(plinthLamp)
@@ -285,8 +288,10 @@ export function createWalkScene(canvas: HTMLCanvasElement, opts: { small: boolea
     last = now
     const t = THREE.MathUtils.clamp(p, 0, 1)
     camera.position.copy(path.getPointAt(t))
-    // Map position-t to look-t through the nearest stop segment so the gaze leads the walk a little.
-    tmpLook.copy(look.getPointAt(Math.min(t + 0.015, 1)))
+    // Both curves have one point per stop, so sharing the curve parameter (not distance travelled) keeps the gaze
+    // in step with the walk. A small lead makes it look where it is going.
+    const param = path.getUtoTmapping(t, 0)
+    tmpLook.copy(look.getPoint(Math.min(param + 0.006, 1)))
     // "Look" drag: turn the head up to 15 degrees.
     const dir = tmpLook.clone().sub(camera.position)
     dir.applyAxisAngle(new THREE.Vector3(0, 1, 0), yaw)
@@ -297,9 +302,10 @@ export function createWalkScene(canvas: HTMLCanvasElement, opts: { small: boolea
     bg.copy(dusk).lerp(night, night01)
     ;(scene.background as THREE.Color).copy(bg)
     ;(scene.fog as THREE.Fog).color.copy(bg)
-    hemi.intensity = 1.1 - night01 * 0.82
+    hemi.intensity = 1.35 - night01 * 1.0
     sun.intensity = 1.6 - night01 * 1.45
     lit.emissiveIntensity = 0.2 + night01 * 2.2
+    glass.color.setHex(0x8d97a3).lerp(new THREE.Color(0x1c2129), night01)
     plinthLamp.intensity = night01 * 8 + 1.5
     roomLamp.intensity = 6 + night01 * 6
     stageLamp.intensity = night01 * 40
@@ -313,7 +319,7 @@ export function createWalkScene(canvas: HTMLCanvasElement, opts: { small: boolea
   const resize = (w: number, h: number) => {
     renderer.setSize(w, h, false)
     camera.aspect = w / h
-    camera.fov = w < 640 ? 68 : 55
+    camera.fov = w < 640 ? 76 : 55
     camera.updateProjectionMatrix()
   }
 

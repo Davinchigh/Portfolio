@@ -53,10 +53,15 @@ export function Walk() {
         return total > 0 ? Math.min(1, Math.max(0, -r.top / total)) : 0
       }
       let shown = -1
+      let lastT = performance.now()
       const tick = () => {
         frame = 0
         const goal = target()
-        p += (goal - p) * 0.08
+        // 8% per 60 Hz frame, scaled by real frame time so slow devices glide at the same speed.
+        const now = performance.now()
+        const dt = Math.min(0.1, (now - lastT) / 1000)
+        lastT = now
+        p += (goal - p) * (1 - Math.pow(0.92, dt * 60))
         if (Math.abs(goal - p) < 0.0004) p = goal
         const y = yaw.current
         if (!y.dragging) y.target *= 0.86
