@@ -214,6 +214,23 @@ export const work: Work[] = [
     ],
   },
   {
+    slug: "bfb-mcp",
+    org: "personal project, ai agents and mcp",
+    title: "BFB MCP Server",
+    hook: "this portfolio as an mcp server: connect claude or any agent and it can search my work, open projects and find how to reach me.",
+    problem: "agents are becoming how people look things up, but a portfolio is a page made for eyes. an assistant asked about a candidate has to scrape and guess.",
+    role: "implemented the model context protocol by hand (stateless json-rpc 2.0 over streamable http, version negotiation, notifications, batches) with six read-only tools on top of recall, the site's own search engine.",
+    outcome: "live at /api/mcp and checked with the official mcp sdk client. six tests cover the protocol and the tools, and the project page sends real requests so you can watch what an agent sees.",
+    tags: ["mcp", "ai agents", "json-rpc", "typescript", "next.js"],
+    image: "/images/mcp.webp",
+    imageDark: "/images/mcp-dark.webp",
+    imageAlt: "The MCP server's console: a tools/call request to search_portfolio for 'has he led a team?' beside the JSON-RPC response with the matching passage and its source link",
+    links: [
+      { label: "connect and try it", href: "/projects/mcp" },
+      { label: "code", href: "https://github.com/Davinchigh/Portfolio/tree/main/lib/mcp" },
+    ],
+  },
+  {
     slug: "recall",
     org: "personal project, search and evaluation",
     title: "Recall",

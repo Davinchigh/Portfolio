@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation"
 import { Menu, X } from "lucide-react"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { useVisitor } from "@/lib/visitor"
-import { LogoMark, Signature } from "@/components/site/logo"
+import { LogoMark, Wordmark } from "@/components/site/logo"
 
 /** Switch between the recruiter view and the story view. Home page only. */
 function ViewSwitch({ className = "" }: { className?: string }) {
@@ -73,6 +73,14 @@ export default function Navbar() {
 
   useEffect(() => setOpen(false), [pathname])
 
+  // Real refraction (an SVG displacement map as a backdrop filter) only works in Chromium; elsewhere the glass stays a plain blur.
+  useEffect(() => {
+    const brands = (navigator as Navigator & { userAgentData?: { brands?: { brand: string }[] } }).userAgentData?.brands ?? []
+    if (brands.some((b) => /Chromium/.test(b.brand)) && !window.matchMedia("(prefers-reduced-transparency: reduce)").matches) {
+      glass.current?.classList.add("is-refracting")
+    }
+  }, [])
+
   useEffect(() => {
     if (!open) return
     const onKey = (e: KeyboardEvent) => {
@@ -93,10 +101,22 @@ export default function Navbar() {
         data-scrolled={scrolled || open ? "" : undefined}
         className="glass-nav pointer-events-auto mx-auto max-w-5xl rounded-[22px]"
       >
+        <svg width="0" height="0" aria-hidden="true" className="absolute">
+          <filter id="liquid-glass" x="0" y="0" width="100%" height="100%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.012 0.03" numOctaves="2" seed="7" result="noise" />
+            <feGaussianBlur in="noise" stdDeviation="2" result="soft" />
+            <feDisplacementMap in="SourceGraphic" in2="soft" scale="14" xChannelSelector="R" yChannelSelector="G" />
+          </filter>
+        </svg>
+        <span className="glass-fluid" aria-hidden="true">
+          <i />
+          <i />
+          <i />
+        </span>
       <nav className="flex h-14 items-center justify-between pl-3 pr-2 sm:pl-4" aria-label="Main">
         <Link href="/" className="logo-link inline-flex min-h-11 items-center gap-2.5 font-display text-lg font-bold tracking-tight" aria-label="bfb, Benedict Frimpong Boateng, home">
           <LogoMark className="h-8 w-8" />
-          <Signature />
+          <Wordmark />
         </Link>
 
         <div className="hidden items-center gap-1 md:flex">

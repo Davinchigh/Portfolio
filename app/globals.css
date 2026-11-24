@@ -695,3 +695,37 @@ html:not(.dark) h1, html:not(.dark) h2 { color: hsl(24 18% 7%); }
 .guide-turn { animation: swap-in 380ms cubic-bezier(0.2, 0.7, 0.1, 1) backwards; }
 @media (prefers-reduced-motion: reduce) { .guide-panel { transition: none; } .guide-turn { animation: none; } }
 @media print { .guide-fab, .guide-panel { display: none; } }
+
+/* ---------- Wordmark and mark motion ---------- */
+.wordmark { display: inline-flex; font-size: 1.2rem; letter-spacing: -0.02em; }
+.wordmark > span { display: inline-block; transition: color 300ms ease, transform 450ms cubic-bezier(0.34, 1.56, 0.64, 1); transition-delay: calc(var(--i) * 60ms); }
+.logo-link:hover .wordmark > span, .logo-link:focus-visible .wordmark > span { color: hsl(var(--amber)); transform: translateY(-3px); }
+@media (prefers-reduced-motion: no-preference) {
+  .wordmark > span { animation: word-rise 700ms cubic-bezier(0.16, 1, 0.3, 1) backwards; }
+  .logo-mark .logo-ring { stroke-dasharray: 1; animation: ring-draw 1100ms cubic-bezier(0.65, 0, 0.35, 1) 100ms backwards; }
+  .logo-mark .logo-stop { animation: stop-drop 700ms cubic-bezier(0.34, 1.56, 0.64, 1) 900ms backwards; }
+  .logo-link:hover .logo-ring { animation: ring-draw 900ms cubic-bezier(0.65, 0, 0.35, 1); }
+}
+@keyframes word-rise { from { opacity: 0; transform: translateY(0.55em) rotate(6deg); filter: blur(3px); } }
+@keyframes ring-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+@keyframes stop-drop { from { opacity: 0; transform: translateY(-120%) scale(0.4); } }
+
+/* ---------- Liquid glass: soft colour drifting inside the pill ---------- */
+.glass-nav { overflow: hidden; }
+.glass-fluid { position: absolute; inset: 0; z-index: -2; pointer-events: none; border-radius: inherit; overflow: hidden; filter: blur(22px) saturate(140%); opacity: 0.55; }
+.dark .glass-fluid { opacity: 0.35; }
+.glass-fluid i { position: absolute; width: 38%; height: 220%; top: -60%; border-radius: 50%; }
+.glass-fluid i:nth-child(1) { left: -6%; background: radial-gradient(closest-side, hsl(var(--amber) / 0.55), transparent); }
+.glass-fluid i:nth-child(2) { left: 32%; background: radial-gradient(closest-side, hsl(195 90% 60% / 0.35), transparent); }
+.glass-fluid i:nth-child(3) { left: 66%; background: radial-gradient(closest-side, hsl(330 80% 65% / 0.28), transparent); }
+@media (prefers-reduced-motion: no-preference) {
+  .glass-fluid i:nth-child(1) { animation: fluid-a 16s ease-in-out infinite alternate; }
+  .glass-fluid i:nth-child(2) { animation: fluid-b 21s ease-in-out infinite alternate; }
+  .glass-fluid i:nth-child(3) { animation: fluid-c 18s ease-in-out infinite alternate; }
+}
+@keyframes fluid-a { to { transform: translate(140%, 10%) scale(1.2); } }
+@keyframes fluid-b { to { transform: translate(-90%, -12%) scale(0.85); } }
+@keyframes fluid-c { to { transform: translate(-120%, 8%) scale(1.15); } }
+/* In Chromium the glass also bends what is behind it (an SVG displacement map); other browsers keep the plain blur. */
+.glass-nav.is-refracting { backdrop-filter: url(#liquid-glass) blur(16px) saturate(185%); }
+@media (prefers-reduced-transparency: reduce) { .glass-fluid { display: none; } }
