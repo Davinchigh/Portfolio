@@ -5,11 +5,11 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 
 // ---------- Illustrations (inline SVG, self-contained, each with a text alternative) ----------
-const FIG_TEXT = "#E8E6E1", FIG_MUTED = "#8A8A8A", FIG_LINE = "rgba(255,255,255,0.14)";
+const FIG_TEXT = "var(--ink)", FIG_MUTED = "var(--muted)", FIG_LINE = "rgb(var(--fg-rgb) / 0.14)";
 
 function Figure({ alt, caption, children, color }) {
   return (
-    <figure style={{ margin: "22px 0", padding: 18, borderRadius: 14, background: "rgba(255,255,255,0.025)", border: `1px solid ${color}26` }}>
+    <figure style={{ margin: "22px 0", padding: 18, borderRadius: 14, background: "var(--card)", boxShadow: "var(--lift)", border: `1px solid ${color}26` }}>
       <svg viewBox="0 0 640 240" role="img" aria-label={alt} style={{ width: "100%", height: "auto", display: "block" }}>
         <title>{alt}</title>
         {children}
@@ -20,7 +20,7 @@ function Figure({ alt, caption, children, color }) {
 }
 const Box = ({ x, y, w, h, label, sub, color, filled }) => (
   <g>
-    <rect x={x} y={y} width={w} height={h} rx="12" fill={filled ? color + "26" : "rgba(255,255,255,0.03)"} stroke={filled ? color : FIG_LINE} />
+    <rect x={x} y={y} width={w} height={h} rx="12" fill={filled ? color + "26" : "rgb(var(--fg-rgb) / 0.03)"} stroke={filled ? color : FIG_LINE} />
     <text x={x + w / 2} y={y + h / 2 + (sub ? -4 : 5)} textAnchor="middle" fill={FIG_TEXT} fontSize="14" fontWeight="700">{label}</text>
     {sub && <text x={x + w / 2} y={y + h / 2 + 15} textAnchor="middle" fill={FIG_MUTED} fontSize="11">{sub}</text>}
   </g>
@@ -42,7 +42,7 @@ const FIGURES = {
       {[["our", 62], ["new", 21], ["the", 11], ["customers", 6]].map(([w, p], i) => (
         <g key={w}>
           <text x={440} y={62 + i * 40} fill={FIG_TEXT} fontSize="13">{w}</text>
-          <rect x={520} y={50 + i * 40} width={100} height={14} rx="7" fill="rgba(255,255,255,0.06)" />
+          <rect x={520} y={50 + i * 40} width={100} height={14} rx="7" fill="rgb(var(--fg-rgb) / 0.06)" />
           <rect x={520} y={50 + i * 40} width={p} height={14} rx="7" fill={c} opacity={1 - i * 0.2} />
           <text x={620} y={62 + i * 40} textAnchor="end" fill={FIG_MUTED} fontSize="10">{p}%</text>
         </g>
@@ -112,11 +112,11 @@ const FIGURES = {
 
 // ---------- Activities ----------
 const choiceBtn = (on, color) => ({
-  background: on ? color + "22" : "rgba(255,255,255,0.03)",
-  border: `1px solid ${on ? color : "rgba(255,255,255,0.1)"}`,
+  background: on ? color + "22" : "rgb(var(--fg-rgb) / 0.03)",
+  border: `1px solid ${on ? color : "rgb(var(--fg-rgb) / 0.1)"}`,
   borderRadius: 10,
   padding: "10px 14px",
-  color: "#EDEDED",
+  color: "var(--ink)",
   fontSize: 13,
   cursor: "pointer",
   textAlign: "left",
@@ -130,13 +130,13 @@ function FlipCards({ data, color, onDone }) {
   const flip = (i) => setSeen((s) => { const n = new Set(s); n.add(i); if (n.size === data.cards.length) onDone(); return n; });
   return (
     <div>
-      <p style={{ fontSize: 13, color: "#9A9A9A", marginBottom: 12 }}>{data.intro} <span style={{ color }}>{seen.size}/{data.cards.length} turned</span></p>
+      <p style={{ fontSize: 13, color: "var(--muted)", marginBottom: 12 }}>{data.intro} <span style={{ color }}>{seen.size}/{data.cards.length} turned</span></p>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(170px,1fr))", gap: 10 }}>
         {data.cards.map(([front, back], i) => (
           <button key={front} type="button" onClick={() => flip(i)} aria-pressed={seen.has(i)} className="flip" style={{ ...choiceBtn(seen.has(i), color), minHeight: 108, display: "flex", flexDirection: "column", justifyContent: "center" }}>
-            <span style={{ fontWeight: 700, fontSize: 14, color: seen.has(i) ? color : "#fff" }}>{front}</span>
-            <span style={{ marginTop: 6, fontSize: 12, lineHeight: 1.5, color: "#C9C9C9", display: seen.has(i) ? "block" : "none" }}>{back}</span>
-            {!seen.has(i) && <span style={{ marginTop: 6, fontSize: 11, color: "#666" }}>tap to turn</span>}
+            <span style={{ fontWeight: 700, fontSize: 14, color: seen.has(i) ? color : "var(--ink)" }}>{front}</span>
+            <span style={{ marginTop: 6, fontSize: 12, lineHeight: 1.5, color: "var(--ink-2)", display: seen.has(i) ? "block" : "none" }}>{back}</span>
+            {!seen.has(i) && <span style={{ marginTop: 6, fontSize: 11, color: "var(--muted-2)" }}>tap to turn</span>}
           </button>
         ))}
       </div>
@@ -151,7 +151,7 @@ function Builder({ data, color, onDone }) {
   const prompt = data.parts.filter((_, i) => added.includes(i)).map((p) => p[1]).join(" ");
   return (
     <div>
-      <p style={{ fontSize: 13, color: "#9A9A9A", marginBottom: 12 }}>{data.intro}</p>
+      <p style={{ fontSize: 13, color: "var(--muted)", marginBottom: 12 }}>{data.intro}</p>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
         {data.parts.map(([label], i) => (
           <button key={label} type="button" onClick={() => add(i)} disabled={added.includes(i)} style={{ ...choiceBtn(added.includes(i), color), opacity: added.includes(i) ? 0.6 : 1 }}>
@@ -159,7 +159,7 @@ function Builder({ data, color, onDone }) {
           </button>
         ))}
       </div>
-      <div aria-live="polite" style={{ marginTop: 14, minHeight: 84, padding: 14, borderRadius: 10, background: "rgba(0,0,0,0.25)", border: "1px dashed rgba(255,255,255,0.12)", fontSize: 13.5, lineHeight: 1.7, color: prompt ? "#EDEDED" : "#666" }}>
+      <div aria-live="polite" style={{ marginTop: 14, minHeight: 84, padding: 14, borderRadius: 10, background: "var(--well)", border: "1px dashed rgb(var(--fg-rgb) / 0.12)", fontSize: 13.5, lineHeight: 1.7, color: prompt ? "var(--ink)" : "var(--muted-2)" }}>
         {prompt || "Your prompt builds here as you add ingredients."}
       </div>
       {added.length === data.parts.length && <p style={{ marginTop: 10, fontSize: 13, color }}>{data.done}</p>}
@@ -179,11 +179,11 @@ function Sorter({ data, color, onDone }) {
   };
   return (
     <div>
-      <p style={{ fontSize: 13, color: "#9A9A9A", marginBottom: 12 }}>{data.intro} <span style={{ color }}>{Object.keys(placed).length}/{data.items.length} sorted</span></p>
+      <p style={{ fontSize: 13, color: "var(--muted)", marginBottom: 12 }}>{data.intro} <span style={{ color }}>{Object.keys(placed).length}/{data.items.length} sorted</span></p>
       <div style={{ display: "grid", gap: 8 }}>
         {data.items.map(([text], i) => (
-          <div key={text} style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap", padding: "10px 12px", borderRadius: 10, background: "rgba(255,255,255,0.025)", border: `1px solid ${placed[i] !== undefined ? color + "55" : "rgba(255,255,255,0.08)"}` }}>
-            <span style={{ flex: "1 1 240px", fontSize: 13.5, color: "#E5E5E5" }}>{text}</span>
+          <div key={text} style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap", padding: "10px 12px", borderRadius: 10, background: "var(--card)", boxShadow: "var(--lift)", border: `1px solid ${placed[i] !== undefined ? color + "55" : "rgb(var(--fg-rgb) / 0.08)"}` }}>
+            <span style={{ flex: "1 1 240px", fontSize: 13.5, color: "var(--ink)" }}>{text}</span>
             {placed[i] !== undefined ? (
               <span style={{ fontSize: 12, color, fontWeight: 700 }}>✓ {data.groups[placed[i]]}</span>
             ) : (
@@ -194,7 +194,7 @@ function Sorter({ data, color, onDone }) {
           </div>
         ))}
       </div>
-      <p aria-live="polite" style={{ marginTop: 10, fontSize: 13, color: note.startsWith("Right") ? color : "#E8A87C", minHeight: 20 }}>{note}</p>
+      <p aria-live="polite" style={{ marginTop: 10, fontSize: 13, color: note.startsWith("Right") ? color : tone("#E8A87C"), minHeight: 20 }}>{note}</p>
     </div>
   );
 }
@@ -212,7 +212,7 @@ function Sequence({ data, color, onDone }) {
   };
   return (
     <div>
-      <p style={{ fontSize: 13, color: "#9A9A9A", marginBottom: 12 }}>{data.intro}</p>
+      <p style={{ fontSize: 13, color: "var(--muted)", marginBottom: 12 }}>{data.intro}</p>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
         {shuffled.map(([s, i]) => (
           <button key={s} type="button" onClick={() => tap(i)} disabled={order.includes(i)} style={{ ...choiceBtn(order.includes(i), color) }}>
@@ -220,7 +220,7 @@ function Sequence({ data, color, onDone }) {
           </button>
         ))}
       </div>
-      <p aria-live="polite" style={{ marginTop: 10, fontSize: 13, color: order.length === data.steps.length ? color : "#E8A87C", minHeight: 20 }}>{note}</p>
+      <p aria-live="polite" style={{ marginTop: 10, fontSize: 13, color: order.length === data.steps.length ? color : tone("#E8A87C"), minHeight: 20 }}>{note}</p>
     </div>
   );
 }
@@ -232,23 +232,23 @@ function QuickCheck({ check, color, passed, onPass }) {
   const [pick, setPick] = useState(passed ? check.answer : null);
   const right = pick === check.answer;
   return (
-    <div style={{ marginTop: 22, padding: 18, borderRadius: 14, background: "rgba(255,255,255,0.025)", border: `1px solid ${right ? color : color + "30"}` }}>
+    <div style={{ marginTop: 22, padding: 18, borderRadius: 14, background: "var(--card)", boxShadow: "var(--lift)", border: `1px solid ${right ? color : color + "30"}` }}>
       <p style={{ fontSize: 10, letterSpacing: "0.14em", color, fontWeight: 700, margin: 0 }}>QUICK CHECK · ANSWER TO UNLOCK THE NEXT LESSON</p>
-      <p style={{ fontSize: 15, color: "#fff", margin: "8px 0 12px", lineHeight: 1.5, fontWeight: 600 }}>{check.q}</p>
+      <p style={{ fontSize: 15, color: "var(--ink)", margin: "8px 0 12px", lineHeight: 1.5, fontWeight: 600 }}>{check.q}</p>
       <div role="radiogroup" aria-label={check.q} style={{ display: "grid", gap: 8 }}>
         {check.options.map((o, i) => {
           const chosen = pick === i;
-          const state = chosen ? (i === check.answer ? color : "#E8A87C") : null;
+          const state = chosen ? (i === check.answer ? color : tone("#E8A87C")) : null;
           return (
             <button key={o} type="button" role="radio" aria-checked={chosen} onClick={() => { setPick(i); if (i === check.answer) onPass(); }}
-              style={{ ...choiceBtn(chosen, state || color), borderColor: state || "rgba(255,255,255,0.1)" }}>
+              style={{ ...choiceBtn(chosen, state || color), borderColor: state || "rgb(var(--fg-rgb) / 0.1)" }}>
               {o}
             </button>
           );
         })}
       </div>
       {pick !== null && (
-        <p aria-live="polite" style={{ marginTop: 12, fontSize: 13, lineHeight: 1.6, color: right ? color : "#E8A87C" }}>
+        <p aria-live="polite" style={{ marginTop: 12, fontSize: 13, lineHeight: 1.6, color: right ? color : tone("#E8A87C") }}>
           {right ? `Correct. ${check.why}` : "Not quite. Have another look at the lesson and try again."}
         </p>
       )}
@@ -266,9 +266,9 @@ function LessonExtras({ lessonId, color, passed, onPass }) {
     <div>
       {ex.figure && FIGURES[ex.figure](color)}
       {Act && (
-        <div style={{ marginTop: 22, padding: 18, borderRadius: 14, background: "rgba(255,255,255,0.02)", border: `1px solid ${activityDone ? color + "66" : "rgba(255,255,255,0.08)"}` }}>
+        <div style={{ marginTop: 22, padding: 18, borderRadius: 14, background: "var(--card)", boxShadow: "var(--lift)", border: `1px solid ${activityDone ? color + "66" : "rgb(var(--fg-rgb) / 0.08)"}` }}>
           <p style={{ fontSize: 10, letterSpacing: "0.14em", color, fontWeight: 700, margin: "0 0 8px" }}>TRY IT{activityDone ? " · DONE ✓" : ""}</p>
-          <p style={{ fontSize: 16, color: "#fff", margin: "0 0 4px", fontWeight: 700 }}>{ex.activity.title}</p>
+          <p style={{ fontSize: 16, color: "var(--ink)", margin: "0 0 4px", fontWeight: 700 }}>{ex.activity.title}</p>
           <Act data={ex.activity} color={color} onDone={() => setActivityDone(true)} />
         </div>
       )}
