@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation"
 import { Menu, X } from "lucide-react"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { useVisitor } from "@/lib/visitor"
+import { LogoMark } from "@/components/site/logo"
 
 /** Switch between the recruiter view and the story view. Home page only. */
 function ViewSwitch({ className = "" }: { className?: string }) {
@@ -53,6 +54,15 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const pathname = usePathname()
   const menuButton = useRef<HTMLButtonElement>(null)
+  const glass = useRef<HTMLDivElement>(null)
+  // A soft highlight follows the pointer across the glass.
+  const glow = (e: React.PointerEvent) => {
+    const el = glass.current
+    if (!el || e.pointerType !== "mouse") return
+    const r = el.getBoundingClientRect()
+    el.style.setProperty("--gx", `${e.clientX - r.left}px`)
+    el.style.setProperty("--gy", `${e.clientY - r.top}px`)
+  }
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8)
@@ -76,14 +86,17 @@ export default function Navbar() {
   }, [open])
 
   return (
-    <header
-      className={`fixed inset-x-0 top-0 z-50 bg-background/85 backdrop-blur-md [@media(prefers-reduced-transparency:reduce)]:bg-background [@media(prefers-reduced-transparency:reduce)]:backdrop-blur-none transition-[border-color,box-shadow] duration-300 ${
-        scrolled || open ? "border-b" : "border-b border-transparent"
-      }`}
-    >
-      <nav className="wrap flex h-16 items-center justify-between" aria-label="Main">
-        <Link href="/" className="inline-flex min-h-11 items-center font-display text-xl font-bold tracking-tight" aria-label="bfb, Benedict Frimpong Boateng, home">
-          bfb
+    <header className="pointer-events-none fixed inset-x-0 top-0 z-50 px-3 pt-3 sm:px-4">
+      <div
+        ref={glass}
+        onPointerMove={glow}
+        data-scrolled={scrolled || open ? "" : undefined}
+        className="glass-nav pointer-events-auto mx-auto max-w-5xl rounded-[22px]"
+      >
+      <nav className="flex h-14 items-center justify-between pl-3 pr-2 sm:pl-4" aria-label="Main">
+        <Link href="/" className="logo-link inline-flex min-h-11 items-center gap-2.5 font-display text-lg font-bold tracking-tight" aria-label="bfb, Benedict Frimpong Boateng, home">
+          <LogoMark className="h-8 w-8" />
+          <span aria-hidden="true">bfb</span>
         </Link>
 
         <div className="hidden items-center gap-1 md:flex">
@@ -125,14 +138,14 @@ export default function Navbar() {
 
       <div id="mobile-menu" className="fold md:hidden" data-open={open ? "" : undefined} inert={!open}>
         <div>
-          <div className="border-t">
+          <div className="border-t border-foreground/10">
             {pathname === "/" && (
-              <div className="wrap flex items-center justify-between pt-4">
+              <div className="flex items-center justify-between px-4 pt-4">
                 <span className="text-sm text-muted-foreground">view the site as</span>
                 <ViewSwitch />
               </div>
             )}
-            <ul className="wrap py-2">
+            <ul className="px-4 py-2">
               {links.map((l) => (
                 <li key={l.href}>
                   <Link href={l.href} onClick={() => setOpen(false)} className="block py-3 text-lg transition-colors hover:text-route">
@@ -143,6 +156,7 @@ export default function Navbar() {
             </ul>
           </div>
         </div>
+      </div>
       </div>
     </header>
   )
