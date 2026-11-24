@@ -9,6 +9,7 @@ import { Lessons } from "@/components/home/lessons"
 import { Certifications, Designs, Stack, Ventures } from "@/components/home/more-sections"
 import { Stats } from "@/components/home/stats"
 import { CaseStudy, MarqueeCard } from "@/components/home/work"
+import { WorkWheel } from "@/components/home/work-wheel"
 import { Marquee } from "@/components/site/kinetic"
 import { Rail } from "@/components/site/route"
 import { Section } from "@/components/site/section"
@@ -16,7 +17,7 @@ import { work } from "@/lib/site"
 import { ForMode } from "@/lib/visitor"
 
 /** How many projects get the full write-up on the home page. The rest appear as cards. */
-const FEATURED = 4
+const FEATURED = 5
 
 export default function Home() {
   return (
@@ -40,9 +41,12 @@ export default function Home() {
                   </Link>
                 }
               >
-                {work.slice(0, FEATURED).map((item, i) => (
-                  <CaseStudy key={item.slug} item={item} index={i} />
-                ))}
+                <WorkWheel
+                  items={work.slice(0, FEATURED)}
+                  fallback={work.slice(0, FEATURED).map((item, i) => (
+                    <CaseStudy key={item.slug} item={item} index={i} />
+                  ))}
+                />
                 <div className="border-t pt-10">
                   <p className="eyebrow">more work</p>
                   <p className="mt-2 text-sm text-muted-foreground">hover to pause, open any one for the full story.</p>
