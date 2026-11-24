@@ -132,7 +132,7 @@ const CSS = `
 }
 [data-theme="light"]{
   --bg:#F6F2EA;--bg-rgb:246 242 234;--panel:#FBF8F2;--fg-rgb:40 30 15;
-  --ink:#1C1813;--ink-2:#3E382F;--muted:#6B655B;--muted-2:#837C70;--faint:#B3AB9E;
+  --ink:#1C1813;--ink-2:#3E382F;--muted:#6B655B;--muted-2:#756E62;--faint:#B3AB9E;
   --accent:#8A6420;--accent-rgb:138 100 32;--accent-ink:#6E4F17;--on-accent:#FFFCF5;
   --well:#FFFFFF;--code-ink:#24476B;--card:#FFFFFF;--card-solid:#FFFFFF;--line:rgb(60 45 20 / 0.12);
   --lift:0 1px 2px rgb(60 45 20 / 0.06),0 16px 36px -22px rgb(60 45 20 / 0.28);
@@ -552,7 +552,7 @@ const SL = ({children}) => (
 );
 
 const Code = ({children}) => (
-  <div style={{background:"rgba(0,0,0,0.4)",border:"1px solid rgb(var(--fg-rgb) / 0.06)",borderRadius:10,padding:"14px 16px",fontFamily:"'JetBrains Mono',monospace",fontSize:12,lineHeight:1.85,color:"var(--code-ink)",whiteSpace:"pre-wrap",overflowX:"auto"}}>{children}</div>
+  <div style={{background:"var(--well)",border:"1px solid rgb(var(--fg-rgb) / 0.06)",borderRadius:10,padding:"14px 16px",fontFamily:"'JetBrains Mono',monospace",fontSize:12,lineHeight:1.85,color:"var(--code-ink)",whiteSpace:"pre-wrap",overflowX:"auto"}}>{children}</div>
 );
 
 function Spinner({color:c0="#D9B36C"}) {
@@ -882,11 +882,11 @@ function TechniquesLesson({lesson,color,onSave,saved,cacheKey}) {
             : (
               <div>
                 <div style={{marginBottom:14}}>
-                  <div style={{fontSize:10,color:"#FF6B6B",fontWeight:700,letterSpacing:"0.1em",marginBottom:8}}>✗ WEAK PROMPT (without this technique)</div>
+                  <div style={{fontSize:10,color:tone("#FF6B6B"),fontWeight:700,letterSpacing:"0.1em",marginBottom:8}}>✗ WEAK PROMPT (without this technique)</div>
                   <Code>{badPrompt||"Example loading..."}</Code>
                 </div>
                 <div>
-                  <div style={{fontSize:10,color:"#00C9A7",fontWeight:700,letterSpacing:"0.1em",marginBottom:8}}>✓ STRONG PROMPT (with this technique applied)</div>
+                  <div style={{fontSize:10,color:tone("#00C9A7"),fontWeight:700,letterSpacing:"0.1em",marginBottom:8}}>✓ STRONG PROMPT (with this technique applied)</div>
                   <Code>{goodPrompt||"Example loading..."}</Code>
                 </div>
               </div>
@@ -1082,7 +1082,7 @@ function FinalLesson({lesson,color,onSave,saved,onDone,cacheKey}) {
         <div style={{fontSize:14,lineHeight:1.9,color:"var(--ink-2)",whiteSpace:"pre-wrap"}}>{lesson.instructions}</div>
       </Card>
       <textarea value={ans} onChange={e=>setAns(e.target.value)} placeholder={lesson.placeholder} rows={14} style={{width:"100%",background:"var(--well)",border:`1px solid ${ans?color+"40":"rgb(var(--fg-rgb) / 0.07)"}`,borderRadius:10,padding:"14px 16px",color:"var(--ink)",fontSize:13,lineHeight:1.7,resize:"vertical",outline:"none",fontFamily:"'Plus Jakarta Sans',sans-serif"}}/>
-      <div style={{marginTop:6,fontSize:11,color:ok?"#00C9A7":"var(--muted-2)"}}>{ans.trim().length} / {lesson.minLen||100} characters minimum</div>
+      <div style={{marginTop:6,fontSize:11,color:ok?tone("#00C9A7"):"var(--muted-2)"}}>{ans.trim().length} / {lesson.minLen||100} characters minimum</div>
       <div style={{marginTop:14,display:"flex",gap:10,alignItems:"center",flexWrap:"wrap"}}>
         <Btn color={color} onClick={()=>{onSave(ans);onDone();}} disabled={!ok}>✓ Submit This Part</Btn>
         {saved && <Tag color="#00C9A7" small>✓ Submitted</Tag>}
@@ -1238,7 +1238,7 @@ function ApiKeyModal({onClose}) {
             value={val}
             onChange={e=>setVal(e.target.value)}
             placeholder="sk-ant-api03-..."
-            style={{width:"100%",background:"rgba(0,0,0,0.4)",border:"1px solid rgb(var(--fg-rgb) / 0.1)",borderRadius:10,padding:"12px 50px 12px 14px",color:"var(--ink)",fontSize:13,fontFamily:"'JetBrains Mono',monospace",outline:"none"}}
+            style={{width:"100%",background:"var(--well)",border:"1px solid rgb(var(--fg-rgb) / 0.1)",borderRadius:10,padding:"12px 50px 12px 14px",color:"var(--ink)",fontSize:13,fontFamily:"'JetBrains Mono',monospace",outline:"none"}}
           />
           <button onClick={()=>setShow(!show)} style={{position:"absolute",right:8,top:"50%",transform:"translateY(-50%)",background:"transparent",border:"none",color:"var(--muted)",cursor:"pointer",padding:6,fontSize:11}}>{show?"":""}</button>
         </div>
@@ -1247,7 +1247,7 @@ function ApiKeyModal({onClose}) {
           {localStorage.getItem(KEY_KEY) && <Btn outline color="#FF6B6B" onClick={remove} small>Remove Key</Btn>}
           <Btn outline color="#666" onClick={onClose} small>Cancel</Btn>
         </div>
-        <div style={{marginTop:16,padding:12,background:"rgba(255,193,18,0.08)",border:"1px solid rgba(255,193,18,0.2)",borderRadius:10,fontSize:11,color:"#FFC312",lineHeight:1.6}}>
+        <div style={{marginTop:16,padding:12,background:"rgba(255,193,18,0.08)",border:"1px solid rgba(255,193,18,0.2)",borderRadius:10,fontSize:11,color:tone("#FFC312"),lineHeight:1.6}}>
            Keys typed into a browser are vulnerable to browser extensions. Use a key with usage limits set in your Anthropic console.
         </div>
       </div>
