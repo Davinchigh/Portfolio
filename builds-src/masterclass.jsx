@@ -112,6 +112,14 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
   .hero{padding:18px!important;}
 }
 .menu-btn{display:none;}
+.topbar{position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:12px;padding:12px 24px 14px;background:rgba(11,12,14,0.86);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,0.05);font-size:12px;color:#9a9a9a;}
+.topbar-text{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.topbar-pct{font-weight:700;color:#EBD9B0;font-variant-numeric:tabular-nums;}
+.topbar-bar{position:absolute;left:0;right:0;bottom:0;height:3px;background:rgba(255,255,255,0.05);}
+.topbar-bar span{display:block;height:100%;transition:width .8s ease;}
+.menu-btn{align-items:center;gap:6px;background:rgba(217,179,108,0.15);border:1px solid rgba(217,179,108,0.3);border-radius:8px;padding:8px 12px;color:#D9B36C;font-size:12px;font-weight:700;cursor:pointer;flex-shrink:0;}
+@media (max-width: 880px){ .topbar{padding:10px 14px 12px;} .topbar-title{display:none;} }
+@media (prefers-reduced-motion: reduce){ .fu{animation:none;} .topbar-bar span{transition:none;} }
 `;
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -1131,9 +1139,16 @@ function App() {
   const [showKey, setShowKey] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [tick, setTick] = useState(0); // forces re-render after reset
+  const mainRef = useRef(null);
 
   const { screen, uIdx, lIdx, saved, done } = state;
   const doneSet = useMemo(() => new Set(done), [done]);
+
+  // Every lesson starts at its top: the lesson pane is its own scroller, so reset it (and the page) on each change.
+  useEffect(() => {
+    if (mainRef.current) mainRef.current.scrollTop = 0;
+    window.scrollTo(0, 0);
+  }, [uIdx, lIdx, screen]);
 
   const unit = UNITS[uIdx];
   const lesson = unit?.lessons[lIdx];
@@ -1217,12 +1232,12 @@ function App() {
   return (
     <>
       <style>{CSS}</style>
-      <div key={tick} style={{display:"flex",minHeight:"100vh",background:"#0B0C0E",fontFamily:"'Plus Jakarta Sans',sans-serif",color:"#fff"}}>
+      <div key={tick} className="shell" style={{display:"flex",height:"100dvh",overflow:"hidden",background:"#0B0C0E",fontFamily:"'Plus Jakarta Sans',sans-serif",color:"#fff"}}>
 
         {sidebarOpen && <div className="sidebar-backdrop" onClick={()=>setSidebarOpen(false)}/>}
 
         {/* SIDEBAR */}
-        <div className={`sidebar ${sidebarOpen?"open":""}`} style={{width:248,minWidth:248,borderRight:"1px solid rgba(255,255,255,0.05)",display:"flex",flexDirection:"column",background:"#0E0F12",overflowY:"auto",flexShrink:0}}>
+        <nav aria-label="Course contents" className={`sidebar ${sidebarOpen?"open":""}`} style={{width:268,minWidth:268,height:"100%",borderRight:"1px solid rgba(255,255,255,0.05)",display:"flex",flexDirection:"column",background:"#0E0F12",overflowY:"auto",flexShrink:0}}>
           <div style={{padding:"16px 14px",borderBottom:"1px solid rgba(255,255,255,0.05)"}}>
             <div style={{display:"flex",alignItems:"center",gap:9,marginBottom:12}}>
               <div style={{width:28,height:28,borderRadius:7,background:"rgba(217,179,108,0.2)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,fontWeight:700,color:"#D9B36C"}}>M</div>
@@ -1275,14 +1290,17 @@ function App() {
               <button onClick={()=>setShowSettings(true)} title="Backup / Reset" style={{flex:1,background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.08)",borderRadius:7,padding:"7px 8px",color:"#888",fontSize:10,fontWeight:600,cursor:"pointer",fontFamily:"inherit"}}> Save</button>
             </div>
           </div>
-        </div>
+        </nav>
 
         {/* MAIN CONTENT */}
-        <div style={{flex:1,overflowY:"auto",minWidth:0}}>
+        <main ref={mainRef} style={{flex:1,height:"100%",overflowY:"auto",minWidth:0,scrollBehavior:"auto"}}>
+          <div className="topbar">
+            <button className="menu-btn" onClick={()=>setSidebarOpen(true)} aria-label="Open course contents">☰ Lessons</button>
+            <div className="topbar-text"><span style={{color:unit.color}}>Unit {unit.id}</span> · Lesson {lIdx+1} of {unit.lessons.length}<span className="topbar-title"> · {lesson.title}</span></div>
+            <div className="topbar-pct">{Math.round((doneCount/totalL)*100)}%</div>
+            <div className="topbar-bar" role="progressbar" aria-label="Course progress" aria-valuemin={0} aria-valuemax={totalL} aria-valuenow={doneCount}><span style={{width:`${(doneCount/totalL)*100}%`,background:unit.color}}/></div>
+          </div>
           <div className="main-pad" style={{maxWidth:800,margin:"0 auto",padding:"36px 36px 80px"}} key={`${uIdx}-${lIdx}`}>
-
-            {/* Mobile menu button */}
-            <button className="menu-btn" onClick={()=>setSidebarOpen(true)} style={{position:"fixed",top:14,left:14,zIndex:50,background:"rgba(217,179,108,0.15)",border:"1px solid rgba(217,179,108,0.3)",borderRadius:8,padding:"8px 12px",color:"#D9B36C",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"inherit"}}> Menu</button>
 
             {lIdx===0 && (
               <div className="fu hero" style={{marginBottom:28,padding:24,borderRadius:16,background:`linear-gradient(135deg,${unit.dark},rgba(11,12,14,0.5))`,border:`1px solid ${unit.color}28`}}>
@@ -1320,7 +1338,7 @@ function App() {
               </Btn>
             </div>
           </div>
-        </div>
+        </main>
       </div>
 
       {showSettings && <SettingsModal onClose={()=>setShowSettings(false)} onReset={onReset}/>}

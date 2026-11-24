@@ -8,16 +8,18 @@ export function SignOff() {
   const ref = useRef<HTMLParagraphElement>(null)
   const word = "let's build"
 
+  // Plays every time the footer scrolls into view: it resets once the word has left the screen entirely.
   useEffect(() => {
     const el = ref.current
     if (!el || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
-    if (el.getBoundingClientRect().top < window.innerHeight) return
-    el.dataset.state = "waiting"
-    const io = new IntersectionObserver(([e]) => {
-      if (!e.isIntersecting) return
-      el.dataset.state = "in"
-      io.disconnect()
-    }, { threshold: 0.35 })
+    if (el.getBoundingClientRect().top >= window.innerHeight) el.dataset.state = "waiting"
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (e.intersectionRatio >= 0.35) el.dataset.state = "in"
+        else if (!e.isIntersecting) el.dataset.state = "waiting"
+      },
+      { threshold: [0, 0.35] },
+    )
     io.observe(el)
     return () => io.disconnect()
   }, [])
