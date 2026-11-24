@@ -516,12 +516,12 @@ function renderSessionShell(app, id) {
             </div>
           </div>
           <div id="session-body"></div>
-          <div class="mt-10 flex flex-wrap items-center justify-between gap-3 p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
-            <div class="text-sm text-slate-600 dark:text-slate-400">${state.progress[id].done ? '✓ You\'ve completed this session.' : `Ready when you are, ${firstName()}.`}</div>
+          <div id="session-footer" class="mt-10 flex flex-wrap items-center justify-between gap-3 p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+            <div class="text-sm text-slate-600 dark:text-slate-400" id="session-status">${state.progress[id].done ? '✓ You\'ve completed this session.' : sessionUnlocked(id) ? `Quiz done. Ready when you are, ${firstName()}.` : 'Finish the end-of-session quiz above to complete this session.'}</div>
             <div class="flex items-center gap-2">
               ${id>1?`<a href="#/session/${id-1}" class="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800">← Previous</a>`:''}
-              <button onclick="markSessionDone(${id})" class="px-4 py-2 rounded-xl ${state.progress[id].done?'bg-emerald-500':'bg-brand-600 hover:bg-brand-700'} text-white font-semibold">${state.progress[id].done?'Completed ✓':'Mark as Complete'}</button>
-              ${id<SESSIONS.length?`<a href="#/session/${id+1}" class="px-4 py-2 rounded-xl bg-gold-400 text-gold-900 font-semibold hover:bg-gold-300">Next →</a>`:`<a href="#/final" class="px-4 py-2 rounded-xl bg-gold-400 text-gold-900 font-semibold hover:bg-gold-300">Final Project →</a>`}
+              <button id="complete-btn" onclick="markSessionDone(${id})" ${sessionUnlocked(id)?'':'disabled aria-disabled="true"'} class="px-4 py-2 rounded-xl ${state.progress[id].done?'bg-emerald-500':'bg-brand-600 hover:bg-brand-700'} text-white font-semibold" style="${sessionUnlocked(id)?'':'opacity:.45;cursor:not-allowed'}">${state.progress[id].done?'Completed ✓':'Mark as Complete'}</button>
+              ${state.progress[id].done ? (id<SESSIONS.length?`<a href="#/session/${id+1}" class="px-4 py-2 rounded-xl bg-gold-400 text-gold-900 font-semibold hover:bg-gold-300">Next →</a>`:`<a href="#/final" class="px-4 py-2 rounded-xl bg-gold-400 text-gold-900 font-semibold hover:bg-gold-300">Final Project →</a>`) : ''}
             </div>
           </div>
         </div>
@@ -531,7 +531,22 @@ function renderSessionShell(app, id) {
   lucide.createIcons();
 }
 
+/* A session can be completed once its quiz has been answered (or if it has no quiz, or was already completed). */
+function sessionUnlocked(id) {
+  const p = state.progress[id] || {};
+  const s = SESSIONS.find(x => x.id === id);
+  const hasQuiz = s && /quiz\(/.test(String(s.render));
+  return !!p.done || !hasQuiz || p.quizScore != null;
+}
+function unlockSession(id) {
+  const btn = document.getElementById('complete-btn');
+  const status = document.getElementById('session-status');
+  if (!btn || !sessionUnlocked(id)) return;
+  btn.disabled = false; btn.removeAttribute('aria-disabled'); btn.style.opacity = ''; btn.style.cursor = '';
+  if (status && !state.progress[id].done) status.textContent = `Quiz done. Mark the session complete to unlock the next one, ${firstName()}.`;
+}
 function markSessionDone(id) {
+  if (!sessionUnlocked(id)) { toast('Finish the end-of-session quiz first.'); return; }
   state.progress[id] = state.progress[id] || {};
   state.progress[id].done = true;
   saveState();
@@ -611,7 +626,7 @@ function quiz(sessionId, questions) {
                     : correct ? 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-400'
                     : wrong   ? 'bg-red-50 dark:bg-red-950/40 border-red-400'
                     : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 opacity-70';
-                  return `<button ${answers[i]!==null?'disabled':''} onclick="window.__qpick_${qid}(${i},${j})" class="text-left text-sm px-3 py-2 rounded-lg border ${cls}">${o}${answers[i]!==null && j===q.a?' ✓':''}${wrong?' ✗':''}</button>`;
+                  return `<button ${answers[i]!==null?'disabled':''} onclick="window['__qpick_${qid}'](${i},${j})" class="text-left text-sm px-3 py-2 rounded-lg border ${cls}">${o}${answers[i]!==null && j===q.a?' ✓':''}${wrong?' ✗':''}</button>`;
                 }).join('')}
               </div>
               ${answers[i]!==null ? `<div class="mt-2 text-xs text-slate-500 italic">${q.exp||''}</div>`:''}
@@ -622,6 +637,7 @@ function quiz(sessionId, questions) {
             state.progress[sessionId] = state.progress[sessionId] || {};
             state.progress[sessionId].quizScore = score;
             saveState();
+            setTimeout(() => unlockSession(sessionId), 0);
             const pct = Math.round(score/questions.length*100);
             const msg = pct===100 ? `Perfect, ${firstName()}! ` : pct>=70 ? `Great work, ${firstName()}! ` : `Good try, ${firstName()}, review and retry anytime.`;
             return `<div class="mt-2 p-3 rounded-xl bg-gradient-to-r from-brand-100 to-gold-100 dark:from-slate-800 dark:to-slate-800 text-sm font-medium">Score: ${score}/${questions.length} (${pct}%), ${msg}</div>`;
@@ -1025,7 +1041,7 @@ function renderSession5(el) {
       ${templates.map(([t,p],i)=>`
         <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
           <div class="flex items-center justify-between mb-2"><div class="font-bold">${t}</div>
-            <button onclick="navigator.clipboard.writeText(this.nextElementSibling.textContent);toast('Template copied!')" class="text-xs text-brand-600 hover:underline">Copy</button>
+            <button onclick="navigator.clipboard.writeText(this.parentElement.nextElementSibling.textContent);toast('Template copied!')" class="text-xs text-brand-600 hover:underline">Copy</button>
           </div>
           <pre class="prompt-box text-xs">${p}</pre>
         </div>`).join('')}
@@ -1148,7 +1164,7 @@ function renderSession7(el) {
     <div class="grid md:grid-cols-2 gap-3">
       ${tplCards.map(([t,p])=>`<div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
         <div class="flex items-center justify-between mb-2"><div class="font-bold">${t}</div>
-          <button onclick="navigator.clipboard.writeText(this.nextElementSibling.textContent);toast('Copied!')" class="text-xs text-brand-600 hover:underline">Copy</button>
+          <button onclick="navigator.clipboard.writeText(this.parentElement.nextElementSibling.textContent);toast('Copied!')" class="text-xs text-brand-600 hover:underline">Copy</button>
         </div>
         <pre class="prompt-box text-xs">${p}</pre>
       </div>`).join('')}
