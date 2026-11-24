@@ -1,7 +1,9 @@
-# Let sharp run its install script (needed for image processing).
+# Dependencies allowed to run install scripts: sharp (image processing)
+# and esbuild (compiles the course demos in builds-src).
 # allowBuilds is read by newer pnpm, onlyBuiltDependencies by older versions.
 allowBuilds:
-  esbuild: set this to true or false
+  esbuild: true
   sharp: true
 onlyBuiltDependencies:
+  - esbuild
   - sharp
