@@ -60,8 +60,8 @@ export function WorkWheel({ items, fallback }: { items: WorkItem[]; fallback: Re
       const travel = r.height - window.innerHeight
       const p = Math.min(1, Math.max(0, -r.top / Math.max(1, travel)))
       const pos = p * (n - 1)
-      ring.current?.style.setProperty("--turn", `${(pos * STEP).toFixed(3)}deg`)
-      ring.current?.style.setProperty("--pos", pos.toFixed(4))
+      el.style.setProperty("--turn", `${(pos * STEP).toFixed(3)}deg`)
+      el.style.setProperty("--pos", pos.toFixed(4))
       setActive(Math.round(pos))
     }
     const onScroll = () => {
@@ -94,23 +94,29 @@ export function WorkWheel({ items, fallback }: { items: WorkItem[]; fallback: Re
       <div className="sticky top-0 flex h-screen items-center pt-16">
         <div className="grid w-full grid-cols-12 items-center gap-10">
           <div className="col-span-5">
-            <ol className="mb-8 flex items-center gap-2" aria-label="Jump to a project">
-              {items.map((it, i) => (
-                <li key={it.slug}>
-                  <button
-                    type="button"
-                    onClick={() => jump(i)}
-                    aria-current={i === active ? "step" : undefined}
-                    className={`wheel-dot inline-flex h-9 items-center rounded-full border px-3 font-mono text-xs transition-colors ${
-                      i === active ? "border-route bg-route/10 text-foreground" : "text-muted-foreground hover:text-foreground"
-                    }`}
-                  >
-                    <span className="sr-only">{it.title}, </span>
-                    {String(i + 1).padStart(2, "0")}
-                  </button>
-                </li>
-              ))}
-            </ol>
+            <div className="wheel-steps mb-8" style={{ "--count": items.length } as CSSProperties}>
+              <ol className="relative inline-flex rounded-full border bg-card/60 p-1" aria-label="Jump to a project">
+                <span aria-hidden="true" className="wheel-glide" />
+                {items.map((it, i) => (
+                  <li key={it.slug} className="relative z-10">
+                    <button
+                      type="button"
+                      onClick={() => jump(i)}
+                      aria-current={i === active ? "step" : undefined}
+                      className={`inline-flex h-9 w-12 items-center justify-center rounded-full font-mono text-xs transition-colors duration-300 ${
+                        i === active ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+                      }`}
+                    >
+                      <span className="sr-only">{it.title}, </span>
+                      {String(i + 1).padStart(2, "0")}
+                    </button>
+                  </li>
+                ))}
+              </ol>
+              <div aria-hidden="true" className="wheel-track mt-3">
+                <span />
+              </div>
+            </div>
             <div aria-live="polite">
             <div key={item.slug} className="wheel-copy">
               <p className="meta flex gap-3">
@@ -139,7 +145,7 @@ export function WorkWheel({ items, fallback }: { items: WorkItem[]; fallback: Re
 
           <div className="col-span-7">
             <div className="wheel-stage">
-              <div ref={ring} className="wheel-ring" style={{ "--turn": "0deg", "--pos": 0 } as CSSProperties}>
+              <div ref={ring} className="wheel-ring">
                 {items.map((it, i) => (
                   <div
                     key={it.slug}
