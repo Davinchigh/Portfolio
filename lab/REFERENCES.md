@@ -16,3 +16,12 @@ Assets
   leafy_grass, brown_planks_05, kloofendal_48d_partly_cloudy_puresky, island_tree_01). Fetched at build time, not committed.
 
 Still needed from residents: room interior, reading room, the mart and shops, block names, a rough floor plan.
+
+## Interiors (lab/interiors.js, ?v=room|reading|corridor|shop|mart|restaurant|stairs)
+- Student room: resident photo (yellow/white metal bunks, blue curtains, louvre window, AC, wall shelves, cream tiles) and Elizabeth Sey "Living Spaces" photo.
+- Reading room: resident photo (dark wood carrels, louvres, curtains, fans, fluorescent tubes, AC, beam).
+- Corridor: resident video (cream walls, beige tiles, wooden doors in dark frames, round ceiling lights).
+- Shops: resident photos (Ultimate Unisex Salon with collapsible grille; foodstuff shops as room units; laundry).
+- Mart: Elizabeth Sey "Hermano's inn" photo (drinks fridges, stocked shelves, TV). Two marts per the resident: 2nd floor at the top of the entrance stairs, and at the opposite far end.
+- Restaurant: resident photo; at the bottom far corner, left down the hallway from the entrance.
+- Stairs: Hilla Limann stair photo and breeze-block stair towers.
