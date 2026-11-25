@@ -25,3 +25,9 @@ Still needed from residents: room interior, reading room, the mart and shops, bl
 - Mart: Elizabeth Sey "Hermano's inn" photo (drinks fridges, stocked shelves, TV). Two marts per the resident: 2nd floor at the top of the entrance stairs, and at the opposite far end.
 - Restaurant: resident photo; at the bottom far corner, left down the hallway from the entrance.
 - Stairs: Hilla Limann stair photo and breeze-block stair towers.
+
+## Exterior pass 5
+- Balconies on both faces, built out with fins and slabs so they cast real shadows (resident courtyard and forecourt photos).
+- Courtyard: grey 40 cm tile walkways with kerbs, teal volleyball court with net (north) and teal basketball court (south), central round bed, gazebo, laundry racks.
+- Forecourt: planted islands with white kerbs, grey pavers, asphalt road, cars and taxis.
+- Trees are now procedural (flamboyant and shade trees from instanced leaf cards); the 60 MB glTF tree is no longer loaded.

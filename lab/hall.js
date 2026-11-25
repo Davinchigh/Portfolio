@@ -1,6 +1,5 @@
 import * as THREE from "three"
 import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader.js"
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js"
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer.js"
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js"
 import { GTAOPass } from "three/examples/jsm/postprocessing/GTAOPass.js"
@@ -46,15 +45,15 @@ function pbr(name, repeat, extra = {}) {
   return new THREE.MeshStandardMaterial({ map: load("diff", true), normalMap: load("nor"), roughnessMap: load("rough"), ...extra })
 }
 // Walls: painted plaster, tinted to the hall's warm white.
-const wall = pbr("plaster", [1, 1], { color: 0xffffff, normalScale: new THREE.Vector2(0.25, 0.25), roughness: 0.92 })
+const wall = pbr("plaster", [1, 1], { color: 0xfff8ee, normalScale: new THREE.Vector2(0.25, 0.25), roughness: 0.92 })
 const roof = pbr("roof", [1, 1], { color: 0xd6806a })
-const pavers = pbr("pavers", [1, 1], { color: 0xd8b6a0 })
+const pavers = pbr("pavers", [1, 1], { color: 0xb3aba2 })
 const concrete = pbr("concrete", [1, 1], { color: 0xbdbab2 })
 const grass = pbr("grass", [1, 1], { color: 0x86b25e })
 const wood = pbr("wood", [1, 1], { color: 0xb5774a })
 const glassDark = new THREE.MeshStandardMaterial({ color: 0x1d242c, roughness: 0.08, metalness: 0.6, envMapIntensity: 1.4 })
 const frame = new THREE.MeshStandardMaterial({ color: 0xf8f6f1, roughness: 0.5 })
-const darkRecess = new THREE.MeshStandardMaterial({ color: 0x2c2a27, roughness: 0.95 })
+const darkRecess = new THREE.MeshStandardMaterial({ color: 0xd9cdb6, roughness: 0.95 })
 const rail = new THREE.MeshStandardMaterial({ color: 0xf2efe8, roughness: 0.6 })
 const fascia = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.55 })
 const courtGreen = new THREE.MeshStandardMaterial({ color: 0x3f7a5c, roughness: 0.75 })
@@ -101,7 +100,7 @@ function slab(w, d, mat, x, z, tile, y = 0.02) {
 }
 slab(W + 8, L + 8, pavers, 0, 0, 2.2, 0.015)
 slab(40, 70, pavers, HX + 22, -6, 2.2, 0.018) // forecourt and car park
-slab(8, 220, concrete, HX + 46, 0, 3, 0.02) // service road
+slab(8, 220, concrete, HX + 46, 0, 3, 0.02).material = new THREE.MeshStandardMaterial({ color: 0x3b3b3a, roughness: 0.9 }) // asphalt road
 
 // ---------- the ring block ----------
 // Walls: four solid wings, open courtyard in the middle.
@@ -188,7 +187,7 @@ const breeze = new THREE.MeshStandardMaterial({ map: breezeTexture(), roughness:
 
 // ---------- facades ----------
 // Each facade is described by a line (start, direction along it, outward normal) and a pattern of bays.
-const instances = { door: [], glass: [], frameH: [], frameV: [], vent: [], recess: [], railTop: [], railPost: [], slabEdge: [], breeze: [] }
+const instances = { door: [], glass: [], frameH: [], frameV: [], vent: [], recess: [], railTop: [], railPost: [], slabEdge: [], breeze: [], fin: [], slab: [] }
 const up = new THREE.Vector3(0, 1, 0)
 function put(list, origin, along, out, a, y, d, sx, sy, sz) {
   // a: distance along the facade, y: height, d: offset out of the wall
@@ -234,20 +233,22 @@ function facade(origin, along, out, length, side, skip = []) {
         for (const dx of [-0.75, -0.25, 0.25, 0.75]) put(instances.vent, origin, along, out, a + dx, y0 + 2.45, 0.015, 0.26, 0.26, 0.03)
         continue
       }
-      if (side === "court") {
-        // Window opening: a dark reveal with a white frame, mullions and a sill (photo 3).
-        put(instances.recess, origin, along, out, a, y0 + 1.6, 0.05, 2.7, 1.55, 0.02)
-        put(instances.glass, origin, along, out, a, y0 + 1.6, 0.08, 2.5, 1.35, 0.02)
-        put(instances.frameH, origin, along, out, a, y0 + 0.84, 0.08, 2.9, 0.1, 0.16)
-        put(instances.frameH, origin, along, out, a, y0 + 2.36, 0.05, 2.75, 0.07, 0.08)
-        for (const dx of [-1.35, -0.45, 0.45, 1.35]) put(instances.frameV, origin, along, out, a + dx, y0 + 1.6, 0.05, 0.06, 1.5, 0.08)
-      } else {
-        // Recessed balcony: a deep shadowed opening, a white solid parapet in front, a window and door behind (photo 1).
-        put(instances.recess, origin, along, out, a, y0 + 1.55, 0.06, BAY * 0.8, 2.45, 0.02)
-        put(instances.glass, origin, along, out, a - 0.35, y0 + 1.75, 0.1, 1.4, 1.3, 0.02)
-        put(instances.door, origin, along, out, a + 0.75, y0 + 1.45, 0.1, 0.8, 2.0, 0.02)
-        put(instances.railPost, origin, along, out, a, y0 + 0.5, 0.2, BAY * 0.84, 1.0, 0.2)
-        put(instances.railTop, origin, along, out, a, y0 + 1.03, 0.22, BAY * 0.86, 0.08, 0.28)
+      {
+        // Balcony bay built out from the wall face (resident photos: both faces have balconies).
+        // Side fins and a floor slab give it real depth and shadow; window and door sit on the wall behind.
+        const BD = 1.3 // balcony depth
+        put(instances.recess, origin, along, out, a, y0 + 1.55, 0.02, BAY - 0.2, 2.6, 0.02)
+        put(instances.glass, origin, along, out, a - 0.45, y0 + 1.75, 0.05, 1.3, 1.25, 0.02)
+        for (const dx of [-1.1, -0.45, 0.2]) put(instances.frameV, origin, along, out, a + dx, y0 + 1.75, 0.06, 0.06, 1.3, 0.06)
+        put(instances.door, origin, along, out, a + 0.85, y0 + 1.1, 0.05, 0.85, 2.1, 0.02)
+        put(instances.fin, origin, along, out, a - BAY / 2 + 0.1, y0 + FLOOR / 2, BD / 2, 0.2, FLOOR, BD)
+        put(instances.fin, origin, along, out, a + BAY / 2 - 0.1, y0 + FLOOR / 2, BD / 2, 0.2, FLOOR, BD)
+        put(instances.slab, origin, along, out, a, y0 + 0.1, BD / 2, BAY, 0.2, BD)
+        if (s === STOREYS - 1) put(instances.slab, origin, along, out, a, y0 + FLOOR - 0.1, BD / 2, BAY, 0.2, BD)
+        if (s > 0) {
+          put(instances.railPost, origin, along, out, a, y0 + 0.65, BD - 0.08, BAY - 0.4, 1.0, 0.14)
+          put(instances.railTop, origin, along, out, a, y0 + 1.17, BD - 0.06, BAY - 0.38, 0.07, 0.24)
+        }
       }
     }
   }
@@ -284,6 +285,8 @@ instanced(instances.recess, darkRecess, false)
 instanced(instances.railTop, rail)
 instanced(instances.railPost, sized(wall, 2, 1, 3))
 instanced(instances.slabEdge, frame)
+instanced(instances.fin, sized(wall, 1.3, 3.2, 3))
+instanced(instances.slab, sized(wall, 3.4, 1.3, 3))
 instanced(instances.breeze, breeze)
 
 // ---------- entrance tower (east side, photo 1) ----------
@@ -329,173 +332,284 @@ instanced(instances.breeze, breeze)
   box(0.1, 2.6, 3.2, glassDark, x + TD + 0.04, 1.3, z)
 }
 
-// ---------- courtyard ----------
-// Grass and crossing paths.
-slab(2 * IX, 2 * IZ, grass, 0, 0, 4, 0.03)
-slab(3, 2 * IZ, pavers, 0, 0, 2.2, 0.05)
-slab(2 * IX, 3, pavers, 0, -2, 2.2, 0.05)
-// Raised basketball court on a platform with rubble-stone retaining walls and steps (Limann and JN photos).
-const stoneMat = (() => {
+// ---------- courtyard (resident photo: lawns, grey square-tile walkways, teal courts, flamboyant trees) ----------
+function canvasMat(w, h, draw, rep, extra = {}) {
   const c = document.createElement("canvas")
-  c.width = c.height = 256
-  const g = c.getContext("2d")
-  g.fillStyle = "#5d5a55"
-  g.fillRect(0, 0, 256, 256)
-  let seed = 7
-  const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647)
-  for (let i = 0; i < 70; i++) {
-    const w = 30 + rnd() * 40, h = 16 + rnd() * 22, x = rnd() * 256, y = rnd() * 256
-    const t = 150 + rnd() * 70
-    g.fillStyle = `rgb(${t},${t - 8},${t - 18})`
-    g.beginPath()
-    g.ellipse(x, y, w / 2, h / 2, rnd(), 0, Math.PI * 2)
-    g.fill()
+  c.width = w; c.height = h
+  draw(c.getContext("2d"), w, h)
+  const t = new THREE.CanvasTexture(c)
+  t.colorSpace = THREE.SRGBColorSpace
+  t.wrapS = t.wrapT = THREE.RepeatWrapping
+  t.repeat.set(rep[0], rep[1])
+  t.anisotropy = 8
+  return new THREE.MeshStandardMaterial({ map: t, roughness: 0.85, ...extra })
+}
+let rs = 11
+const rnd = () => { rs = (rs * 16807) % 2147483647; return (rs - 1) / 2147483646 }
+// 40 cm grey concrete tiles: 8 x 8 per texture = 3.2 m.
+const tileDraw = (c, w, h) => {
+  const n = 8, s = w / n
+  c.fillStyle = "#7f7a72"; c.fillRect(0, 0, w, h)
+  for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) {
+    const v = 150 + rnd() * 30
+    c.fillStyle = `rgb(${v},${v - 6},${v - 14})`
+    c.fillRect(i * s + 2, j * s + 2, s - 4, s - 4)
+    for (let k = 0; k < 40; k++) { c.fillStyle = `rgba(60,55,50,${rnd() * 0.12})`; c.fillRect(i * s + rnd() * s, j * s + rnd() * s, 2, 2) }
   }
-  const tx = new THREE.CanvasTexture(c)
-  tx.wrapS = tx.wrapT = THREE.RepeatWrapping
-  tx.colorSpace = THREE.SRGBColorSpace
-  return new THREE.MeshStandardMaterial({ map: tx, roughness: 0.95 })
-})()
-const BC = { x: -IX + 12, z: -IZ + 22 }
-const RISE = 0.75
+}
+function walk(w, d, x, z, ry = 0) {
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(w, d), canvasMat(256, 256, tileDraw, [w / 3.2, d / 3.2]))
+  m.rotation.x = -Math.PI / 2; m.rotation.z = ry
+  m.position.set(x, 0.05, z); m.receiveShadow = true
+  scene.add(m)
+  // concrete edging kerbs both sides
+  const e = new THREE.MeshStandardMaterial({ color: 0xb8b2a6, roughness: 0.9 })
+  for (const s of [-1, 1]) {
+    const k = new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.12, d), e)
+    k.position.set(x + Math.cos(ry) * s * (w / 2 + 0.07), 0.06, z - Math.sin(ry) * s * (w / 2 + 0.07))
+    k.rotation.y = ry; k.receiveShadow = true; k.castShadow = true
+    scene.add(k)
+  }
+  return m
+}
+slab(2 * IX, 2 * IZ, grass, 0, 0, 4, 0.03)
+// perimeter walkway along the courtyard faces, and the long central spine with cross paths
+walk(3, 2 * IZ - 4, -IX + 3.2, 0); walk(3, 2 * IZ - 4, IX - 3.2, 0)
+walk(3, 2 * IX - 4, 0, -IZ + 3.2, Math.PI / 2); walk(3, 2 * IX - 4, 0, IZ - 3.2, Math.PI / 2)
+walk(3.2, 2 * IZ - 8, 0, 0)
+for (const z of [-34, -2, 30]) walk(3, 2 * IX - 8, 0, z, Math.PI / 2)
+
+const BC = { x: 0, z: -IZ + 24 } // court with the net, at the north end (resident photo)
+const TC = { x: 0, z: IZ - 24 } // second court, south end
+const RISE = 0
+const teal = new THREE.MeshStandardMaterial({ color: 0x109c8b, roughness: 0.6 })
+const tealDark = new THREE.MeshStandardMaterial({ color: 0x0c7f74, roughness: 0.7 })
+function court(cx, cz, w, l, inner, outer, lines) {
+  const o = slab(w + 4, l + 4, concrete, cx, cz, 3, 0.07); o.material = outer
+  const c = slab(w, l, concrete, cx, cz, 3, 0.08); c.material = inner
+  for (const [lw, ll, lx, lz] of lines) slab(lw, ll, concrete, cx + lx, cz + lz, 3, 0.09).material = lineWhite
+}
+const tileWide = (cx, cz, w, l) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, l), canvasMat(256, 256, tileDraw, [w / 3.2, l / 3.2])); m.rotation.x = -Math.PI / 2; m.position.set(cx, 0.055, cz); m.receiveShadow = true; scene.add(m) }
+tileWide(BC.x, BC.z, 26, 34)
+tileWide(TC.x, TC.z, 26, 34)
+// volleyball court with net
+court(BC.x, BC.z, 9, 18, teal, tealDark, [[9, 0.06, 0, -9], [9, 0.06, 0, 9], [0.06, 18, -4.5, 0], [0.06, 18, 4.5, 0], [9, 0.06, 0, -3], [9, 0.06, 0, 3]])
+for (const s of [-1, 1]) box(0.1, 2.5, 0.1, steel, BC.x + s * 5.2, 1.25, BC.z)
 {
-  const pw = 19, pl = 32
-  const plat = new THREE.Mesh(new THREE.BoxGeometry(pw, RISE, pl), [stoneMat, stoneMat, sized(concrete, pw, pl, 3), stoneMat, stoneMat, stoneMat])
-  for (const i of [0, 1, 4, 5]) {
-    const m = plat.material[i].clone()
-    m.map = stoneMat.map.clone()
-    m.map.repeat.set((i < 2 ? pl : pw) / 2.2, RISE / 0.9)
-    m.map.needsUpdate = true
-    plat.material[i] = m
-  }
-  plat.position.set(BC.x, RISE / 2, BC.z)
-  plat.castShadow = plat.receiveShadow = true
-  scene.add(plat)
-  // Steps up from the courtyard path on the east side.
-  for (let k = 0; k < 3; k++) box(1.2 - 0.0, (RISE / 3) * (k + 1), 4, sized(concrete, 1, 4, 2), BC.x + pw / 2 + 1.8 - k * 0.6, ((RISE / 3) * (k + 1)) / 2, BC.z)
+  const c = document.createElement("canvas"); c.width = 256; c.height = 32
+  const g = c.getContext("2d"); g.strokeStyle = "#111"; g.lineWidth = 2
+  for (let i = 0; i <= 256; i += 8) { g.beginPath(); g.moveTo(i, 0); g.lineTo(i, 32); g.stroke() }
+  for (let j = 0; j <= 32; j += 8) { g.beginPath(); g.moveTo(0, j); g.lineTo(256, j); g.stroke() }
+  g.fillStyle = "#fff"; g.fillRect(0, 0, 256, 4)
+  const t = new THREE.CanvasTexture(c); t.wrapS = THREE.RepeatWrapping; t.repeat.set(4, 1)
+  const net = new THREE.Mesh(new THREE.PlaneGeometry(10.2, 1), new THREE.MeshStandardMaterial({ map: t, alphaTest: 0.3, transparent: true, side: THREE.DoubleSide }))
+  net.material.alphaMap = t
+  net.position.set(BC.x, 1.95, BC.z); scene.add(net)
 }
-function court(cx, cz, w, l, inner, outer, lines, y = 0) {
-  slab(w + 3, l + 3, concrete, cx, cz, 3, y + 0.06).material = outer
-  const c = slab(w, l, concrete, cx, cz, 3, y + 0.07)
-  c.material = inner
-  for (const [lw, ll, lx, lz] of lines) slab(lw, ll, concrete, cx + lx, cz + lz, 3, y + 0.08).material = lineWhite
-}
-court(BC.x, BC.z, 15, 28, courtGreen, courtRed, [
-  [15, 0.08, 0, -14], [15, 0.08, 0, 14], [0.08, 28, -7.5, 0], [0.08, 28, 7.5, 0], [15, 0.08, 0, 0],
-], RISE)
+// basketball court at the south end
+court(TC.x, TC.z, 15, 28, teal, tealDark, [[15, 0.08, 0, -14], [15, 0.08, 0, 14], [0.08, 28, -7.5, 0], [0.08, 28, 7.5, 0], [15, 0.08, 0, 0]])
 for (const s of [-1, 1]) {
-  box(0.2, 3.2, 0.2, courtGreen, BC.x, RISE + 1.6, BC.z + s * 15.1)
-  box(1.8, 1.05, 0.05, new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.3, transparent: true, opacity: 0.85 }), BC.x, RISE + 3.35, BC.z + s * 14.6)
+  box(0.2, 3.2, 0.2, steel, TC.x, 1.6, TC.z + s * 15.1)
+  box(1.8, 1.05, 0.05, new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.3 }), TC.x, 3.35, TC.z + s * 14.6)
   const rim = new THREE.Mesh(new THREE.TorusGeometry(0.23, 0.02, 8, 24), new THREE.MeshStandardMaterial({ color: 0xd24b1c }))
-  rim.rotation.x = Math.PI / 2
-  rim.position.set(BC.x, RISE + 3.05, BC.z + s * 14.3)
-  scene.add(rim)
+  rim.rotation.x = Math.PI / 2; rim.position.set(TC.x, 3.05, TC.z + s * 14.3); scene.add(rim)
 }
-// Central fountain bed: a raised ring with a small monument, radial paved paths and flower beds (Limann photo).
+// Central round feature with monument and flower bed (aerial photo and Limann photo).
 {
   const cz = -2
   const ringWall = new THREE.Mesh(new THREE.CylinderGeometry(3.4, 3.4, 0.6, 64, 1, true), new THREE.MeshStandardMaterial({ color: 0xf3f1ec, roughness: 0.7, side: THREE.DoubleSide }))
-  ringWall.position.set(0, 0.3, cz)
-  scene.add(ringWall)
-  const top = new THREE.Mesh(new THREE.RingGeometry(3.1, 3.5, 64), frame)
-  top.rotation.x = -Math.PI / 2
-  top.position.set(0, 0.61, cz)
-  scene.add(top)
-  const soil = new THREE.Mesh(new THREE.CircleGeometry(3.15, 48), new THREE.MeshStandardMaterial({ color: 0x5b8f4a, roughness: 1 }))
-  soil.rotation.x = -Math.PI / 2
-  soil.position.set(0, 0.5, cz)
-  scene.add(soil)
+  ringWall.position.set(0, 0.3, cz); scene.add(ringWall)
+  const top = new THREE.Mesh(new THREE.RingGeometry(3.1, 3.5, 64), frame); top.rotation.x = -Math.PI / 2; top.position.set(0, 0.61, cz); scene.add(top)
+  const soil = new THREE.Mesh(new THREE.CircleGeometry(3.15, 48), new THREE.MeshStandardMaterial({ color: 0x4f7f3f, roughness: 1 })); soil.rotation.x = -Math.PI / 2; soil.position.set(0, 0.5, cz); scene.add(soil)
   box(0.7, 1.4, 0.7, frame, 0, 1.2, cz)
   box(0.5, 0.6, 0.5, new THREE.MeshStandardMaterial({ color: 0x8a6a2a, roughness: 0.35, metalness: 0.7 }), 0, 2.2, cz)
-  for (let k = 0; k < 8; k++) {
-    const ang = (k / 8) * Math.PI * 2
-    const pth = slab(2.4, 14, pavers, Math.cos(ang) * 10, cz + Math.sin(ang) * 10, 2.2, 0.05)
-    pth.rotation.z = -ang + Math.PI / 2
-  }
-  // Flower beds between the paths.
-  const flowers = [0xf2c14e, 0xe0607e, 0xf4f1e6, 0xd94f2b]
-  for (let k = 0; k < 40; k++) {
-    const ang = (k / 40) * Math.PI * 2 + 0.2, r = 4.6 + (k % 3) * 0.6
-    const f = new THREE.Mesh(new THREE.SphereGeometry(0.28, 8, 6), new THREE.MeshStandardMaterial({ color: flowers[k % 4], roughness: 0.8 }))
-    f.position.set(Math.cos(ang) * r, 0.25, cz + Math.sin(ang) * r)
-    scene.add(f)
+  const disc = new THREE.Mesh(new THREE.CircleGeometry(7, 48), canvasMat(256, 256, tileDraw, [4, 4])); disc.rotation.x = -Math.PI / 2; disc.position.set(0, 0.052, cz); disc.receiveShadow = true; scene.add(disc)
+  const flowers = [0xd9343a, 0xf2c14e, 0xe0607e, 0xf4f1e6]
+  for (let k = 0; k < 60; k++) {
+    const ang = (k / 60) * Math.PI * 2, r = 2.2 + (k % 3) * 0.35
+    const f = new THREE.Mesh(new THREE.IcosahedronGeometry(0.22, 0), new THREE.MeshStandardMaterial({ color: flowers[k % 4], roughness: 0.8 }))
+    f.position.set(Math.cos(ang) * r, 0.62, cz + Math.sin(ang) * r); scene.add(f)
   }
 }
-// Tennis court further south (green court with red surround on the satellite image).
-const TC = { x: IX - 11, z: IZ - 34 }
-court(TC.x, TC.z, 11, 23.8, new THREE.MeshStandardMaterial({ color: 0x4f8a64, roughness: 0.8 }), courtRed, [
-  [11, 0.06, 0, -11.9], [11, 0.06, 0, 11.9], [0.06, 23.8, -5.5, 0], [0.06, 23.8, 5.5, 0], [0.06, 12.8, 0, 0], [8.2, 0.06, 0, -6.4], [8.2, 0.06, 0, 6.4],
-])
-box(12, 1.0, 0.04, new THREE.MeshStandardMaterial({ color: 0x222222, transparent: true, opacity: 0.55 }), TC.x, 0.55, TC.z)
-// Kiosk gazebo with a red hipped roof beside the court (photo 3).
+// Hedge beds along the lawns (low clipped shrubs with red-leaf borders in the photo).
+const hedgeMat = new THREE.MeshStandardMaterial({ color: 0x3e6b34, roughness: 0.95 })
+const redLeaf = new THREE.MeshStandardMaterial({ color: 0x4d7a2e, roughness: 0.95 })
+function hedge(x, z, len, ry, mat = hedgeMat) {
+  const g = new THREE.BoxGeometry(len, 0.5, 0.8, Math.ceil(len * 3), 2, 2)
+  const p = g.attributes.position
+  for (let i = 0; i < p.count; i++) p.setY(i, p.getY(i) + Math.sin(p.getX(i) * 3.1) * 0.05 + Math.cos(p.getZ(i) * 5 + p.getX(i)) * 0.04)
+  g.computeVertexNormals()
+  const m = new THREE.Mesh(g, mat); m.position.set(x, 0.25, z); m.rotation.y = ry; m.castShadow = m.receiveShadow = true; scene.add(m)
+}
+hedge(-8, BC.z + 19, 9, 0); hedge(8, BC.z + 19, 9, 0, redLeaf); hedge(-8, TC.z - 19, 9, 0, redLeaf); hedge(8, TC.z - 19, 9, 0)
+// Kiosk gazebo with a red hipped roof at the far end (resident photo).
 {
-  const gx = BC.x + 16, gz = BC.z + 9
+  const gx = IX - 10, gz = -IZ + 8
   box(5.6, 0.25, 5.6, sized(pavers, 6, 6, 2.2), gx, 0.12, gz)
-  for (const [dx, dz] of [[-2.4, -2.4], [2.4, -2.4], [-2.4, 2.4], [2.4, 2.4]]) box(0.25, 2.6, 0.25, wood, gx + dx, 1.4, gz + dz)
+  for (const [dx, dz] of [[-2.4, -2.4], [2.4, -2.4], [-2.4, 2.4], [2.4, 2.4]]) box(0.25, 2.6, 0.25, frame, gx + dx, 1.4, gz + dz)
   const hip = new THREE.Mesh(new THREE.ConeGeometry(4.6, 2.2, 4, 1), sized(roof, 6, 3, 2.2))
-  hip.rotation.y = Math.PI / 4
-  hip.position.set(gx, 3.8, gz)
-  hip.castShadow = true
-  scene.add(hip)
-  box(4.6, 1.0, 0.6, wood, gx, 0.75, gz - 1.9)
-  box(4.0, 0.7, 0.05, new THREE.MeshStandardMaterial({ color: 0xc23b2e, roughness: 0.7 }), gx, 2.45, gz - 2.5)
+  hip.rotation.y = Math.PI / 4; hip.position.set(gx, 3.8, gz); hip.castShadow = true; scene.add(hip)
+  box(4.6, 1.0, 0.6, wood, gx, 0.75, gz + 1.9)
+}
+// Laundry: folding drying racks and clothes on the lawn edge, like every hall courtyard.
+function rack(x, z, ry) {
+  const g = new THREE.Group()
+  const m = new THREE.MeshStandardMaterial({ color: 0xdedede, roughness: 0.4, metalness: 0.6 })
+  for (const s of [-1, 1]) {
+    const a = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.015, 1.3, 6), m); a.position.set(s * 0.7, 0.6, 0.25); a.rotation.x = 0.4; g.add(a)
+    const b = a.clone(); b.position.z = -0.25; b.rotation.x = -0.4; g.add(b)
+  }
+  for (let i = 0; i < 6; i++) {
+    const c = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.5 + rnd() * 0.3, 0.02), new THREE.MeshStandardMaterial({ color: [0xd8344a, 0x2b63c6, 0xffffff, 0xf2c14e, 0x6b3fa0, 0x1f8a5a, 0xff8fb0][Math.floor(rnd() * 7)], roughness: 0.95, side: THREE.DoubleSide }))
+    c.position.set(-0.55 + i * 0.22, 0.85, (i % 2 ? 0.12 : -0.12)); c.rotation.x = i % 2 ? 0.35 : -0.35; c.castShadow = true; g.add(c)
+  }
+  g.position.set(x, 0.05, z); g.rotation.y = ry; scene.add(g)
+}
+;[[IX - 6, -12], [IX - 6, -16], [IX - 7.5, 8], [-IX + 6, 14], [-IX + 6, 40], [IX - 6, 42]].forEach(([x, z], i) => rack(x, z, Math.PI / 2 + i * 0.2))
+for (const [x, z] of [[6, -20], [9, 18], [-7, 46]]) {
+  const cloth = slab(2.2, 1.4, concrete, x, z, 3, 0.06)
+  cloth.material = new THREE.MeshStandardMaterial({ color: [0xd8344a, 0x2b63c6, 0xf2c14e][Math.floor(rnd() * 3)], roughness: 1 })
 }
 
-// ---------- models: lamps, trees, shrubs (CC0) ----------
-const gltf = new GLTFLoader()
-const loadModel = (name) => new Promise((res) => gltf.load(`models/${name}/${name}.gltf`, (g) => res(g.scene), undefined, () => res(null)))
-const ready = Promise.all([loadModel("island_tree_01")]).then(([tree]) => {
-  const place = (src, x, z, s = 1, ry = 0) => {
-    if (!src) return
-    const o = src.clone(true)
-    o.position.set(x, 0, z)
-    o.scale.setScalar(s)
-    o.rotation.y = ry
-    o.traverse((m) => {
-      if (m.isMesh) {
-        m.castShadow = true
-        m.receiveShadow = true
-      }
-    })
-    scene.add(o)
+// ---------- trees, lamps, cars (all procedural: light enough for the web) ----------
+// Feathery leaf card: pinnate fronds like the flamboyant (Delonix) trees in the courtyard photo.
+function leafTexture(col) {
+  const c = document.createElement("canvas"); c.width = c.height = 128
+  const g = c.getContext("2d")
+  g.strokeStyle = col; g.fillStyle = col; g.lineWidth = 1.2
+  for (let f = 0; f < 5; f++) {
+    const x0 = 20 + f * 22, y0 = 120, ang = -Math.PI / 2 + (f - 2) * 0.35
+    const len = 90
+    for (let t = 0.1; t < 1; t += 0.06) {
+      const px = x0 + Math.cos(ang) * len * t, py = y0 + Math.sin(ang) * len * t
+      for (const s of [-1, 1]) { g.beginPath(); g.ellipse(px + Math.cos(ang + s * 1.3) * 5, py + Math.sin(ang + s * 1.3) * 5, 4, 1.6, ang + s * 1.3, 0, 7); g.fill() }
+    }
+    g.beginPath(); g.moveTo(x0, y0); g.lineTo(x0 + Math.cos(ang) * len, y0 + Math.sin(ang) * len); g.stroke()
   }
-  // Solar street lamps around the court and along the paths (photo 3): a pole, a tilted panel and a lamp head.
-  const solar = (x, z) => {
-    box(0.12, 6.2, 0.12, steel, x, 3.1, z)
-    const panel = box(1.2, 0.05, 0.7, new THREE.MeshStandardMaterial({ color: 0x1a2a44, roughness: 0.2, metalness: 0.6 }), x, 6.3, z)
-    panel.rotation.z = 0.35
-    box(0.6, 0.12, 0.25, steel, x + 0.35, 5.7, z)
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace
+  return t
+}
+const leafCard = new THREE.PlaneGeometry(1.6, 1.6)
+const bark = new THREE.MeshStandardMaterial({ color: 0x6f6358, roughness: 0.95 })
+const leafMats = {
+  flame: new THREE.MeshStandardMaterial({ map: leafTexture("#3d6a26"), alphaTest: 0.4, side: THREE.DoubleSide, roughness: 0.9 }),
+  dark: new THREE.MeshStandardMaterial({ map: leafTexture("#2f5a2a"), alphaTest: 0.4, side: THREE.DoubleSide, roughness: 0.9 }),
+}
+const cards = { flame: [], dark: [] }
+function branch(a, b, r0, r1) {
+  const A = new THREE.Vector3(...a), B = new THREE.Vector3(...b)
+  const m = new THREE.Mesh(new THREE.CylinderGeometry(r1, r0, A.distanceTo(B), 8), bark)
+  m.position.copy(A).add(B).multiplyScalar(0.5)
+  m.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), B.clone().sub(A).normalize())
+  m.castShadow = true; scene.add(m)
+}
+// Flamboyant: short trunk, wide branches spreading out, a flat umbrella canopy of fine leaves.
+function flamboyant(x, z, s = 1) {
+  const h = 3.2 * s
+  branch([x, 0, z], [x, h, z], 0.32 * s, 0.24 * s)
+  const n = 5
+  for (let i = 0; i < n; i++) {
+    const ang = (i / n) * Math.PI * 2 + rnd()
+    const R = (5 + rnd() * 3) * s, top = h + (2 + rnd() * 1.5) * s
+    const ex = x + Math.cos(ang) * R, ez = z + Math.sin(ang) * R
+    branch([x, h, z], [x + Math.cos(ang) * R * 0.55, top - 0.6 * s, z + Math.sin(ang) * R * 0.55], 0.2 * s, 0.12 * s)
+    branch([x + Math.cos(ang) * R * 0.55, top - 0.6 * s, z + Math.sin(ang) * R * 0.55], [ex, top, ez], 0.12 * s, 0.05 * s)
   }
-  for (const dz of [-13, 0, 13]) solar(BC.x - 9.5, BC.z + dz)
-  for (const dz of [-30, -10, 10, 30, 50]) solar(2.4, dz)
-  // Shrubs: clusters of soft leafy spheres, and conifers like the ones beside the court.
-  const leafMat = sized(grass, 2, 2, 1)
-  leafMat.color = new THREE.Color(0x3f6a35)
-  const bush = (x, z, r) => {
-    for (let k = 0; k < 4; k++) {
-      const g = new THREE.IcosahedronGeometry(r * (0.7 + (k % 2) * 0.3), 2)
-      const pos = g.attributes.position
-      for (let i = 0; i < pos.count; i++) {
-        const n = 1 + Math.sin(pos.getX(i) * 7 + k) * 0.08 + Math.cos(pos.getZ(i) * 9) * 0.08
-        pos.setXYZ(i, pos.getX(i) * n, pos.getY(i) * n * 0.8, pos.getZ(i) * n)
-      }
-      g.computeVertexNormals()
-      const m = new THREE.Mesh(g, leafMat)
-      m.position.set(x + Math.cos(k * 2.1) * r * 0.6, r * 0.6, z + Math.sin(k * 2.1) * r * 0.6)
-      m.castShadow = m.receiveShadow = true
-      scene.add(m)
+  // canopy: cards spread in a flattened dome
+  for (let k = 0; k < 900 * s; k++) {
+    const r = Math.sqrt(rnd()) * 8.5 * s, a = rnd() * Math.PI * 2
+    const y = h + (2.4 + (1 - r / (8.5 * s)) * 1.6 + rnd() * 0.8) * s
+    const m = new THREE.Matrix4().compose(new THREE.Vector3(x + Math.cos(a) * r, y, z + Math.sin(a) * r), new THREE.Quaternion().setFromEuler(new THREE.Euler(-Math.PI / 2 + (rnd() - 0.5) * 0.9, rnd() * 6.28, (rnd() - 0.5) * 0.9)), new THREE.Vector3(s, s, s))
+    cards.flame.push(m)
+  }
+}
+// Rounded shade tree (mango / neem type) for the forecourt and outer edges.
+function shadeTree(x, z, s = 1) {
+  const h = 2.6 * s
+  branch([x, 0, z], [x, h + 1, z], 0.3 * s, 0.15 * s)
+  for (let k = 0; k < 900 * s; k++) {
+    const v = new THREE.Vector3(rnd() - 0.5, (rnd() - 0.3) * 0.8, rnd() - 0.5).normalize().multiplyScalar(Math.cbrt(rnd()) * 3.6 * s)
+    const m = new THREE.Matrix4().compose(new THREE.Vector3(x + v.x, h + 3 * s + v.y, z + v.z), new THREE.Quaternion().setFromEuler(new THREE.Euler(rnd() * 6.28, rnd() * 6.28, rnd() * 6.28)), new THREE.Vector3(s, s, s))
+    cards.dark.push(m)
+  }
+}
+const ready = Promise.resolve().then(() => {
+  // Flamboyant trees frame the courtyard (resident photo) and line the forecourt.
+  ;[[-IX + 9, -IZ + 12], [IX - 9, 20], [-IX + 10, 26], [IX - 8, -44], [-IX + 9, -40], [10, 52], [-12, 58], [IX - 9, 60]].forEach(([x, z], i) => flamboyant(x, z, 0.85 + (i % 3) * 0.12))
+  ;[[HX + 18.5, -30], [HX + 18.5, 18], [HX + 26, -18], [HX + 26, 14], [HX + 33.5, -6], [-HX - 12, 30], [-HX - 12, -50], [40, HZ + 14], [-30, -HZ - 14], [0, HZ + 20]].forEach(([x, z], i) => (i % 2 ? shadeTree : flamboyant)(x, z, 0.9 + (i % 3) * 0.1))
+  for (const k of ["flame", "dark"]) {
+    const im = new THREE.InstancedMesh(leafCard, leafMats[k], cards[k].length)
+    cards[k].forEach((m, i) => im.setMatrixAt(i, m))
+    im.castShadow = true; im.receiveShadow = true
+    scene.add(im)
+  }
+  // Street lamps along the walkways (resident photo: slim poles with a lantern head).
+  const lamp = (x, z) => {
+    box(0.1, 4.2, 0.1, new THREE.MeshStandardMaterial({ color: 0x2a2a2a, roughness: 0.5, metalness: 0.6 }), x, 2.1, z)
+    box(0.35, 0.45, 0.35, new THREE.MeshStandardMaterial({ color: 0xf6f3ea, roughness: 0.4, emissive: 0xfff1cc, emissiveIntensity: 0.2 }), x, 4.4, z)
+    box(0.5, 0.06, 0.5, new THREE.MeshStandardMaterial({ color: 0x2a2a2a }), x, 4.66, z)
+  }
+  for (const z of [-50, -30, -10, 10, 30, 50]) { lamp(2.3, z); lamp(-2.3, z + 10) }
+  for (const z of [-40, 0, 40]) { lamp(-IX + 5.2, z); lamp(IX - 5.2, z) }
+  // Cars and taxis in the forecourt car park (resident photos: Ghana taxis are body-colour with yellow corners).
+  const car = (x, z, ry, color, taxi = false) => {
+    const g = new THREE.Group()
+    const paint = new THREE.MeshPhysicalMaterial({ color, roughness: 0.35, metalness: 0.4, clearcoat: 0.8 })
+    const prof = (pts, width, mat, bevel = 0.06) => {
+      const sh = new THREE.Shape(pts.map(([z, y]) => new THREE.Vector2(z, y)))
+      const geo = new THREE.ExtrudeGeometry(sh, { depth: width - 2 * bevel, bevelEnabled: true, bevelSize: bevel, bevelThickness: bevel, bevelSegments: 3, curveSegments: 4 })
+      geo.translate(0, 0, -(width - 2 * bevel) / 2)
+      geo.rotateY(-Math.PI / 2)
+      const m = new THREE.Mesh(geo, mat); g.add(m); return m
+    }
+    // body: bumper, bonnet, windscreen base, roof, rear screen, boot (z along the car, front at +z)
+    prof([[-2.15, 0.28], [2.15, 0.28], [2.2, 0.55], [2.1, 0.78], [1.1, 0.88], [0.55, 0.9], [-0.95, 0.9], [-1.95, 0.85], [-2.18, 0.7]], 1.72, paint)
+    prof([[1.05, 0.88], [0.25, 1.38], [-0.85, 1.4], [-1.55, 0.9]], 1.6, paint, 0.05)
+    prof([[0.98, 0.92], [0.24, 1.33], [-0.82, 1.35], [-1.48, 0.93]], 1.64, new THREE.MeshStandardMaterial({ color: 0x141a1f, roughness: 0.05, metalness: 0.7 }), 0.02)
+    if (taxi) for (const zz of [-1.9, 1.9]) for (const xx of [-0.88, 0.88]) { const c = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.42, 0.7), new THREE.MeshStandardMaterial({ color: 0xf28c00, roughness: 0.4 })); c.position.set(xx * 1.0, 0.56, zz * 1.02); g.add(c) }
+    for (const zz of [-1.35, 1.35]) for (const xx of [-0.82, 0.82]) { const w = new THREE.Mesh(new THREE.CylinderGeometry(0.33, 0.33, 0.24, 16), new THREE.MeshStandardMaterial({ color: 0x151515, roughness: 0.9 })); w.rotation.z = Math.PI / 2; w.position.set(xx * 1.02, 0.33, zz); g.add(w) }
+    for (const xx of [-0.6, 0.6]) { const l = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.12, 0.04), new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xffffff, emissiveIntensity: 0.3 })); l.position.set(xx, 0.68, 2.16); g.add(l) }
+    g.traverse((o) => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true } })
+    g.position.set(x, 0.02, z); g.rotation.y = ry; scene.add(g)
+  }
+  const colors = [0xc9ccd0, 0x1e2a44, 0xf4f4f2, 0x8b1b1b, 0x2b2b2b, 0xb7b9bc, 0x5a6b7a]
+  let ci = 0
+  for (let i = 0; i < 9; i++) { const z = -32 + i * 3.1; if (i === 4) continue; car(HX + 22, z, Math.PI / 2 + (rnd() - 0.5) * 0.05, i % 3 === 0 ? 0xd0d3d6 : colors[ci++ % colors.length], i % 3 === 0) }
+  for (let i = 0; i < 7; i++) { const z = 4 + i * 3.1; car(HX + 30, z, -Math.PI / 2, i % 2 ? colors[ci++ % colors.length] : 0xc4c7ca, i % 2 === 0) }
+  car(HX + 12, ENTRY_Z + 6, 0.2, 0xd0d3d6, true)
+  // Planted islands with white kerbs between the parking lanes (resident photo of the forecourt).
+  const kerb = new THREE.MeshStandardMaterial({ color: 0xf1efe9, roughness: 0.8 })
+  const fill = new THREE.MeshStandardMaterial({ color: 0x8fc24a, roughness: 1 })
+  const island = (x, z0, z1, w = 2.4) => {
+    const l = z1 - z0, zc = (z0 + z1) / 2
+    box(w, 0.25, l, kerb, x, 0.125, zc)
+    const g = new THREE.BoxGeometry(w - 0.3, 0.6, l - 0.3, 6, 2, Math.ceil(l * 2))
+    const p = g.attributes.position
+    for (let i = 0; i < p.count; i++) if (p.getY(i) > 0) p.setY(i, p.getY(i) + Math.sin(p.getZ(i) * 4.1 + p.getX(i) * 3) * 0.12)
+    g.computeVertexNormals()
+    const m = new THREE.Mesh(g, soilMat); m.position.set(x, 0.2, zc); m.scale.y = 0.3; m.receiveShadow = true; scene.add(m)
+    for (let k = 0; k < l * 22; k++) {
+      const tx = x + (rnd() - 0.5) * (w - 0.4), tz = z0 + 0.2 + rnd() * (l - 0.4), sc = 0.7 + rnd() * 0.6
+      for (const r of [0, Math.PI / 2]) tufts.push(new THREE.Matrix4().compose(new THREE.Vector3(tx, 0.3 + 0.4 * sc, tz), new THREE.Quaternion().setFromEuler(new THREE.Euler(0, r + rnd(), 0)), new THREE.Vector3(sc, sc, sc)))
     }
   }
-  const conifer = (x, z) => {
-    const m = new THREE.Mesh(new THREE.ConeGeometry(1.1, 3.4, 10), leafMat)
-    m.position.set(x, 1.8, z)
-    m.castShadow = true
-    scene.add(m)
+  const soilMat = new THREE.MeshStandardMaterial({ color: 0x6b5338, roughness: 1 })
+  const tufts = []
+  island(HX + 18.5, -36, -10); island(HX + 18.5, 0, 26); island(HX + 26, -36, 26); island(HX + 33.5, -36, 26)
+  {
+    const c = document.createElement("canvas"); c.width = 64; c.height = 128
+    const gx = c.getContext("2d")
+    for (let i = 0; i < 70; i++) {
+      const bx = 4 + rnd() * 56, h = 60 + rnd() * 66, lean = (rnd() - 0.5) * 24
+      gx.strokeStyle = `hsl(${80 + rnd() * 20},${55 + rnd() * 20}%,${38 + rnd() * 22}%)`; gx.lineWidth = 1.5 + rnd() * 1.5
+      gx.beginPath(); gx.moveTo(bx, 128); gx.quadraticCurveTo(bx + lean * 0.3, 128 - h / 2, bx + lean, 128 - h); gx.stroke()
+    }
+    const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace
+    const im = new THREE.InstancedMesh(new THREE.PlaneGeometry(0.7, 0.8), new THREE.MeshStandardMaterial({ map: t, alphaTest: 0.35, side: THREE.DoubleSide, roughness: 0.9 }), tufts.length)
+    tufts.forEach((m, i) => im.setMatrixAt(i, m)); im.castShadow = true; im.receiveShadow = true; scene.add(im)
   }
-  ;[[-6, -9], [6, -9], [-6, 5], [6, 5], [-10, 20], [12, -24], [18, 10], [-2, 28], [9, 44]].forEach(([x, z], i) => bush(x, z, 0.9 + (i % 3) * 0.3))
-  ;[[BC.x + 9, BC.z - 10], [BC.x + 9, BC.z + 8], [BC.x - 9, BC.z + 17], [IX - 3, -30]].forEach(([x, z]) => conifer(x, z))
-  const trees = [[-14, 12], [14, 22], [-16, 30], [10, 50], [-12, 52], [17, -12], [-18, -6], [56, -34], [58, 26], [-60, 20], [-55, -60], [54, -60]]
-  trees.forEach(([x, z], i) => place(tree, x, z, 0.75 + (i % 3) * 0.12, i * 1.3))
+  // parking bay lines
+  for (let i = 0; i < 10; i++) { slab(5, 0.1, concrete, HX + 22, -33.5 + i * 3.1, 3, 0.03).material = lineWhite; slab(5, 0.1, concrete, HX + 30, 2.5 + i * 3.1, 3, 0.03).material = lineWhite }
 })
 
 // ---------- light: real sky + sun ----------
@@ -530,8 +644,10 @@ composer.addPass(new OutputPass())
 
 // ---------- views ----------
 const VIEWS = {
-  court: { pos: [BC.x + 30, 4.6, BC.z + 4], look: [-IX, 6.4, BC.z + 4] },
-  entrance: { pos: [HX + 46, 2.2, ENTRY_Z], look: [HX, 7.8, ENTRY_Z] },
+  court: { pos: [0, 10.5, IZ - 1.5], look: [0, 3, -IZ + 10] },
+  courtlow: { pos: [IX - 6, 1.7, BC.z + 22], look: [-IX + 8, 4.5, BC.z - 4] },
+  entrance: { pos: [HX + 41.5, 1.7, -52], look: [HX + 4, 7, -4] },
+  front: { pos: [HX + 22.3, 1.7, -40], look: [HX + 3, 8, ENTRY_Z] },
   aerial: { pos: [140, 110, 150], look: [0, 0, 0] },
 }
 window.setView = (name) => {
