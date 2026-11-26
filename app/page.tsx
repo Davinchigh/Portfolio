@@ -1,5 +1,6 @@
 import Link from "next/link"
-import { Cite, MottoCard } from "@/components/ui"
+import { Cite } from "@/components/ui"
+import { CinemaFinale, CinemaHero, CinemaPlan, CinemaWalk } from "@/components/cinema"
 
 const facts = [
   { k: "1,700", v: "residents, give or take", cite: "cloth" },
@@ -19,37 +20,9 @@ const index = [
 export default function Home() {
   return (
     <>
-      {/* HERO */}
-      <section aria-labelledby="hero-h" className="wrap grid items-end gap-14 pb-20 pt-14 sm:pt-20 lg:grid-cols-[1.6fr_1fr] lg:gap-14 lg:pb-28">
-        <div>
-          <p className="label fade-in flex items-center gap-3 text-lamp-deep">
-            <span className="rule" aria-hidden="true" /> University of Ghana, Legon
-          </p>
-          <h1 id="hero-h" className="mt-7 text-[clamp(3rem,7.6vw,6.6rem)] leading-[0.95] [&>.line-mask]:lg:whitespace-nowrap">
-            <span className="line-mask">
-              <span>Jean Nelson</span>
-            </span>
-            <span className="line-mask">
-              <span>
-                Aka Hall<span className="text-lamp">.</span>
-              </span>
-            </span>
-          </h1>
-          <p className="fade-in mt-8 max-w-xl text-lg leading-relaxed text-ink-muted sm:text-xl">
-            A quiet, honest guide to the hall, for freshers finding their feet, parents with questions and old Royals who
-            miss the place. Written by someone who lived here.
-          </p>
-          <div className="fade-in mt-10 flex flex-wrap items-center gap-3">
-            <Link href="/rooms/" className="btn-ink">
-              How to get a room <span aria-hidden="true">→</span>
-            </Link>
-            <Link href="/walk/" className="btn-ghost">
-              Walk through the hall <span aria-hidden="true">↓</span>
-            </Link>
-          </div>
-        </div>
-        <MottoCard className="fade-in" />
-      </section>
+      <CinemaHero />
+      <CinemaPlan />
+      <CinemaWalk />
 
       {/* FACTS */}
       <section aria-labelledby="facts-h" className="border-y border-line bg-white/60">
@@ -148,6 +121,8 @@ export default function Home() {
           </Link>
         </div>
       </section>
+      <div className="h-24 sm:h-32" />
+      <CinemaFinale />
     </>
   )
 }
