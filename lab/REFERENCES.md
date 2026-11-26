@@ -31,3 +31,10 @@ Still needed from residents: room interior, reading room, the mart and shops, bl
 - Courtyard: grey 40 cm tile walkways with kerbs, teal volleyball court with net (north) and teal basketball court (south), central round bed, gazebo, laundry racks.
 - Forecourt: planted islands with white kerbs, grey pavers, asphalt road, cars and taxis.
 - Trees are now procedural (flamboyant and shade trees from instanced leaf cards); the 60 MB glTF tree is no longer loaded.
+
+## Pass 6: context, dusk, and the photoreal plates
+- Context: the neighbouring diaspora halls (Elizabeth Sey, Alexander Kwapong) are placed from the satellite image; the ground beyond the site is draped satellite imagery (Esri World Imagery, kept out of this repo: put the 1792 px crop at `lab/tex/sat.jpg` and a bush crop at `lab/tex/bush.jpg`).
+- Lighting modes: `?t=day` (default), `?t=dusk` (Poly Haven belfast_sunset_puresky, lit windows), `?t=overcast` (kloofendal_overcast_puresky).
+- Render: `OUT=. DSF=1.5 node lab/render.js "entrance&t=dusk",court,aerial` with the lab served on port 3040.
+- Photoreal plates in `public/plates/`: each is a render from this model passed through Higgsfield `nano_banana_2_1` (1k, image reference = the render) with a prompt that lists the geometry to keep and asks for real materials, light and lived-in detail, no text, no logos, no people, no added or removed storeys. Upscaled 2x locally (Lanczos + light unsharp). `entrance-front.webp` is the entrance plate with the sky cut away (flood-fill sky mask) so the headline can sit behind the roofline.
+- They are labelled on the site as AI-enhanced renders of a reconstruction, not photographs. The aerial's distant surroundings are invented by the model.

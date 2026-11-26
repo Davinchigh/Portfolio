@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { Callout, Cite, Ext, PageHead, Ph, Section } from "@/components/ui"
+import { Callout, Cite, Ext, PageHead, Section } from "@/components/ui"
 import { official, site } from "@/lib/site"
 
 export const metadata: Metadata = {
@@ -99,8 +99,8 @@ export default function RoomsPage() {
           international students.<Cite id="cloth" />
         </p>
         <p>
-          Fees: <Ph value={site.fees} />. Fees are set by the University each year and published on its website. We don't
-          copy them here because old numbers cause confusion.
+          Fees: {site.fees}, paid to UGEL at CalBank.<Cite id="fees2526" /> Fees change every year, so always check the
+          latest schedule on the University&apos;s website before paying.
         </p>
       </Section>
     </>

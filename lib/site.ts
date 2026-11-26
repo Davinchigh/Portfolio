@@ -15,7 +15,7 @@ export const site = {
   hallMaster: "[CURRENT HALL MASTER]",
   seniorTutor: "[CURRENT SENIOR TUTOR]",
   hallWeekDates: "[HALL WEEK DATES]",
-  fees: "[CURRENT FEES]",
+  fees: "GH₵ 3,500 a semester for local undergraduates and GH₵ 7,000 for local graduate students (2025/26)",
   benMemory: "[BEN'S MEMORY]",
   benYears: "[BEN'S YEARS IN HALL]",
 } as const
@@ -134,7 +134,7 @@ export const sources: Source[] = [
 
 export const nav = [
   { href: "/", label: "Home" },
-  { href: "/walk/", label: "Walk through" },
+  { href: "/#walk", label: "Walk through" },
   { href: "/hall/", label: "The hall" },
   { href: "/life/", label: "Life" },
   { href: "/rooms/", label: "Rooms" },

@@ -17,6 +17,7 @@ const H = FLOOR * STOREYS + 0.6 // wall top
 const HX = W / 2, HZ = L / 2
 const IX = HX - DEPTH, IZ = HZ - DEPTH // courtyard half sizes
 const BAY = 3.4
+const MODE = new URLSearchParams(location.search).get("t") || "day" // day | dusk | overcast
 
 const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" })
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2))
@@ -85,10 +86,29 @@ function box(w, h, d, mat, x, y, z, { cast = true, recv = true, ry = 0 } = {}) {
 }
 
 // ---------- ground ----------
-const ground = new THREE.Mesh(new THREE.PlaneGeometry(600, 600), sized(grass, 600, 600, 4))
+// Context: the real neighbourhood from satellite imagery (Esri World Imagery, 0.297 m/px), aligned to the model.
+// The hall's long axis runs 62 degrees from image east; the image centre sits 77.7 m east and 20.7 m south of the hall centre.
+const bushTex = tl.load("tex/bush.jpg"); bushTex.colorSpace = THREE.SRGBColorSpace; bushTex.wrapS = bushTex.wrapT = THREE.MirroredRepeatWrapping; bushTex.repeat.set(3000 / 120, 3000 / 120)
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(3000, 3000), new THREE.MeshStandardMaterial({ map: bushTex, roughness: 1 }))
 ground.rotation.x = -Math.PI / 2
+ground.position.y = -0.06
 ground.receiveShadow = true
 scene.add(ground)
+{
+  const t = tl.load("tex/sat.jpg"); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8
+  const S = 1792 * 0.2971
+  const sat = new THREE.Mesh(new THREE.PlaneGeometry(S, S), new THREE.MeshStandardMaterial({ map: t, roughness: 1 }))
+  sat.rotation.order = "YXZ"
+  sat.rotation.set(-Math.PI / 2, THREE.MathUtils.degToRad(-28), 0)
+  sat.position.set(77.7, -0.03, 20.7)
+  sat.receiveShadow = true
+  scene.add(sat)
+}
+// Grass lawn immediately around the hall (covers the hall in the satellite image).
+{
+  const g = new THREE.Mesh(new THREE.PlaneGeometry(W + 40, L + 30), sized(grass, W + 40, L + 30, 4))
+  g.rotation.x = -Math.PI / 2; g.position.set(4, -0.01, 0); g.receiveShadow = true; scene.add(g)
+}
 // Paved apron around the building and the forecourt on the east side (photo 1).
 function slab(w, d, mat, x, z, tile, y = 0.02) {
   const m = new THREE.Mesh(new THREE.PlaneGeometry(w, d), sized(mat, w, d, tile))
@@ -276,7 +296,16 @@ function instanced(list, mat, cast = true) {
   m.receiveShadow = true
   scene.add(m)
 }
-instanced(instances.glass, glassDark, false)
+if (MODE === "dusk") {
+  // About half the rooms have lights on at dusk: warm glass, a few cool.
+  const lit = [], cool = [], dark = []
+  let sd = 3
+  const r = () => ((sd = (sd * 16807) % 2147483647) / 2147483647)
+  instances.glass.forEach((m) => { const v = r(); (v < 0.45 ? lit : v < 0.55 ? cool : dark).push(m) })
+  instanced(lit, new THREE.MeshStandardMaterial({ color: 0x332211, emissive: 0xffb866, emissiveIntensity: 2.2, roughness: 0.2 }), false)
+  instanced(cool, new THREE.MeshStandardMaterial({ color: 0x222833, emissive: 0xdfeaff, emissiveIntensity: 1.6, roughness: 0.2 }), false)
+  instanced(dark, glassDark, false)
+} else instanced(instances.glass, glassDark, false)
 instanced(instances.door, new THREE.MeshStandardMaterial({ color: 0x5a3a24, roughness: 0.6 }), false)
 instanced(instances.frameH, frame)
 instanced(instances.frameV, frame)
@@ -471,6 +500,53 @@ for (const [x, z] of [[6, -20], [9, 18], [-7, 46]]) {
   cloth.material = new THREE.MeshStandardMaterial({ color: [0xd8344a, 0x2b63c6, 0xf2c14e][Math.floor(rnd() * 3)], roughness: 1 })
 }
 
+// ---------- neighbouring diaspora halls (same plan, brown roofs), placed from the satellite image ----------
+const facadeTex = (() => {
+  const c = document.createElement("canvas"); c.width = 512; c.height = 512
+  const g = c.getContext("2d")
+  // one texture = 3 bays (10.2 m) x 4 storeys (13 m)
+  const bw = 512 / 3, sh = 512 / 4
+  g.fillStyle = "#f2ede4"; g.fillRect(0, 0, 512, 512)
+  for (let b = 0; b < 3; b++) for (let st = 0; st < 4; st++) {
+    const x = b * bw, y = st * sh
+    if (b === 2) { g.fillStyle = "#3a3632"; for (let k = 0; k < 4; k++) g.fillRect(x + 30 + k * 30, y + 30, 14, 14); continue }
+    g.fillStyle = "#cfc4b2"; g.fillRect(x + 10, y + 18, bw - 20, sh - 22) // recess
+    g.fillStyle = "#4a4038"; g.fillRect(x + 22, y + 34, bw * 0.42, sh * 0.42) // window
+    g.fillStyle = "#6b4a30"; g.fillRect(x + bw * 0.62, y + 30, bw * 0.24, sh * 0.7) // door
+    g.fillStyle = "#f6f2ea"; g.fillRect(x + 6, y + sh * 0.62, bw - 12, sh * 0.38) // parapet
+    g.fillStyle = "rgba(0,0,0,0.18)"; g.fillRect(x + 6, y + sh * 0.6, bw - 12, 5)
+  }
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = 8
+  return t
+})()
+function neighbourHall(cx, cz, roofColor) {
+  const H2 = 13.6
+  const face = (len) => { const m = new THREE.MeshStandardMaterial({ map: facadeTex.clone(), roughness: 0.85 }); m.map.needsUpdate = true; m.map.repeat.set(len / 10.2, 1); m.map.offset.y = 0; return m }
+  const cap = new THREE.MeshStandardMaterial({ color: 0xefe9df, roughness: 0.9 })
+  const wing = (w, d, x, z) => {
+    const mats = [face(d), face(d), cap, cap, face(w), face(w)]
+    const m = new THREE.Mesh(new THREE.BoxGeometry(w, H2, d), mats)
+    m.position.set(cx + x, H2 / 2, cz + z); m.castShadow = m.receiveShadow = true; scene.add(m)
+  }
+  wing(W, DEPTH, 0, -HZ + DEPTH / 2); wing(W, DEPTH, 0, HZ - DEPTH / 2)
+  wing(DEPTH, L - 2 * DEPTH, -HX + DEPTH / 2, 0); wing(DEPTH, L - 2 * DEPTH, HX - DEPTH / 2, 0)
+  const OV = 0.9, rise = Math.tan(THREE.MathUtils.degToRad(24)) * (DEPTH / 2 + OV)
+  const rect = (hx, hz, y) => [V(cx - hx, y, cz - hz), V(cx + hx, y, cz - hz), V(cx + hx, y, cz + hz), V(cx - hx, y, cz + hz)]
+  const outer = rect(HX + OV, HZ + OV, H2), ridge = rect(HX - DEPTH / 2, HZ - DEPTH / 2, H2 + rise), inner = rect(IX - OV, IZ - OV, H2)
+  const pos = [], uv = []
+  const quad = (a, b, c, d) => { for (const p of [a, b, c, a, c, d]) { pos.push(p.x, p.y, p.z); uv.push((p.x + p.z) / 2.2, p.y / 1.1 + Math.hypot(p.x - cx, p.z - cz) / 2.2) } }
+  for (let i = 0; i < 4; i++) { const j = (i + 1) % 4; quad(outer[i], outer[j], ridge[j], ridge[i]); quad(ridge[i], ridge[j], inner[j], inner[i]) }
+  const g = new THREE.BufferGeometry()
+  g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute("uv", new THREE.Float32BufferAttribute(uv, 2)); g.computeVertexNormals()
+  const r = roof.clone(); for (const k of ["map", "normalMap", "roughnessMap"]) { r[k] = r[k].clone(); r[k].repeat.set(1, 1); r[k].needsUpdate = true }
+  r.color = new THREE.Color(roofColor); r.side = THREE.DoubleSide
+  const m = new THREE.Mesh(g, r); m.castShadow = m.receiveShadow = true; scene.add(m)
+  // courtyard lawn so the satellite roof doesn't show through
+  const lawn = new THREE.Mesh(new THREE.PlaneGeometry(2 * IX, 2 * IZ), sized(grass, 2 * IX, 2 * IZ, 4)); lawn.rotation.x = -Math.PI / 2; lawn.position.set(cx, 0.01, cz); lawn.receiveShadow = true; scene.add(lawn)
+}
+neighbourHall(140, 9.5, 0x7a4a3a) // Elizabeth Frances Sey Hall
+neighbourHall(335, -24, 0x7a4a3a) // Alexander Kwapong Hall
+
 // ---------- trees, lamps, cars (all procedural: light enough for the web) ----------
 // Feathery leaf card: pinnate fronds like the flamboyant (Delonix) trees in the courtyard photo.
 function leafTexture(col) {
@@ -615,24 +691,26 @@ const ready = Promise.resolve().then(() => {
 // ---------- light: real sky + sun ----------
 const pmrem = new THREE.PMREMGenerator(renderer)
 const skyReady = new Promise((res) =>
-  new RGBELoader().load("hdri/sky_2k.hdr", (hdr) => {
+  new RGBELoader().load(MODE === "dusk" ? "hdri/belfast_sunset_puresky.hdr" : MODE === "overcast" ? "hdri/kloofendal_overcast_puresky.hdr" : "hdri/sky_2k.hdr", (hdr) => {
     hdr.mapping = THREE.EquirectangularReflectionMapping
     scene.background = hdr
     scene.environment = pmrem.fromEquirectangular(hdr).texture
-    scene.backgroundIntensity = 1
-    scene.environmentIntensity = 1.0
+    scene.backgroundIntensity = MODE === "dusk" ? 0.8 : MODE === "overcast" ? 0.9 : 1
+    scene.environmentIntensity = MODE === "dusk" ? 0.55 : MODE === "overcast" ? 1.3 : 0.75
+    if (MODE === "dusk") scene.backgroundBlurriness = 0
     res()
   }),
 )
-const sun = new THREE.DirectionalLight(0xfff1dc, 3.2)
-sun.position.set(-60, 90, -40)
+const sun = new THREE.DirectionalLight(MODE === "dusk" ? 0xff9a55 : MODE === "overcast" ? 0xe9eef2 : 0xffeccc, MODE === "dusk" ? 2.0 : MODE === "overcast" ? 0.9 : 3.4)
+if (MODE === "dusk") sun.position.set(-160, 22, 60)
+else sun.position.set(-60, 90, -40)
 sun.castShadow = true
-sun.shadow.mapSize.set(2048, 2048)
 Object.assign(sun.shadow.camera, { left: -110, right: 110, top: 110, bottom: -110, near: 10, far: 400 })
 sun.shadow.bias = -0.0004
 sun.shadow.normalBias = 0.03
 scene.add(sun)
-scene.fog = new THREE.Fog(0xd8dde2, 250, 900)
+scene.fog = new THREE.Fog(MODE === "dusk" ? 0x6d6a78 : 0xd8dde2, 250, 1100)
+sun.shadow.mapSize.set(4096, 4096)
 
 // ---------- post ----------
 const composer = new EffectComposer(renderer)
@@ -648,7 +726,9 @@ const VIEWS = {
   courtlow: { pos: [IX - 6, 1.7, BC.z + 22], look: [-IX + 8, 4.5, BC.z - 4] },
   entrance: { pos: [HX + 41.5, 1.7, -52], look: [HX + 4, 7, -4] },
   front: { pos: [HX + 22.3, 1.7, -40], look: [HX + 3, 8, ENTRY_Z] },
-  aerial: { pos: [140, 110, 150], look: [0, 0, 0] },
+  aerial: { pos: [150, 120, 170], look: [20, 0, 0] },
+  hero: { pos: [HX + 95, 26, -95], look: [HX - 10, 6, 0] },
+  wide: { pos: [-150, 160, 260], look: [90, 0, -10] },
 }
 window.setView = (name) => {
   const v = VIEWS[name]

@@ -142,10 +142,10 @@ export function CinemaHero() {
 const pins = [
   { n: 1, x: 59.2, y: 48.5, title: "Entrance and porters' lodge", body: "The gabled tower on the long side, facing the car park and the taxi rank." },
   { n: 2, x: 61.5, y: 42, title: "Mart, upstairs", body: "Climb the entrance stairs and it is the first thing you meet. A spacious one.", resident: true },
-  { n: 3, x: 33.5, y: 56, title: "The court with the net", body: "Teal court used for volleyball and badminton, ringed by tiled walks." },
-  { n: 4, x: 44.5, y: 46.5, title: "The round garden", body: "A flower bed with a small monument at the centre of the courtyard." },
-  { n: 5, x: 53, y: 37.5, title: "Basketball court", body: "The second court, at the far end of the courtyard." },
-  { n: 6, x: 10, y: 55, title: "Restaurant, shops and laundry", body: "From the entrance turn left down the hallway; the restaurant is at the far corner, with small shops along the way.", resident: true },
+  { n: 3, x: 33.5, y: 56, title: "Basketball court", body: "One of the two courts in the courtyard, ringed by tiled walks.", resident: true },
+  { n: 4, x: 44.5, y: 46.5, title: "The round garden", body: "A round flower bed at the centre of the courtyard, where the paths meet." },
+  { n: 5, x: 53, y: 37.5, title: "Tennis court", body: "The court with the net, at the other end of the courtyard.", resident: true },
+  { n: 6, x: 12, y: 55.5, title: "Restaurant, shops and laundry", body: "From the entrance turn left down the hallway; the restaurant is at the far corner, with small shops along the way.", resident: true },
   { n: 7, x: 69, y: 27, title: "The second mart", body: "At the opposite far end of the hall.", resident: true },
   { n: 8, x: 87, y: 68, title: "Elizabeth Sey Hall", body: "The next diaspora hall, built to the same plan, across the car park." },
 ]
@@ -214,7 +214,7 @@ const stops = [
   { img: "entrance", k: "Arrival", title: "Under the trees, through the tall arched door.", body: "Taxis wait in the car park. Inside, the porters' lodge, and the stairs up to the mart.", pos: "50% 70%" },
   { img: "courtyard", k: "The courtyard", title: "Two courts, a round garden and laundry in the sun.", body: "Every room looks onto green: the courtyard on one side, the bush and the next hall on the other.", pos: "50% 60%" },
   { img: "room", k: "Your room", title: "Four to a room, yellow bunks, blue curtains.", body: "Self-contained rooms with louvre windows, wall shelves and a desk by the window.", pos: "50% 55%" },
-  { img: "reading", k: "The reading room", title: "Quiet rows of carrels, fans turning overhead.", body: "Busy at night and very busy in exam season.", pos: "50% 55%" },
+  { img: "reading", k: "The reading room", title: "Quiet rows of carrels, and room to think.", body: "Long rows of desks with dividers, louvre windows on both sides and fans overhead.", pos: "50% 55%" },
   { img: "mart", k: "The mart", title: "Cold drinks, bread and noodles, a few steps away.", body: "One mart at the top of the entrance stairs and another at the far end; a restaurant, a salon and foodstuff shops downstairs.", pos: "50% 60%" },
 ]
 
@@ -309,11 +309,14 @@ export function CinemaFinale() {
   const [ref, p] = useSectionProgress<HTMLElement>()
   const [vw, setVw] = useState(1440)
   const [vh, setVh] = useState(900)
+  const [banner, setBanner] = useState(34)
   const reduced = useReducedMotion()
   useEffect(() => {
     const on = () => {
       setVw(window.innerWidth)
       setVh(window.innerHeight)
+      // the real hero starts below the site notice; line the landed view up with it
+      setBanner((document.querySelector('aside[aria-label="Site notice"]') as HTMLElement | null)?.offsetHeight ?? 0)
     }
     on()
     window.addEventListener("resize", on)
@@ -357,7 +360,7 @@ export function CinemaFinale() {
         </div>
 
         {/* landed: the screen has become the site, straightened out */}
-        <div className="absolute inset-0" style={{ opacity: landed }} aria-hidden="true">
+        <div className="absolute inset-x-0 bottom-0" style={{ opacity: landed, top: banner, height: vh }} aria-hidden="true">
           <img src="/plates/entrance.webp" alt="" className="absolute inset-0 h-full w-full object-cover object-[50%_70%]" style={{ transform: `scale(${1.12 - landed * 0.08})` }} loading="lazy" />
           <p className="absolute inset-x-0 top-[13vh] text-center font-sans text-[clamp(3.4rem,12.4vw,13rem)] font-black uppercase leading-[0.8] tracking-[-0.045em] text-white/95 sm:top-[11vh] sm:whitespace-nowrap">
             Jean Nelson
@@ -368,12 +371,13 @@ export function CinemaFinale() {
         <div className="absolute inset-0 flex items-end justify-center pb-16" style={{ opacity: landed, pointerEvents: landed > 0.5 ? "auto" : "none" }}>
           <button
             type="button"
-            onClick={() => window.scrollTo({ top: 0, behavior: reduced ? "auto" : "smooth" })}
+            onClick={() => window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior })}
             className="inline-flex min-h-[52px] items-center gap-2 rounded-full bg-white px-7 font-medium text-ink shadow-2xl transition hover:bg-lamp-soft"
           >
             Back to the start <span aria-hidden="true">↑</span>
           </button>
         </div>
+        <p className="absolute bottom-3 right-4 text-[0.7rem] text-white/50 sm:right-8">AI-enhanced render of a 3D reconstruction.</p>
       </div>
     </section>
   )
