@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import { Banner } from "@/components/chrome"
 import { useEffect, useRef, useState } from "react"
 
 /*
@@ -61,29 +62,25 @@ const ease = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 
 
 /* ------------------------------------------------------------------ HERO */
 
-export function CinemaHero() {
-  const [y, setY] = useState(0)
-  useEffect(() => {
-    const on = () => setY(window.scrollY)
-    on()
-    window.addEventListener("scroll", on, { passive: true })
-    return () => window.removeEventListener("scroll", on)
-  }, [])
-  const t = clamp(y / 800)
+/** The hero picture and words; `t` is the scroll parallax. Shared with the laptop finale so it lands on the same frame. */
+function HeroArt({ t, copy = false }: { t: number; copy?: boolean }) {
   return (
-    <section aria-labelledby="hero-h" className="relative -mt-[5.5rem] h-[100svh] min-h-[640px] overflow-hidden bg-[#1b1d3a] text-white">
+    <>
       {/* sky and building */}
       <img
         src="/plates/entrance.webp"
-        alt="The hall's entrance at dusk: a four-storey block with a red tiled roof, a gabled entrance tower with a tall arched window, lit windows and trees in the car park."
-        className="absolute inset-0 h-full w-full object-cover object-[50%_70%]"
+        alt={copy ? "" : "The hall's entrance at dusk: a four-storey block with a red tiled roof, a gabled entrance tower with a tall arched window, lit windows and trees in the car park."}
+        aria-hidden={copy || undefined}
+        className="absolute inset-0 h-full w-full select-none object-cover object-[50%_70%]"
         style={{ transform: `scale(${1.04 + t * 0.06})` }}
-        fetchPriority="high"
+        fetchPriority={copy ? undefined : "high"}
+        draggable={false}
       />
       {/* the name, set in the sky behind the roofline */}
       <h1
-        id="hero-h"
-        aria-label="Jean Nelson Aka Hall"
+        id={copy ? undefined : "hero-h"}
+        aria-label={copy ? undefined : "Jean Nelson Aka Hall"}
+        aria-hidden={copy || undefined}
         className="pointer-events-none absolute inset-x-0 top-[13vh] select-none text-center font-sans font-black uppercase leading-[0.8] tracking-[-0.045em] text-white/95 sm:top-[11vh]"
         style={{ transform: `translateY(${t * 90}px)`, opacity: 1 - t * 0.7 }}
       >
@@ -100,18 +97,18 @@ export function CinemaHero() {
       <div className="absolute inset-x-0 bottom-0 h-[55%] bg-gradient-to-t from-[#0b0c1a] via-[#0b0c1a]/55 to-transparent" aria-hidden="true" />
       <div className="grain absolute inset-0 opacity-[0.07] mix-blend-overlay" aria-hidden="true" />
 
-      <div className="wrap absolute inset-x-0 bottom-0 flex flex-col gap-8 pb-10 sm:pb-14 lg:flex-row lg:items-end lg:justify-between">
-        <div className="max-w-xl fade-in">
+      <div aria-hidden={copy || undefined} className="wrap absolute inset-x-0 bottom-0 flex flex-col gap-8 pb-10 sm:pb-14 lg:flex-row lg:items-end lg:justify-between">
+        <div className={`max-w-xl ${copy ? "" : "fade-in"}`}>
           <p className="text-xs font-medium uppercase tracking-[0.22em] text-white/70">Aka Hall · University of Ghana, Legon</p>
           <p className="mt-1 text-[0.7rem] text-white/50 sm:hidden">AI-enhanced render of a 3D reconstruction.</p>
           <p className="mt-4 font-display text-[clamp(1.6rem,3vw,2.4rem)] leading-[1.1]">
             Light in darkness. Home to the Royals since 2011.
           </p>
           <div className="mt-7 flex flex-wrap gap-3">
-            <a href="#walk" className="inline-flex min-h-[48px] items-center gap-2 rounded-full bg-white px-6 font-medium text-ink transition hover:bg-lamp-soft">
+            <a href="#walk" tabIndex={copy ? -1 : undefined} className="inline-flex min-h-[48px] items-center gap-2 rounded-full bg-white px-6 font-medium text-ink transition hover:bg-lamp-soft">
               Walk through the hall <span aria-hidden="true">↓</span>
             </a>
-            <Link href="/rooms/" className="inline-flex min-h-[48px] items-center gap-2 rounded-full border border-white/40 px-6 font-medium text-white backdrop-blur transition hover:bg-white/10">
+            <Link href="/rooms/" tabIndex={copy ? -1 : undefined} className="inline-flex min-h-[48px] items-center gap-2 rounded-full border border-white/40 px-6 font-medium text-white backdrop-blur transition hover:bg-white/10">
               Getting a room
             </Link>
           </div>
@@ -133,6 +130,21 @@ export function CinemaHero() {
       <p className="absolute bottom-3 right-4 hidden text-right text-[0.7rem] leading-snug text-white/50 sm:right-8 sm:block">
         AI-enhanced render of a 3D reconstruction. Not a photograph.
       </p>
+    </>
+  )
+}
+
+export function CinemaHero() {
+  const [y, setY] = useState(0)
+  useEffect(() => {
+    const on = () => setY(window.scrollY)
+    on()
+    window.addEventListener("scroll", on, { passive: true })
+    return () => window.removeEventListener("scroll", on)
+  }, [])
+  return (
+    <section aria-labelledby="hero-h" className="relative -mt-[5.5rem] h-[100svh] min-h-[640px] overflow-hidden bg-[#1b1d3a] text-white">
+      <HeroArt t={clamp(y / 800)} />
     </section>
   )
 }
@@ -290,8 +302,10 @@ const SCREEN: [number, number][] = [
   [222, 1330],
 ]
 
-/** CSS matrix3d that maps a w x h box onto the quad (a homography). */
-function quadMatrix(w: number, h: number, q: [number, number][]) {
+type Pt = [number, number]
+
+/** CSS matrix3d that maps a w x h box (at 0,0) onto the quad TL, TR, BR, BL (a homography). */
+function quadMatrix(w: number, h: number, q: Pt[]) {
   const [[x0, y0], [x1, y1], [x2, y2], [x3, y3]] = q
   const dx1 = x1 - x2, dx2 = x3 - x2, dx3 = x0 - x1 + x2 - x3
   const dy1 = y1 - y2, dy2 = y3 - y2, dy3 = y0 - y1 + y2 - y3
@@ -300,84 +314,193 @@ function quadMatrix(w: number, h: number, q: [number, number][]) {
   const hh = (dx1 * dy3 - dx3 * dy1) / den
   const a = x1 - x0 + g * x1, b = x3 - x0 + hh * x3, c = x0
   const d = y1 - y0 + g * y1, e = y3 - y0 + hh * y3, f = y0
-  // unit square -> quad; pre-scale the w x h box to the unit square
   const m = [a / w, d / w, 0, g / w, b / h, e / h, 0, hh / h, 0, 0, 1, 0, c, f, 0, 1]
-  return `matrix3d(${m.map((v) => +v.toFixed(8)).join(",")})`
+  return `matrix3d(${m.map((v) => +v.toFixed(9)).join(",")})`
 }
 
+const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2)
+const easeOut = (t: number) => 1 - Math.pow(1 - t, 3)
+
+/**
+ * The walk ends in a student room. Scrolling pulls the camera to the laptop on the desk; the site on its screen
+ * then lifts off the laptop, straightens and grows until it is the hero itself, at full resolution, and you are
+ * handed back to the top of the page on the same frame.
+ *
+ * The screen content is the real hero rendered at viewport size and transformed DOWN onto the screen, so the last
+ * frame is pixel-sharp. Motion runs in one rAF loop with smoothed progress and writes transforms directly.
+ */
 export function CinemaFinale() {
-  const [ref, p] = useSectionProgress<HTMLElement>()
-  const [vw, setVw] = useState(1440)
-  const [vh, setVh] = useState(900)
-  const [banner, setBanner] = useState(34)
+  const section = useRef<HTMLElement>(null)
+  const room = useRef<HTMLDivElement>(null)
+  const roomShade = useRef<HTMLDivElement>(null)
+  const screen = useRef<HTMLDivElement>(null)
+  const glare = useRef<HTMLDivElement>(null)
+  const intro = useRef<HTMLDivElement>(null)
+  const label = useRef<HTMLParagraphElement>(null)
+  const notice = useRef<HTMLDivElement>(null)
+  const [box, setBox] = useState({ w: 1440, h: 900, top: 34 })
   const reduced = useReducedMotion()
+
   useEffect(() => {
-    const on = () => {
-      setVw(window.innerWidth)
-      setVh(window.innerHeight)
-      // the real hero starts below the site notice; line the landed view up with it
-      setBanner((document.querySelector('aside[aria-label="Site notice"]') as HTMLElement | null)?.offsetHeight ?? 0)
-    }
-    on()
-    window.addEventListener("resize", on)
-    return () => window.removeEventListener("resize", on)
+    const measure = () =>
+      setBox({
+        w: window.innerWidth,
+        h: Math.max(window.innerHeight, 640), // the hero is 100svh with a 640px floor
+        top: (document.querySelector('aside[aria-label="Site notice"]') as HTMLElement | null)?.offsetHeight ?? 0,
+      })
+    measure()
+    window.addEventListener("resize", measure)
+    return () => window.removeEventListener("resize", measure)
   }, [])
 
-  // Start: the room plate covers the viewport. End: the laptop screen fills it.
-  const cover = Math.max(vw / PLATE_W, vh / PLATE_H)
-  const sx = SCREEN.map((c) => c[0]), sy = SCREEN.map((c) => c[1])
-  const scx = (Math.min(...sx) + Math.max(...sx)) / 2, scy = (Math.min(...sy) + Math.max(...sy)) / 2
-  const sw = Math.max(...sx) - Math.min(...sx), shh = Math.max(...sy) - Math.min(...sy)
-  const endScale = Math.max(vw / sw, vh / shh) * 1.15
-  const t = reduced ? 0 : ease(clamp((p - 0.15) / 0.7))
-  const scale = cover + (endScale - cover) * t
-  const cx = PLATE_W / 2 + (scx - PLATE_W / 2) * t
-  const cy = PLATE_H / 2 + (scy - PLATE_H / 2) * t
-  const tx = vw / 2 - cx * scale, ty = vh / 2 - cy * scale
-  const landed = clamp((p - 0.78) / 0.16)
+  useEffect(() => {
+    const el = section.current
+    if (!el) return
+    const vw = window.innerWidth, vh = window.innerHeight
+    const { w: BW, h: BH, top: BT } = box
 
-  const SW = 1600, SH = 1000 // the little site inside the laptop
+    // Geometry that does not change with scroll.
+    const cover = Math.max(vw / PLATE_W, vh / PLATE_H)
+    const xs = SCREEN.map((c) => c[0]), ys = SCREEN.map((c) => c[1])
+    const scx = (Math.min(...xs) + Math.max(...xs)) / 2, scy = (Math.min(...ys) + Math.max(...ys)) / 2
+    const sw = Math.max(...xs) - Math.min(...xs)
+    const zoomTo = (0.5 * vw) / (sw * cover) // room scale factor at which the screen spans half the viewport
+    const end: Pt[] = [
+      [0, BT],
+      [BW, BT],
+      [BW, BT + BH],
+      [0, BT + BH],
+    ]
+
+    const apply = (sp: number) => {
+      // 1. camera moves in on the laptop
+      // Zoom eases in and out; the laptop is panned to the centre a little ahead of the zoom so it never leaves the frame.
+      const z = easeInOut(clamp((sp - 0.04) / 0.56))
+      const pan = easeOut(clamp((sp - 0.02) / 0.4))
+      const scale = cover * (1 + (zoomTo - 1) * z)
+      const sx0 = vw / 2 + (scx - PLATE_W / 2) * cover, sy0 = vh / 2 + (scy - PLATE_H / 2) * cover // laptop at the start
+      const fx = sx0 + (vw / 2 - sx0) * pan, fy = sy0 + (vh * 0.52 - sy0) * pan // where the laptop sits on screen now
+      // never let the edge of the room picture show
+      const tx = clamp(fx - scx * scale, vw - PLATE_W * scale, 0)
+      const ty = clamp(fy - scy * scale, vh - PLATE_H * scale, 0)
+      room.current!.style.transform = `translate3d(${tx}px,${ty}px,0) scale(${scale})`
+      // 2. the screen lifts off the laptop and becomes the page
+      const k = easeInOut(clamp((sp - 0.36) / 0.56))
+      const quad = SCREEN.map(([x, y], i) => {
+        const ax = tx + x * scale, ay = ty + y * scale
+        return [ax + (end[i][0] - ax) * k, ay + (end[i][1] - ay) * k] as Pt
+      })
+      screen.current!.style.transform = quadMatrix(BW, BH, quad)
+      glare.current!.style.opacity = String(0.9 * (1 - easeOut(k)))
+      // 3. the room falls away behind it
+      const fade = clamp((sp - 0.5) / 0.35)
+      room.current!.style.opacity = String(1 - fade)
+      roomShade.current!.style.opacity = String(0.25 + 0.5 * clamp((sp - 0.3) / 0.4))
+      intro.current!.style.opacity = String(1 - clamp(sp / 0.16))
+      intro.current!.style.transform = `translate3d(0,${-40 * clamp(sp / 0.16)}px,0)`
+      label.current!.style.opacity = String(1 - clamp((sp - 0.85) / 0.1))
+      // At the top of the page the site notice sits above the hero and the nav sits below it: match that as we land.
+      const land = clamp((sp - 0.86) / 0.1)
+      notice.current!.style.opacity = String(land)
+      document.documentElement.style.setProperty("--hdr-shift", `${(BT * land).toFixed(2)}px`)
+    }
+
+    if (reduced) {
+      apply(0)
+      return
+    }
+
+    let target = 0, sp = 0, last = performance.now(), raf = 0, visible = false, landedAt = 0
+    const read = () => {
+      const r = el.getBoundingClientRect()
+      const total = r.height - vh
+      target = clamp(total > 0 ? -r.top / total : 0)
+    }
+    const loop = (now: number) => {
+      const dt = Math.min(64, now - last) / 16.667
+      last = now
+      read()
+      sp += (target - sp) * (1 - Math.pow(0.86, dt))
+      if (Math.abs(target - sp) < 0.0004) sp = target
+      apply(sp)
+      // Landed on the hero's frame and settled: hand over to the real top of the page, invisibly.
+      if (sp > 0.995 && target > 0.995) {
+        landedAt ||= now
+        if (now - landedAt > 380) {
+          landedAt = 0
+          sp = 0
+          window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior })
+          document.documentElement.style.setProperty("--hdr-shift", "0px")
+        }
+      } else landedAt = 0
+      if (visible) raf = requestAnimationFrame(loop)
+    }
+    const io = new IntersectionObserver(([e]) => {
+      visible = e.isIntersecting
+      if (visible) {
+        last = performance.now()
+        cancelAnimationFrame(raf)
+        raf = requestAnimationFrame(loop)
+      }
+    })
+    io.observe(el)
+    read()
+    sp = target
+    apply(sp)
+    return () => {
+      io.disconnect()
+      cancelAnimationFrame(raf)
+      document.documentElement.style.setProperty("--hdr-shift", "0px")
+    }
+  }, [box, reduced])
+
   return (
-    <section ref={ref} aria-labelledby="fin-h" className="relative bg-black" style={{ height: reduced ? "auto" : "320vh" }}>
-      <div className={`${reduced ? "relative h-[100svh]" : "sticky top-0 h-[100svh]"} overflow-hidden`}>
-        <div className="absolute left-0 top-0 origin-top-left will-change-transform" style={{ width: PLATE_W, height: PLATE_H, transform: `translate(${tx}px,${ty}px) scale(${scale})` }}>
-          <img src="/plates/room.webp" alt="A student room: two yellow bunk beds, blue curtains at a louvre window, and a laptop open on the desk." className="absolute inset-0 h-full w-full" loading="lazy" />
-          {/* the site, on the laptop screen */}
-          <div className="absolute left-0 top-0 origin-top-left overflow-hidden" style={{ width: SW, height: SH, transform: quadMatrix(SW, SH, SCREEN) }} aria-hidden="true">
-            <img src="/plates/entrance.webp" alt="" className="absolute inset-0 h-full w-full object-cover object-[50%_70%]" loading="lazy" />
-            <p className="absolute inset-x-0 top-[9%] text-center font-sans text-[190px] font-black uppercase leading-none tracking-[-0.045em] text-white/95">Jean Nelson</p>
-            <img src="/plates/entrance-front.webp" alt="" className="absolute inset-0 h-full w-full object-cover object-[50%_70%]" loading="lazy" />
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_30%_20%,rgba(255,255,255,0.25),transparent_55%)]" />
-          </div>
+    <section ref={section} aria-labelledby="fin-h" className="relative bg-[#07080f]" style={{ height: reduced ? "auto" : "380vh" }}>
+      <div className={`${reduced ? "relative" : "sticky top-0"} h-[100svh] overflow-hidden`}>
+        <div ref={room} className="absolute left-0 top-0 origin-top-left will-change-transform" style={{ width: PLATE_W, height: PLATE_H }}>
+          <img
+            src="/plates/room.webp"
+            alt="A student room: two yellow bunk beds, blue curtains at a louvre window, and a laptop open on the desk."
+            className="absolute inset-0 h-full w-full select-none"
+            draggable={false}
+            loading="lazy"
+            decoding="async"
+          />
         </div>
-        <div className="absolute inset-0 bg-black/30 transition-opacity" style={{ opacity: 1 - t }} aria-hidden="true" />
+        <div ref={roomShade} className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_35%,rgba(5,6,12,0.85))]" aria-hidden="true" />
 
-        <div className="wrap absolute inset-x-0 top-[22vh] text-white transition-opacity duration-300" style={{ opacity: 1 - clamp(t * 3) }}>
+        {/* the site on the laptop screen: the real hero at viewport size, transformed onto the screen */}
+        <div
+          ref={screen}
+          className="absolute left-0 top-0 origin-top-left overflow-hidden bg-[#1b1d3a] text-white will-change-transform [backface-visibility:hidden]"
+          style={{ width: box.w, height: box.h }}
+          aria-hidden="true"
+        >
+          <HeroArt t={0} copy />
+          <div ref={glare} className="pointer-events-none absolute inset-0 bg-[linear-gradient(115deg,rgba(255,255,255,0.32)_0%,rgba(255,255,255,0.06)_38%,transparent_55%)]" />
+        </div>
+
+        <div ref={intro} className="wrap pointer-events-none absolute inset-x-0 top-[22vh] text-white">
           <p className="text-xs font-medium uppercase tracking-[0.22em] text-lamp">The end of the walk</p>
-          <h2 id="fin-h" className="mt-4 max-w-xl font-display text-[clamp(2.2rem,5vw,4rem)] leading-[1.02]">
+          <h2 id="fin-h" className="mt-4 max-w-xl font-display text-[clamp(2.2rem,5vw,4rem)] leading-[1.02] [text-shadow:0_4px_30px_rgba(0,0,0,0.45)]">
             And at the end of the day, a desk by the window.
           </h2>
+          <p className="mt-4 text-white/70">Keep scrolling.</p>
         </div>
-
-        {/* landed: the screen has become the site, straightened out */}
-        <div className="absolute inset-x-0 bottom-0" style={{ opacity: landed, top: banner, height: vh }} aria-hidden="true">
-          <img src="/plates/entrance.webp" alt="" className="absolute inset-0 h-full w-full object-cover object-[50%_70%]" style={{ transform: `scale(${1.12 - landed * 0.08})` }} loading="lazy" />
-          <p className="absolute inset-x-0 top-[13vh] text-center font-sans text-[clamp(3.4rem,12.4vw,13rem)] font-black uppercase leading-[0.8] tracking-[-0.045em] text-white/95 sm:top-[11vh] sm:whitespace-nowrap">
-            Jean Nelson
-          </p>
-          <img src="/plates/entrance-front.webp" alt="" className="absolute inset-0 h-full w-full object-cover object-[50%_70%]" style={{ transform: `scale(${1.12 - landed * 0.08})` }} loading="lazy" />
-          <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-[#0b0c1a]/80 to-transparent" />
+        {/* a copy of the site notice, faded in as we land so the hand-over to the real page top is invisible */}
+        <div ref={notice} className="pointer-events-none absolute inset-x-0 top-0 opacity-0" aria-hidden="true">
+          <Banner />
         </div>
-        <div className="absolute inset-0 flex items-end justify-center pb-16" style={{ opacity: landed, pointerEvents: landed > 0.5 ? "auto" : "none" }}>
-          <button
-            type="button"
-            onClick={() => window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior })}
-            className="inline-flex min-h-[52px] items-center gap-2 rounded-full bg-white px-7 font-medium text-ink shadow-2xl transition hover:bg-lamp-soft"
-          >
-            Back to the start <span aria-hidden="true">↑</span>
-          </button>
-        </div>
-        <p className="absolute bottom-3 right-4 text-[0.7rem] text-white/50 sm:right-8">AI-enhanced render of a 3D reconstruction.</p>
+        <p ref={label} className="absolute bottom-3 left-4 text-[0.7rem] text-white/50 sm:left-8">
+          AI-enhanced render of a 3D reconstruction.
+        </p>
+        {reduced && (
+          <div className="absolute inset-x-0 bottom-16 flex justify-center">
+            <button type="button" onClick={() => window.scrollTo({ top: 0 })} className="inline-flex min-h-[52px] items-center gap-2 rounded-full bg-white px-7 font-medium text-ink shadow-2xl">
+              Back to the start <span aria-hidden="true">↑</span>
+            </button>
+          </div>
+        )}
       </div>
     </section>
   )

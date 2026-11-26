@@ -33,7 +33,7 @@ export function Header() {
   const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname?.startsWith(href.replace(/\/$/, "")))
 
   return (
-    <header className="pointer-events-none sticky top-0 z-40 px-3 pt-3 sm:px-5 sm:pt-4">
+    <header className="pointer-events-none sticky top-0 z-40 px-3 pt-3 sm:px-5 sm:pt-4" style={{ transform: "translateY(var(--hdr-shift, 0px))" }}>
       <div
         className={`pointer-events-auto mx-auto max-w-6xl rounded-[22px] border transition-[background-color,box-shadow,border-color,padding] duration-500 ease-out ${
           scrolled || open
