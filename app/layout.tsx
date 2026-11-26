@@ -15,11 +15,15 @@ const title = "Benedict Frimpong Boateng | AI engineer and software developer"
 const description =
   "AI engineer, prompt engineer and software developer in Accra, Ghana. I build with Claude, test things properly and ship fast. Open to full time and freelance work."
 
+// Absolute URLs for link previews: the production domain on Vercel, or a local one when building elsewhere.
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : "http://localhost:3000")
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title,
   description,
   openGraph: { title, description, type: "website" },
-  twitter: { card: "summary", title, description },
+  twitter: { card: "summary_large_image", title, description },
 }
 
 export const viewport: Viewport = {

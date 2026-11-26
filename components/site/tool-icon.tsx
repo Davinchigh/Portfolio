@@ -108,7 +108,7 @@ export function BrandGradients() {
 export function ToolIcon({ icon, name, className = "h-6 w-6", reveal = false }: { icon: string; name: string; className?: string; reveal?: boolean }) {
   const cls = `${className} ${reveal ? "tool-mark" : ""}`
   // eslint-disable-next-line @next/next/no-img-element
-  if (LOGO[icon]) return <img src={`/logos/tools/${LOGO[icon]}.svg`} alt="" aria-hidden="true" className={`${cls} object-contain`} />
+  if (LOGO[icon]) return <img src={`/logos/tools/${LOGO[icon]}.svg`} alt="" aria-hidden="true" loading="lazy" decoding="async" className={`${cls} object-contain`} />
   const Icon = ICONS[icon]
   if (Icon) {
     if (GRADIENT[icon]) return <Icon aria-hidden="true" className={cls} style={{ fill: `url(#brand-${icon})` }} />

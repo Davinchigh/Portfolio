@@ -30,7 +30,8 @@ export function SignOff() {
         <LogoMark className="h-7 w-7" />
         <p className="meta">thanks for walking the road.</p>
       </div>
-      <p ref={ref} className="sign-off mt-6" aria-label="let's build.">
+      <p ref={ref} className="sign-off mt-6">
+        <span className="sr-only">let&apos;s build.</span>
         {[...word, "."].map((ch, i) => (
           <span key={i} aria-hidden="true" className={ch === "." ? "sign-dot" : undefined} style={{ "--i": i } as CSSProperties}>
             {ch === " " ? " " : ch}

@@ -80,7 +80,7 @@ export function RecallDemo({ docs }: { docs: Doc[] }) {
                     <span className="meta tabular-nums">{hit.score.toFixed(1)}</span>
                   </span>
                 </div>
-                <h3 className={`mt-2 ${i === 0 ? "text-xl" : "text-base"}`}>{hit.doc.title}</h3>
+                <h2 className={`mt-2 ${i === 0 ? "text-xl" : "text-base"}`}>{hit.doc.title}</h2>
                 <p className={`mt-2 leading-relaxed text-muted-foreground ${i === 0 ? "text-[17px]" : "text-sm"}`}>
                   {highlight(hit.snippet, hit.matched).map((piece, n) =>
                     piece.hit ? (
