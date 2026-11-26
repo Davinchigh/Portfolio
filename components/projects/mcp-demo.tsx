@@ -58,7 +58,7 @@ export function McpDemo() {
   return (
     <div className="grid gap-10">
       <div>
-        <h3 className="text-lg">connect it</h3>
+        <h2 className="text-lg">connect it</h2>
         <p className="mt-1 text-sm text-muted-foreground">in claude code:</p>
         <div className="mt-2">
           <CopyLine text={`claude mcp add --transport http bfb ${origin}/api/mcp`} />
@@ -72,7 +72,7 @@ export function McpDemo() {
       </div>
 
       <div className="rounded-2xl border bg-card p-5 sm:p-6">
-        <h3 className="text-lg">try it here</h3>
+        <h2 className="text-lg">try it here</h2>
         <p className="mt-1 text-sm text-muted-foreground">pick a message, send it, and see exactly what an ai client gets back.</p>
         <ul className="mt-4 flex flex-wrap gap-2">
           {EXAMPLES.map((e, i) => (

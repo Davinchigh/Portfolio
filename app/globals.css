@@ -499,6 +499,7 @@ html.theme-vt::view-transition-new(root) {
 /* Tool tiles: each logo rests in greyscale and takes its real colours on hover or focus,
    with a soft glow in the brand's colour. Touch screens have no hover, so they show colour. */
 .tool-mark { filter: grayscale(1); opacity: 0.62; transition: filter 260ms ease, opacity 260ms ease, transform 360ms cubic-bezier(0.34, 1.56, 0.64, 1); }
+.dark .tool-mark { filter: grayscale(1) brightness(1.55); opacity: 0.72; }
 .tool-tile { transition: transform 360ms cubic-bezier(0.34, 1.56, 0.64, 1), border-color 260ms ease, box-shadow 260ms ease, background-color 260ms ease; }
 .tool-tile:hover, .tool-tile:focus {
   transform: translateY(-3px);
